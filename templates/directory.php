@@ -9,6 +9,23 @@ function pmpromd_shortcode($atts, $content=null, $code="")
 	// $code    ::= the shortcode found, when == callback name
 	// examples: [pmpro_member_directory show_avatar="false" show_email="false" levels="1,2"]
 
+	// init vars
+	$avatar_size      = '128';
+	$fields           = null;
+	$layout           = 'div';
+	$level            = null;
+	$levels           = null;
+	$limit            = null;
+	$link             = null;
+	$order_by         = 'u.display_name';
+	$order            = 'ASC';
+	$show_avatar      = null;
+	$show_email       = null;
+	$show_level       = null;
+	$show_search      = null;
+	$show_startdate   = null;
+	$limit_to         = null;
+
 	extract(shortcode_atts(array(
 		'avatar_size' => '128',
 		'fields' => NULL,
@@ -122,7 +139,7 @@ function pmpromd_shortcode($atts, $content=null, $code="")
 	if(!empty($s) || !empty($extra_search_fields))
 	{
 		$sqlQuery = "
-		SELECT
+		SELECT SQL_CALC_FOUND_ROWS
 			u.ID,
 			u.user_login,
 			u.user_email,
@@ -219,7 +236,7 @@ function pmpromd_shortcode($atts, $content=null, $code="")
 	else
 	{
 		$sqlQuery = "
-		SELECT
+		SELECT SQL_CALC_FOUND_ROWS
 			DISTINCT u.ID,
 			u.user_login,
 			u.user_email,
@@ -267,7 +284,7 @@ function pmpromd_shortcode($atts, $content=null, $code="")
 		error_log("Query for Directory search: " . $sqlQuery);
 
 	$theusers = $wpdb->get_results($sqlQuery);
-	$totalrows = count($theusers);
+	$totalrows = $wpdb->get_var( "SELECT FOUND_ROWS() AS found_rows" );
 
 	//update end to match totalrows if total rows is small
 	if($totalrows < $end)
