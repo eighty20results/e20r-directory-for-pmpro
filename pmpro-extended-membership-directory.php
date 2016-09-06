@@ -3,7 +3,7 @@
 Plugin Name: PMPro Extended Membership Directory (Add-on)
 Plugin URI: https://eighty20results.com/support/
 Description: Extended version of the PMPro Membership Directory add-on
-Version: 1.1
+Version: 1.2
 Author: Thomas Sjolshagen <thomas@eighty20results.com>
 Author URI: https://eighty20results.com/thomas-sjolshagen
 License: GPL2
