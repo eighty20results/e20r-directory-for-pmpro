@@ -1,8 +1,8 @@
 {
   "name" : "Extended Membership Directory for Paid Memberships Pro",
   "slug" : "pmpro-extended-membership-directory",
-  "download_url" : "https://eighty20results.com/protected-content/pmpro-extended-membership-directory/pmpro-extended-membership-directory-1.3.zip",
-  "version" : "1.3",
+  "download_url" : "https://eighty20results.com/protected-content/pmpro-extended-membership-directory/pmpro-extended-membership-directory-1.3.1.zip",
+  "version" : "1.3.1",
   "tested": "4.7.3",
   "requires": "4.7.3",
   "author" : "eighty20results",
@@ -11,7 +11,7 @@
   "homepage": "https://eighty20results.com/paid-memberships-pro/do-it-for-me/",
   "sections" : {
     "description" : "<p>Exending the Extended Membership Directory for Paid Memberships Pro plugin to support filtered search fields for specific user meta data fields.</p>.",
-    "changelog": "",
+    "changelog": "<h3>1.3.1</h3><ol><li>ENHANCEMENT: Make sure search area is big enough.</li></ol><h3>1.3</h3><ol><li>ENHANCEMENT: Add support for one-click plugin upgrade</li><li>ENHANCEMENT: Add build infrastructure</li><li>ENHANCEMENT: Add plugin specific constant</li><li>ENHANCEMENT: Clean up the SQL statement (escape variables)</li><li>ENHANCEMENT: Refactor CSS</li><li>ENHANCEMENT: Fix placement of Search button</li><li>ENHANCEMENT: Fix layout of Search button</li><li>ENHANCEMENT: Fix placeholder text width for Select2 inputs</li><li>ENHANCEMENT: Add versioned CSS file support</li></ol>",
     "faq": "<h3>I found a bug in the plugin.</h3>Please report your issue to us by using the <a href='https://eighty20results.com/support-forums/forum/support-forums/custom-code/' target='_blank'>Custom Code</a> Support Forum on The Eighty / 20 Website, and we'll normally respond within 1 business day."
     }
 }

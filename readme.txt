@@ -2,8 +2,8 @@
 Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 3.5
-Tested up to: 4.6
-Stable tag: 1.2
+Tested up to: 4.7.3
+Stable tag: 1.3.1
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -44,7 +44,7 @@ Shortcode attributes for `[pmpro_member_profile]` include:
 
 == Installation ==
 
-1. Upload the `pmpro-member-directory` directory to the `/wp-content/plugins/` directory of your site.
+1. Upload the `pmpro-extended-membership-directory` directory to the `/wp-content/plugins/` directory of your site.
 1. Activate the plugin through the `Plugins` menu in WordPress.
 1. Create a page for your directory and set the appropriate shortcode attributes and `Require Membership` settings per your needs.
 1. Create a page for your profile and set the appropriate shortcode attributes and `Require Membership` settings per your needs.
@@ -90,6 +90,22 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+== 1.3.1 ==
+
+* ENHANCEMENT: Make sure search area is big enough.
+
+= 1.3 =
+
+* ENHANCEMENT: Add plugin specific constant
+* ENHANCEMENT: Clean up the SQL statement (escape variables)
+* ENHANCEMENT: Refactor CSS
+* ENHANCEMENT: Fix placement of Search button
+* ENHANCEMENT: Fix layout of Search button
+* ENHANCEMENT: Fix placeholder text width for Select2 inputs
+* ENHANCEMENT: Add support for one-click plugin upgrade
+* ENHANCEMENT: Add support for build tools
+* ENHANCEMENT: Add versioned CSS file support
+
 = 1.1 =
 * FIX: Didn't always handle pagination for the directory correctly
 

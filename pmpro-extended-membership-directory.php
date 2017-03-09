@@ -3,7 +3,7 @@
 Plugin Name: Extended Membership Directory for Paid Memberships Pro (Add-on)
 Plugin URI: https://eighty20results.com/wordpress-plugins/pmpro-extended-membership-directory
 Description: Extended version of the PMPro Membership Directory add-on
-Version: 1.3
+Version: 1.3.1
 Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
 Text Domain: pmpro-extended-membership-directory
@@ -19,7 +19,7 @@ if ( ! defined("PMPRO_EXTENDED_DIRECTORY" ) ) {
 }
 
 if ( ! defined("PMPROED_VER" ) ) {
-	define('PMPROED_VER', "1.3" );
+	define('PMPROED_VER', "1.3.1" );
 }
 
 
