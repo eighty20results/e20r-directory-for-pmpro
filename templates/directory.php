@@ -170,13 +170,13 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 			m.name as membership,
 			umf.meta_value as first_name,
 			uml.meta_value as last_name
-		FROM $wpdb->users u
-		LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id
-		LEFT JOIN $wpdb->usermeta umf ON umf.meta_key = 'first_name' AND u.ID = umf.user_id
-		LEFT JOIN $wpdb->usermeta uml ON uml.meta_key = 'last_name' AND u.ID = uml.user_id
-		LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id
-		LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id
-		LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id
+		FROM {$wpdb->users} u
+		LEFT JOIN {$wpdb->usermeta} umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id
+		LEFT JOIN {$wpdb->usermeta} umf ON umf.meta_key = 'first_name' AND u.ID = umf.user_id
+		LEFT JOIN {$wpdb->usermeta} uml ON uml.meta_key = 'last_name' AND u.ID = uml.user_id
+		LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
+		LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
+		LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
 		";
 
 		if ( ! empty( $extra_search_fields ) ) {
@@ -184,7 +184,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 
 			foreach ( $extra_search_fields as $f ) {
 				if ( ! empty( ${$f} ) ) {
-					$sqlQuery .= "LEFT JOIN $wpdb->usermeta umrh_{$cnt} ON umrh_{$cnt}.meta_key = '{$f}' AND u.ID = umrh_{$cnt}.user_id
+					$sqlQuery .= "LEFT JOIN {$wpdb->usermeta} umrh_{$cnt} ON umrh_{$cnt}.meta_key = '{$f}' AND u.ID = umrh_{$cnt}.user_id
 					";
 				}
 				++ $cnt;
@@ -219,7 +219,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 
 						if ( $max_v > $i ) {
 							$sqlQuery .= " OR ";
-							++ $i;
+							++$i;
 						}
 					}
 
@@ -273,12 +273,12 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 			m.name as membership,
 			umf.meta_value as first_name,
 			uml.meta_value as last_name
-		FROM $wpdb->users u
-		LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id
-		LEFT JOIN $wpdb->usermeta umf ON umf.meta_key = 'first_name' AND u.ID = umf.user_id
-		LEFT JOIN $wpdb->usermeta uml ON uml.meta_key = 'last_name' AND u.ID = uml.user_id
-		LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id
-		LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id
+		FROM {$wpdb->users} u
+		LEFT JOIN {$wpdb->usermeta} umh ON umh.meta_key = 'pmpromd_hide_directory' AND u.ID = umh.user_id
+		LEFT JOIN {$wpdb->usermeta} umf ON umf.meta_key = 'first_name' AND u.ID = umf.user_id
+		LEFT JOIN {$wpdb->usermeta} uml ON uml.meta_key = 'last_name' AND u.ID = uml.user_id
+		LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
+		LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
 		WHERE mu.status IN ('{$status_list}')
 			AND (umh.meta_value IS NULL OR umh.meta_value <> '1')
 			";
