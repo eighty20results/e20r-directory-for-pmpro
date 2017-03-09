@@ -1,12 +1,15 @@
 <?php
 /*
-Plugin Name: PMPro Extended Membership Directory (Add-on)
-Plugin URI: https://eighty20results.com/support/
+Plugin Name: Extended Membership Directory for Paid Memberships Pro (Add-on)
+Plugin URI: https://eighty20results.com/wordpress-plugins/pmpro-extended-membership-directory
 Description: Extended version of the PMPro Membership Directory add-on
 Version: 1.3
-Author: Thomas Sjolshagen <thomas@eighty20results.com>
+Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
+Text Domain: pmpro-extended-membership-directory
+Domain Path: /languages
 License: GPL2
+License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
 global $pmpromd_options;
@@ -14,6 +17,11 @@ global $pmpromd_options;
 if ( ! defined("PMPRO_EXTENDED_DIRECTORY" ) ) {
     define('PMPRO_EXTENDED_DIRECTORY', true );
 }
+
+if ( ! defined("PMPROED_VER" ) ) {
+	define('PMPROED_VER', "1.3" );
+}
+
 
 $path = dirname(__FILE__);
 $custom_dir = get_stylesheet_directory()."/paid-memberships-pro/pmpro-member-directory/";
@@ -33,13 +41,14 @@ else
 function pmpromd_register_styles() {
 	//load stylesheet (check child theme, then parent theme, then plugin folder)	
 	if(file_exists(get_stylesheet_directory()."/paid-memberships-pro/member-directory/css/pmpro-member-directory.css"))
-		wp_register_style( 'pmpro-member-directory-styles', get_stylesheet_directory_uri()."/paid-memberships-pro/member-directory/css/pmpro-member-directory.css");
+		wp_register_style( 'pmpro-member-directory-styles', get_stylesheet_directory_uri()."/paid-memberships-pro/member-directory/css/pmpro-member-directory.css", NULL, PMPROED_VER );
 	elseif(file_exists(get_template_directory()."/paid-memberships-pro/member-directory/css/pmpro-member-directory.css"))
-		wp_register_style( 'pmpro-member-directory-styles', get_template_directory_uri()."/paid-memberships-pro/member-directory/css/pmpro-member-directory.css");
+		wp_register_style( 'pmpro-member-directory-styles', get_template_directory_uri()."/paid-memberships-pro/member-directory/css/pmpro-member-directory.css", NULL, PMPROED_VER );
 	elseif(function_exists("pmpro_https_filter"))
-		wp_register_style( 'pmpro-member-directory-styles', pmpro_https_filter(plugins_url( 'css/pmpro-member-directory.css', __FILE__ ) ), NULL, "");		
+		wp_register_style( 'pmpro-member-directory-styles', pmpro_https_filter(plugins_url( 'css/pmpro-member-directory.css', __FILE__ ) ), NULL, PMPROED_VER );
 	else
-		wp_register_style( 'pmpro-member-directory-styles', plugins_url( 'css/pmpro-member-directory.css', __FILE__ ) );		
+		wp_register_style( 'pmpro-member-directory-styles', plugins_url( 'css/pmpro-member-directory.css', __FILE__ ), NULL, PMPROED_VER );
+
 	wp_enqueue_style( 'pmpro-member-directory-styles' );
 }
 add_action( 'wp_enqueue_scripts', 'pmpromd_register_styles' );
@@ -119,3 +128,13 @@ function pmpromd_plugin_row_meta($links, $file) {
 	return $links;
 }
 add_filter('plugin_row_meta', 'pmpromd_plugin_row_meta', 10, 2);
+
+if ( ! class_exists( '\\PucFactory' ) ) {
+	require_once( plugin_dir_path( __FILE__ ) . 'plugin-updates/plugin-update-checker.php' );
+}
+
+$plugin_updates = \PucFactory::buildUpdateChecker(
+	'https://eighty20results.com/protected-content/pmpro-extended-membership-directory/metadata.json',
+	__FILE__,
+	'pmpro-extended-membership-directory'
+);
