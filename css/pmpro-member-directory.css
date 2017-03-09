@@ -12,6 +12,9 @@ form.pmpro_member_directory_search {
     float: right;
     margin-bottom: 1rem;
     clear: both;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
 }
 input.select2-search__field {
     width: 100% !important;
