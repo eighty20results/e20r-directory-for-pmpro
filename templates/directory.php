@@ -325,15 +325,17 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 
 	?>
 	<?php if ( ! empty( $show_search ) ) { ?>
-		<form role="search" class="pmpro_member_directory_search search-form">
-			<label>
-				<span class="screen-reader-text"><?php _e( 'Search for:', 'label' ); ?></span>
-				<input type="search" class="search-field" placeholder="Search Members" name="ps"
-				       value="<?php if ( ! empty( $_REQUEST['ps'] ) ) {
-					       echo esc_attr( $_REQUEST['ps'] );
-				       } ?>" title="Search Members"/>
-				<input type="hidden" name="limit" value="<?php echo esc_attr( $limit ); ?>"/>
-			</label>
+		<form role="search" class="pmpro_member_directory_search search-form <?php echo apply_filters('pmpro_member_directory_search_class', 'locate-right') ; ?>">
+			<div class="pmpro_member_directory_search_field ">
+                <label>
+                    <span class="screen-reader-text"><?php _e( 'Search for:', 'label' ); ?></span>
+                    <input type="search" class="search-field" placeholder="Search Members" name="ps"
+                           value="<?php if ( ! empty( $_REQUEST['ps'] ) ) {
+                               echo esc_attr( $_REQUEST['ps'] );
+                           } ?>" title="Search Members"/>
+                    <input type="hidden" name="limit" value="<?php echo esc_attr( $limit ); ?>"/>
+                </label>
+            </div>
 			<?php
 			$field_array = apply_filters( 'pmpro_member_directory_extra_search_input', array() );
 
