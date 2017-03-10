@@ -1,1 +1,1 @@
-ENHANCEMENT: Make sure search area is big enough.
+ENH: Add wrapper around Search form components for more direct placement control
