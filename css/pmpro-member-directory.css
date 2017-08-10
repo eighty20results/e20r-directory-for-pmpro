@@ -1,8 +1,11 @@
 @charset "UTF-8";
 /* CSS Document */
 h3#pmpro_member_directory_subheading {
-    clear: none;
+    clear: both;
     margin-top: 0;
+}
+.search-form .search-submit {
+    position: relative !important;
 }
 form.pmpro_member_directory_search label input {
     clear: both;
