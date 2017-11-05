@@ -478,7 +478,6 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 					foreach ( $theusers as $the_user ) {
 						$the_user                   = get_userdata( $the_user->ID );
 						$the_user->membership_level = pmpro_getMembershipLevelForUser( $the_user->ID );
-						error_log("Level info: " . print_r( $the_user->membership_level, true));
 						$count ++;
 						?>
                         <tr id="pmpro_member_directory_row-<?php echo $the_user->ID; ?>"
