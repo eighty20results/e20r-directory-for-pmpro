@@ -314,7 +314,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 	
 	$sqlQuery .= " LIMIT $start, $limit";
 	
-	$sqlQuery = apply_filters( "pmpro_member_directory_sql", $sqlQuery, $levels, $s, $pn, $limit, $start, $end, $orderby, $order );
+	$sqlQuery = apply_filters( "pmpro_member_directory_sql", $sqlQuery, $levels, $s, $pn, $limit, $start, $end, $order_by, $order );
 	
 	if ( WP_DEBUG ) {
 		error_log( "Query for Directory search: " . $sqlQuery );
@@ -478,6 +478,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 					foreach ( $theusers as $the_user ) {
 						$the_user                   = get_userdata( $the_user->ID );
 						$the_user->membership_level = pmpro_getMembershipLevelForUser( $the_user->ID );
+						error_log("Level info: " . print_r( $the_user->membership_level, true));
 						$count ++;
 						?>
                         <tr id="pmpro_member_directory_row-<?php echo $the_user->ID; ?>"
@@ -496,7 +497,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
                             <td>
                                 <h3 class="pmpro_member_directory_display-name">
 									<?php if ( ! empty( $link ) && ! empty( $profile_url ) ) { ?>
-                                        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php echo $the_user->display_name; ?></a>
+                                        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php esc_html_e( $the_user->display_name ); ?></a>
 									<?php } else { ?>
 										<?php esc_html_e( $the_user->display_name ); ?>
 									<?php } ?>
