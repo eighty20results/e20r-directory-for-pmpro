@@ -1,8 +1,11 @@
 <?php
-/*
-	This shortcode will display the profile for the user ID specified in the URL and additional content based on the defined attributes.
-*/
-function pmpromd_profile_preheader()
+/**
+ * This shortcode will display the profile for the user ID specified in the URL and
+ * additional content based on the defined attributes.
+ *
+ * @credit https://www.paidmembershipspro.com
+ */
+function pmproemd_profile_preheader()
 {
 	global $post, $pmpro_pages, $current_user;
 	if(!empty($post->ID) && $post->ID == $pmpro_pages['profile'])
@@ -50,7 +53,7 @@ function pmpromd_profile_preheader()
 		/*
 			Update the head title and H1
 		*/
-		function pmpromd_the_title($title, $post_id = NULL)
+		function pmproemd_the_title($title, $post_id = NULL)
 		{				
 			global $main_post_id, $current_user;
 			if($post_id == $main_post_id)
@@ -70,9 +73,9 @@ function pmpromd_profile_preheader()
 			}			
 			return $title;
 		}
-		add_filter("the_title", "pmpromd_the_title", 10, 2);
+		add_filter("the_title", "pmproemd_the_title", 10, 2);
 		
-		function pmpromd_wp_title($title, $sep)
+		function pmproemd_wp_title($title, $sep)
 		{
 			global $wpdb, $main_post_id, $post, $current_user;
 			if($post->ID == $main_post_id)
@@ -94,12 +97,12 @@ function pmpromd_profile_preheader()
 			}
 			return $title;
 		}
-		add_filter("wp_title", "pmpromd_wp_title", 10, 2);
+		add_filter("wp_title", "pmproemd_wp_title", 10, 2);
 	}
 }
-add_action("wp", "pmpromd_profile_preheader", 1);	
+add_action("wp", "pmproemd_profile_preheader", 1);
 
-function pmpromd_profile_shortcode($atts, $content=null, $code="")
+function pmproemd_profile_shortcode($atts, $content=null, $code="")
 {
 	// $atts    ::= array of attributes
 	// $content ::= text within enclosing form of shortcode element
@@ -220,10 +223,10 @@ function pmpromd_profile_shortcode($atts, $content=null, $code="")
 	<form action="<?php echo esc_url_raw( $directory_url ); ?>" method="post" role="search" class="pmpro_member_directory_search search-form">
 		<label>
 			<span class="screen-reader-text"><?php _e('Search for:','label'); ?></span>
-			<input type="search" class="search-field" placeholder="<?php _e("Search Members", "pmpro-membership-directory"); ?>" name="ps" value="<?php if(!empty($_REQUEST['ps'])) echo esc_attr($_REQUEST['ps']);?>" title="<?php _e("Search Members", "pmpro-membership-directory"); ?>" />
+			<input type="search" class="search-field" placeholder="<?php _e("Search Members", "pmpro-member-directory"); ?>" name="ps" value="<?php if(!empty($_REQUEST['ps'])) echo esc_attr($_REQUEST['ps']);?>" title="<?php _e("Search Members", "pmpro-member-directory"); ?>" />
 			<input type="hidden" name="limit" value="<?php echo esc_attr($limit);?>" />
 		</label>
-		<input type="submit" class="search-submit" value="<?php _e("Search Members", "pmpro-membership-directory"); ?>">
+		<input type="submit" class="search-submit" value="<?php _e("Search Members", "pmpro-member-directory"); ?>">
 	</form>
 	<?php } ?>
 	<?php
@@ -329,7 +332,7 @@ function pmpromd_profile_shortcode($atts, $content=null, $code="")
 										//this is a file field
 										?>
 										<strong><?php esc_html_e( $field[0] ); ?></strong>
-										<?php echo pmpromd_display_file_field($meta_field); ?>
+										<?php echo pmproemd_display_file_field($meta_field); ?>
 										<?php
 									}
 									elseif(is_array($meta_field))
@@ -377,7 +380,7 @@ function pmpromd_profile_shortcode($atts, $content=null, $code="")
 			</div>
 			<hr />
 			<?php if(!empty($directory_url)) { ?>
-				<div align="center"><a class="more-link" href="<?php echo esc_url_raw( $directory_url );?>"><?php _e('View All Members', 'pmpro-membership-directory' );?></a></div>
+				<div align="center"><a class="more-link" href="<?php echo esc_url_raw( $directory_url );?>"><?php _e('View All Members', 'pmpro-member-directory' );?></a></div>
 			<?php } ?>
 			<?php
 		}	
@@ -387,4 +390,4 @@ function pmpromd_profile_shortcode($atts, $content=null, $code="")
 	ob_end_clean();
 	return $temp_content;
 }
-add_shortcode("pmpro_member_profile", "pmpromd_profile_shortcode");
+add_shortcode("pmpro_member_profile", "pmproemd_profile_shortcode");

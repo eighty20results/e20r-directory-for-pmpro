@@ -1,8 +1,9 @@
 <?php
-/*
-	This shortcode will display the members list and additional content based on the defined attributes.
-*/
-function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
+/**
+ * This shortcode will display the members list and additional content based on the defined attributes.
+ * @credit https://www.paidmembershipspro.com
+ */
+function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	// $atts    ::= array of attributes
 	// $content ::= text within enclosing form of shortcode element
 	// $code    ::= the shortcode found, when == callback name
@@ -367,7 +368,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
             <div class="pmpro_member_directory_search_field ">
                 <label>
                     <span class="screen-reader-text"><?php _e( 'Search for:', 'label' ); ?></span>
-                    <input type="search" class="search-field" placeholder="<?php echo apply_filters( 'pmpromd_search_placeholder_text', __("Search Members", "pmpro-membership-directory" ) ); ?>" name="ps" value="<?php esc_attr_e($search_string ); ?>" title="<?php  echo apply_filters( 'pmpromd_search_placeholder_text', __("Search Members", "pmpro-membership-directory" ) ); ?>"/>
+                    <input type="search" class="search-field" placeholder="<?php echo apply_filters( 'pmpromd_search_placeholder_text', __("Search Members", "pmpro-member-directory" ) ); ?>" name="ps" value="<?php esc_attr_e($search_string ); ?>" title="<?php  echo apply_filters( 'pmpromd_search_placeholder_text', __("Search Members", "pmpro-member-directory" ) ); ?>"/>
                     <input type="hidden" name="limit" value="<?php echo esc_attr( $limit ); ?>"/>
                 </label>
             </div>
@@ -382,11 +383,11 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 			?>
             <div class="search-button clear">
                 <input type="submit" class="search-submit"
-                       value="<?php _e( "Search Members", "pmpro-membership-directory" ); ?>">
+                       value="<?php _e( "Search Members", "pmpro-member-directory" ); ?>">
             </div>
             <?php if (!empty( $search_string ) ) { error_log("Something in the search string!"); ?>
             <div class="search-button clear">
-                <a class="button button-secondary" href="<?php echo esc_url( pmpro_url( 'directory' ) ); ?>"><?php _e("Reset", "pmpro-membership-directory"); ?></a>
+                <a class="button button-secondary" href="<?php echo esc_url( pmpro_url( 'directory' ) ); ?>"><?php _e("Reset", "pmpro-member-directory"); ?></a>
             </div>
             <?php } ?>
 
@@ -395,19 +396,19 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 
     <h3 id="pmpro_member_directory_subheading">
 		<?php if ( !empty( $roles ) ) { ?>
-			<?php printf( __( 'Viewing All %s Profiles.', 'pmpro-membership-directory' ), implode( ', ', array_map( 'ucwords', $roles ) ) ); ?>
+			<?php printf( __( 'Viewing All %s Profiles.', 'pmpro-member-directory' ), implode( ', ', array_map( 'ucwords', $roles ) ) ); ?>
 		<?php } else if ( ! empty( $s ) ) { ?>
-			<?php printf( __( 'Profiles Within <em>%s</em>.', 'pmpro-membership-directory' ), ucwords( esc_html( $s ) ) ); ?>
+			<?php printf( __( 'Profiles Within <em>%s</em>.', 'pmpro-member-directory' ), ucwords( esc_html( $s ) ) ); ?>
 		<?php } else { ?>
-			<?php _e( 'Viewing All Profiles.', 'pmpro-membership-directory' ); ?>
+			<?php _e( 'Viewing All Profiles.', 'pmpro-member-directory' ); ?>
 		<?php } ?>
 		<?php /* if ( $totalrows > 0 ) { ?>
             <small class="muted">
                 (<?php
 				if ( $totalrows == 1 ) {
-					printf( __( 'Showing 1 Result', 'pmpro-membership-directory' ), $start + 1, $end, $totalrows );
+					printf( __( 'Showing 1 Result', 'pmpro-member-directory' ), $start + 1, $end, $totalrows );
 				} else {
-					printf( __( 'Showing %s-%s of %s Results', 'pmpro-membership-directory' ), $start + 1, $end, $totalrows );
+					printf( __( 'Showing %s-%s of %s Results', 'pmpro-member-directory' ), $start + 1, $end, $totalrows );
 				}
 				?>)
             </small>
@@ -527,7 +528,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 													//this is a file field
 													?>
                                                     <strong><?php esc_html_e( $field[0] ); ?></strong>
-													<?php echo pmpromd_display_file_field( $meta_field ); ?>
+													<?php echo pmproemd_display_file_field( $meta_field ); ?>
 													<?php
 												} else if ( is_array( $meta_field ) ) {
 													//this is a general array, check for Register Helper options first
@@ -582,7 +583,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 							<?php } ?>
 							<?php if ( ! empty( $link ) && ! empty( $profile_url ) ) { ?>
                                 <td class="pmpro_member_directory_link">
-                                    <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'View Profile', 'pmpro-membership-directory' ); ?></a>
+                                    <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'View Profile', 'pmpro-member-directory' ); ?></a>
                                 </td>
 							<?php } ?>
                         </tr>
@@ -670,7 +671,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 														//this is a file field
 														?>
                                                         <strong><?php echo esc_attr( $field[0] ); ?></strong>
-														<?php echo pmpromd_display_file_field( $meta_field ); ?>
+														<?php echo pmproemd_display_file_field( $meta_field ); ?>
 														<?php
 													} else if ( is_array( $meta_field ) ) {
 														//this is a general array, check for Register Helper options first
@@ -704,7 +705,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 									<?php if ( ! empty( $link ) && ! empty( $profile_url ) ) { ?>
                                         <p class="pmpro_member_directory_link">
                                             <a class="more-link"
-                                               href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'View Profile', 'pmpro-membership-directory' ); ?></a>
+                                               href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'View Profile', 'pmpro-member-directory' ); ?></a>
                                         </p>
 									<?php } ?>
                                 </div> <!-- end pmpro_addon_package-->
@@ -723,14 +724,14 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 	} else {
 		?>
         <p class="pmpro_member_directory_message pmpro_message pmpro_error">
-			<?php _e( 'No matching profiles found', 'pmpro-membership-directory' ); ?>
+			<?php _e( 'No matching profiles found', 'pmpro-member-directory' ); ?>
 			<?php
 			if ( !empty( $s ) ) {
-				printf( __( 'within <em>%s</em>.', 'pmpro-membership-directory' ), ucwords( esc_html( $s ) ) );
+				printf( __( 'within <em>%s</em>.', 'pmpro-member-directory' ), ucwords( esc_html( $s ) ) );
 				if ( ! empty( $directory_url ) ) {
 					?>
                     <a class="more-link"
-                       href="<?php echo esc_url_raw( $directory_url ); ?>"><?php _e( 'View All Members', 'pmpro-membership-directory' ); ?></a>
+                       href="<?php echo esc_url_raw( $directory_url ); ?>"><?php _e( 'View All Members', 'pmpro-member-directory' ); ?></a>
 					<?php
 				}
 			} else {
@@ -752,7 +753,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 					"ps"    => $s,
 					"pn"    => $pn - 1,
 					"limit" => $limit,
-				), get_permalink( $post->ID ) ) ); ?>">&laquo; <?php _e("Previous", "pmpro-membership-directory"); ?></a></span>
+				), get_permalink( $post->ID ) ) ); ?>">&laquo; <?php _e("Previous", "pmpro-member-directory"); ?></a></span>
 			<?php
 		}
 		//next
@@ -762,7 +763,7 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 					"ps"    => $s,
 					"pn"    => $pn + 1,
 					"limit" => $limit,
-				), get_permalink( $post->ID ) ) ); ?>"> <?php _e( "Next", "pmpro-membership-directory"); ?> &raquo;</a></span>
+				), get_permalink( $post->ID ) ) ); ?>"> <?php _e( "Next", "pmpro-member-directory"); ?> &raquo;</a></span>
 			<?php
 		}
 		?>
@@ -776,4 +777,4 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 	return $temp_content;
 }
 
-add_shortcode( "pmpro_member_directory", "pmpromd_shortcode" );
+add_shortcode( "pmpro_member_directory", "pmproemd_shortcode" );

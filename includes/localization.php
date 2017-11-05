@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017 - Stranger Studios, LLC
+ * Copyright (c) 2017 - Eighty / 20 Results by Wicked Strong Chicks, LLC
  * ALL RIGHTS RESERVED
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @credit https://www.paidmembershipspro.com
  */
-function pmpromd_load_textdomain()
+function pmproemd_load_textdomain()
 {
     //get the locale
-    $locale = apply_filters("plugin_locale", get_locale(), "pmpro-membership-directory");
+    $locale = apply_filters("plugin_locale", get_locale(), "pmpro-member-directory");
     $mofile = "pmpro-" . $locale . ".mo";
     
     //paths to local (plugin) and global (WP) language files
@@ -27,9 +29,9 @@ function pmpromd_load_textdomain()
     $mofile_global = WP_LANG_DIR . '/pmpro/' . $mofile;
     
     //load global first
-    load_textdomain("pmpro-membership-directory", $mofile_global);
+    load_textdomain("pmpro-member-directory", $mofile_global);
     
     //load local second
-    load_textdomain("pmpro-membership-directory", $mofile_local);
+    load_textdomain("pmpro-member-directory", $mofile_local);
 }
-add_action('init', 'pmpromd_load_textdomain', 1 );
+add_action('init', 'pmproemd_load_textdomain', 1 );
