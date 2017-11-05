@@ -1,17 +1,17 @@
 {
   "name" : "Extended Membership Directory for Paid Memberships Pro",
   "slug" : "pmpro-extended-membership-directory",
-  "download_url" : "https://eighty20results.com/protected-content/pmpro-extended-membership-directory/pmpro-extended-membership-directory-1.4.zip",
-  "version" : "1.4",
-  "tested": "4.7.3",
+  "download_url" : "https://eighty20results.com/protected-content/pmpro-extended-membership-directory/pmpro-extended-membership-directory-1.5.zip",
+  "version" : "1.5",
+  "tested": "4.8.3",
   "requires": "4.7.3",
   "author" : "eighty20results",
   "author_homepage": "https://eighty20results.com/thomas-sjolshagen",
-  "last_updated": "2017-03-09 21:30:00",
+  "last_updated": "2017-11-05 06:00:00",
   "homepage": "https://eighty20results.com/paid-memberships-pro/do-it-for-me/",
   "sections" : {
     "description" : "<p>Exending the Extended Membership Directory for Paid Memberships Pro plugin to support filtered search fields for specific user meta data fields.</p>.",
-    "changelog": "<h3>1.4</h3><ol><li>ENH: Add wrapper around Search form components for more direct placement control</li></ol><h3>1.3.1</h3><ol><li>ENHANCEMENT: Make sure search area is big enough.</li></ol><h3>1.3</h3><ol><li>ENHANCEMENT: Add support for one-click plugin upgrade</li><li>ENHANCEMENT: Add build infrastructure</li><li>ENHANCEMENT: Add plugin specific constant</li><li>ENHANCEMENT: Clean up the SQL statement (escape variables)</li><li>ENHANCEMENT: Refactor CSS</li><li>ENHANCEMENT: Fix placement of Search button</li><li>ENHANCEMENT: Fix layout of Search button</li><li>ENHANCEMENT: Fix placeholder text width for Select2 inputs</li><li>ENHANCEMENT: Add versioned CSS file support</li></ol>",
+    "changelog": "<h3>1.5</h3><ol><li>BUG FIX: Make sure Search button doesn't overlay the Search field</li><li>BUG FIX: Search gets clobbered by header</li><li>BUG FIX: Escape URLs when printing to front end</li><li>BUG FIX: Better escaping of data on front-end pages</li><li>BUG FIX: Sanitize values better when printing</li><li>ENHANCEMENT: Initialize variables before use</li><li>ENHANCEMENT: Remove extra whitespace</li><li>ENHANCEMENT: Add localization</li><li>ENHANCEMENT: Force search to use precise values in query</li><li>ENHANCEMENT: Allow user to specify WordPress Role(s) to use as filter for directory</li><li>ENHANCEMENT: Added documentation for extra filters (pmpromd_extra_search_filters, pmpromd_exact_search_values)</li><li>ENHANCEMENT: Load localization function(s)</li><li>ENHANCEMENT: Use plugin slug (for standard version) in localization</li><li>ENHANCEMENT: Fixed code style</li><li>ENHANCEMENT: Explicit priority for all action hooks</li><li>ENHANCEMENT: Added locatlization loader to build script</li></ol><h3>1.4</h3><ol><li>ENH: Add wrapper around Search form components for more direct placement control</li></ol><h3>1.3.1</h3><ol><li>ENHANCEMENT: Make sure search area is big enough.</li></ol><h3>1.3</h3><ol><li>ENHANCEMENT: Add support for one-click plugin upgrade</li><li>ENHANCEMENT: Add build infrastructure</li><li>ENHANCEMENT: Add plugin specific constant</li><li>ENHANCEMENT: Clean up the SQL statement (escape variables)</li><li>ENHANCEMENT: Refactor CSS</li><li>ENHANCEMENT: Fix placement of Search button</li><li>ENHANCEMENT: Fix layout of Search button</li><li>ENHANCEMENT: Fix placeholder text width for Select2 inputs</li><li>ENHANCEMENT: Add versioned CSS file support</li></ol>",
     "faq": "<h3>I found a bug in the plugin.</h3>Please report your issue to us by using the <a href='https://eighty20results.com/support-forums/forum/support-forums/custom-code/' target='_blank'>Custom Code</a> Support Forum on The Eighty / 20 Website, and we'll normally respond within 1 business day."
     }
 }

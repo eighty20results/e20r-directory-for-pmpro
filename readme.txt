@@ -2,8 +2,8 @@
 Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 3.5
-Tested up to: 4.7.3
-Stable tag: 1.4
+Tested up to: 4.8.3
+Stable tag: 1.5
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -27,6 +27,7 @@ Shortcode attributes for `[pmpro_member_directory]` include:
 1. show_level: Display the user's membership level; default: true  (accepts 'true' or 'false').
 1. show_search: Display a search form (searches on member display name or email address); default: true (accepts 'true' or 'false').
 1. show_startdate: Display the user's membership start date for their current level; default: true (accepts 'true' or 'false').
+1. show_roles: Display the users if they have been assigned the role(s) listed (default: null, accepts comma separated list of role names)
 
 Shortcode attributes for `[pmpro_member_profile]` include:	
 
@@ -90,6 +91,25 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 1.5 =
+
+* BUG FIX: Make sure Search button doesn't overlay the Search field
+* BUG FIX: Search gets clobbered by header
+* BUG FIX: Escape URLs when printing to front end
+* BUG FIX: Better escaping of data on front-end pages
+* BUG FIX: Sanitize values better when printing
+* ENHANCEMENT: Initialize variables before use
+* ENHANCEMENT: Remove extra whitespace
+* ENHANCEMENT: Add localization
+* ENHANCEMENT: Force search to use precise values in query
+* ENHANCEMENT: Allow user to specify WordPress Role(s) to use as filter for directory
+* ENHANCEMENT: Added documentation for extra filters (pmpromd_extra_search_filters, pmpromd_exact_search_values)
+* ENHANCEMENT: Load localization function(s)
+* ENHANCEMENT: Use plugin slug (for standard version) in localization
+* ENHANCEMENT: Fixed code style
+* ENHANCEMENT: Explicit priority for all action hooks
+* ENHANCEMENT: Added locatlization loader to build script
+
 = 1.4 =
 
 * ENH: Add wrapper around Search form components for more direct placement control
