@@ -359,16 +359,15 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 	ob_start();
 	
 	?>
-	<?php if ( ! empty( $show_search ) ) { ?>
+	<?php if ( ! empty( $show_search ) ) {
+	    $search_string = ! empty( $_REQUEST['ps'] ) ? sanitize_text_field( $_REQUEST['ps']) : null;
+	    ?>
         <form role="search"
               class="pmpro_member_directory_search search-form <?php echo apply_filters( 'pmpro_member_directory_search_class', 'locate-right' ); ?>">
             <div class="pmpro_member_directory_search_field ">
                 <label>
                     <span class="screen-reader-text"><?php _e( 'Search for:', 'label' ); ?></span>
-                    <input type="search" class="search-field" placeholder="Search Members" name="ps"
-                           value="<?php if ( ! empty( $_REQUEST['ps'] ) ) {
-						       echo esc_attr( $_REQUEST['ps'] );
-					       } ?>" title="Search Members"/>
+                    <input type="search" class="search-field" placeholder="<?php echo apply_filters( 'pmpromd_search_placeholder_text', __("Search Members", "pmpro-membership-directory" ) ); ?>" name="ps" value="<?php esc_attr_e($search_string ); ?>" title="<?php  echo apply_filters( 'pmpromd_search_placeholder_text', __("Search Members", "pmpro-membership-directory" ) ); ?>"/>
                     <input type="hidden" name="limit" value="<?php echo esc_attr( $limit ); ?>"/>
                 </label>
             </div>
@@ -385,6 +384,12 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
                 <input type="submit" class="search-submit"
                        value="<?php _e( "Search Members", "pmpro-membership-directory" ); ?>">
             </div>
+            <?php if (!empty( $search_string ) ) { error_log("Something in the search string!"); ?>
+            <div class="search-button clear">
+                <a class="button button-secondary" href="<?php echo esc_url( pmpro_url( 'directory' ) ); ?>"><?php _e("Reset", "pmpro-membership-directory"); ?></a>
+            </div>
+            <?php } ?>
+
         </form>
 	<?php } ?>
 
