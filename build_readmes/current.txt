@@ -1,16 +1,3 @@
-BUG FIX: Make sure Search button doesn't overlay the Search field
-BUG FIX: Search gets clobbered by header
-BUG FIX: Escape URLs when printing to front end
-BUG FIX: Better escaping of data on front-end pages
-BUG FIX: Sanitize values better when printing
-ENHANCEMENT: Initialize variables before use
-ENHANCEMENT: Remove extra whitespace
-ENHANCEMENT: Add localization
-ENHANCEMENT: Force search to use precise values in query
-ENHANCEMENT: Allow user to specify WordPress Role(s) to use as filter for directory
-ENHANCEMENT: Added documentation for extra filters (pmpromd_extra_search_filters, pmpromd_exact_search_values)
-ENHANCEMENT: Load localization function(s)
-ENHANCEMENT: Use plugin slug (for standard version) in localization
-ENHANCEMENT: Fixed code style
-ENHANCEMENT: Explicit priority for all action hooks
-ENHANCEMENT: Added locatlization loader to build script
+ENHANCEMENT: Add check for the other (standard) Member Directory add-on presence
+ENHANCEMENT: Added partial French translation
+BUG FIX: Avoid namespace collisions with standard directory

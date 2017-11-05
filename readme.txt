@@ -3,7 +3,7 @@ Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 3.5
 Tested up to: 4.8.3
-Stable tag: 1.5
+Stable tag: 1.6
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -91,6 +91,20 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 1.6 =
+
+* ENHANCEMENT: Add check for the other (standard) Member Directory add-on presence
+* ENHANCEMENT: Added partial French translation
+* BUG FIX: Avoid namespace collisions with standard directory
+
+= 1.5.1 =
+
+* BUG FIX: Only attempt to load extra search fields if they've been defined
+* BUG FIX: Typo in $orderby variable (should be $order_by)
+* BUG FIX: Sanitize search info when looking at it
+* ENHANCEMENT: Add reset link for search form (only if search is active)
+* ENHANCEMENT: Remove debug info
+
 = 1.5 =
 
 * BUG FIX: Make sure Search button doesn't overlay the Search field
