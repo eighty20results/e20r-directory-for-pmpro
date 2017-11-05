@@ -375,9 +375,11 @@ function pmpromd_shortcode( $atts, $content = null, $code = "" ) {
 			<?php
 			$field_array = apply_filters( 'pmpro_member_directory_extra_search_input', array() );
 			
-			foreach ( $field_array as $field ) {
-				echo $field;
-			}
+			if ( !empty( $field_array ) && is_array( $field_array ) ) {
+                foreach ( $field_array as $field ) {
+                    echo $field;
+                }
+            }
 			?>
             <div class="search-button clear">
                 <input type="submit" class="search-submit"
