@@ -3,7 +3,7 @@
 Plugin Name: Extended Member Directory for Paid Memberships Pro (Add-on)
 Plugin URI: https://eighty20results.com/wordpress-plugins/pmpro-extended-membership-directory
 Description: Extended version of the PMPro Member Directory add-on
-Version: 1.6
+Version: 1.7
 Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
 Text Domain: pmpro-extended-membership-directory
@@ -23,7 +23,7 @@ if ( ! defined( "PMPRO_EXTENDED_DIRECTORY" ) ) {
 }
 
 if ( ! defined( "PMPROED_VER" ) ) {
-	define( 'PMPROED_VER', "1.5.2" );
+	define( 'PMPROED_VER', "1.7" );
 }
 
 /**
@@ -77,6 +77,32 @@ if ( file_exists( $custom_profile_file ) ) {
 
 // Add localization feature(s)
 require_once( "{$path}/includes/localization.php");
+
+/**
+ * Check if the value is one of the valid responses for the boolean type
+ *
+ * @param int|string $value
+ * @param string $type
+ *
+ * @return bool
+ */
+function pmproemd_true_false( $value, $type = 'false' ) {
+    
+    
+    switch( $type ) {
+        case 'true':
+	        // Return true if we found one of the 'true' values
+	        $found = in_array( $value,array( 'yes', '1', 'true' ) );
+	        error_log("Checking for true: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
+	        return ( true === $found ? true : false );
+            break;
+        default:
+	        // Return false if we found one of the 'false' values
+	        $found = in_array( $value,array( 'no', 'false', '0' ) );
+	        error_log("Checking for false: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
+            return ( true === $found ? false : true );
+    }
+}
 
 function pmproemd_register_styles() {
 	//load stylesheet (check child theme, then parent theme, then plugin folder)	
