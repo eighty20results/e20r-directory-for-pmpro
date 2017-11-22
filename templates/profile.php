@@ -337,7 +337,7 @@ function pmproemd_profile_shortcode( $atts, $content = null, $code = "" ) {
 					if ( empty( $field[0] ) ) {
 						break;
 					}
-					$meta_field = $profile_user->{$field[1]};
+					$meta_field = wp_unslash( $profile_user->{$field[1]} );
 					if ( ! empty( $meta_field ) ) {
 						?>
                         <p class="pmpro_member_directory_<?php echo esc_attr( $field[1] ); ?>">
@@ -356,7 +356,7 @@ function pmproemd_profile_shortcode( $atts, $content = null, $code = "" ) {
 									}
 								}
 								?>
-                                <strong><?php echo $field[0]; ?></strong>
+                                <strong><?php esc_attr_e( $field[0] ); ?></strong>
 								<?php echo implode( ", ", $meta_field ); ?>
 								<?php
 							} else {

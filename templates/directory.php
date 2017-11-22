@@ -514,7 +514,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
                                 <td class="pmpro_member_directory_additional">
 									<?php
 									foreach ( $fields_array as $field ) {
-										$meta_field = $the_user->{$field[1]};
+										$meta_field = wp_unslash( $the_user->{$field[1]} );
 										if ( ! empty( $meta_field ) ) {
 											?>
                                             <p class="pmpro_member_directory_<?php esc_attr_e( $field[1] ); ?>">
@@ -543,14 +543,14 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
                                                            target="_blank"><?php esc_html_e( $field[0] ); ?></a>
 														<?php
 													} else {
-														?>
+                                                        ?>
                                                         <strong><?php esc_html_e( $field[0] ); ?></strong>
 														<?php
 														$meta_field_embed = wp_oembed_get( $meta_field );
 														if ( ! empty( $meta_field_embed ) ) {
-															echo $meta_field_embed;
+															echo wp_unslash( $meta_field_embed );
 														} else {
-															echo make_clickable( $meta_field );
+															echo make_clickable( wp_unslash( $meta_field ) );
 														}
 														?>
 														<?php
@@ -582,7 +582,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
                                     <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'View Profile', 'pmpro-member-directory' ); ?></a>
                                 <?php } else { ?>
                                     <span>
-								        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'Edit', 'pmpro-member-directory' ); ?></a> / <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $read_only_profile ) ); ?>"><?php _e( 'View', 'pmpro-member-directory' ); ?></a> <?php _e("Profile", "pmpro-member-directory" ); ?>
+								        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'Edit', 'pmpro-member-directory' ); ?></a> <?php _e( 'or', 'pmpro-member-directory'); ?> <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $read_only_profile ) ); ?>"><?php _e( 'View', 'pmpro-member-directory' ); ?></a> <?php _e("Profile", "pmpro-member-directory" ); ?>
                                         </span>
                                    <?php } ?>
                                 </td>
@@ -673,7 +673,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 									<?php
 									if ( ! empty( $fields_array ) ) {
 										foreach ( $fields_array as $field ) {
-											$meta_field = $the_user->{$field[1]};
+											$meta_field = wp_unslash( $the_user->{$field[1]} );
 											if ( ! empty( $meta_field ) ) {
 												?>
                                                 <p class="pmpro_member_directory_<?php echo esc_attr( $field[1] ); ?>">
@@ -719,7 +719,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
                                                 <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'View Profile', 'pmpro-member-directory' ); ?></a>
 	                                        <?php } else { ?>
                                                 <span>
-								        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'Edit', 'pmpro-member-directory' ); ?></a> / <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $read_only_profile ) ); ?>"><?php _e( 'View', 'pmpro-member-directory' ); ?></a> <?php _e("Profile", "pmpro-member-directory" ); ?>
+								        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $profile_url ) ); ?>"><?php _e( 'Edit', 'pmpro-member-directory' ); ?></a> <?php _e( 'or', 'pmpro-member-directory'); ?> <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $read_only_profile ) ); ?>"><?php _e( 'View', 'pmpro-member-directory' ); ?></a> <?php _e("Profile", "pmpro-member-directory" ); ?>
                                         </span>
 	                                        <?php } ?>
                                         </p>
