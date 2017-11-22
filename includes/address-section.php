@@ -80,8 +80,8 @@ function pmproemd_add_address_section( $fields, $user ) {
 	global $pmproemd_show_billing_address;
 	global $pmproemd_show_shipping_address;
 	
-	$b_heading = apply_filters( 'pmpro-member-profile-billing-header',__("Billing Address", "pmpro-member-directory" ) );
-	$s_heading = apply_filters( 'pmpro-member-profile-shipping-header', __( "Shipping Address", "pmpro-member-directory" ) );
+	$b_heading = apply_filters( 'pmpro_member_profile_billing_header',__("Billing Address", "pmpro-member-directory" ) );
+	$s_heading = apply_filters( 'pmpro_member_profile_shipping_header', __( "Shipping Address", "pmpro-member-directory" ) );
 	
 	// Nothing to show!
 	if ( ( false === $pmproemd_show_billing_address && false === $pmproemd_show_shipping_address )  ||
