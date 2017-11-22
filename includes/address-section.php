@@ -80,22 +80,16 @@ function pmproemd_add_address_section( $fields, $user ) {
 	global $pmproemd_show_billing_address;
 	global $pmproemd_show_shipping_address;
 	
-	$b_heading = apply_filters( 'pmpro-membership-directory-billing-header',__("Billing Address", "pmpro-member-directory" ) );
-	$s_heading = apply_filters( 'pmpro-membership-directory-shipping-header', __( "Shipping Address", "pmpro-member-directory" ) );
+	$b_heading = apply_filters( 'pmpro-member-profile-billing-header',__("Billing Address", "pmpro-member-directory" ) );
+	$s_heading = apply_filters( 'pmpro-member-profile-shipping-header', __( "Shipping Address", "pmpro-member-directory" ) );
 	
 	// Nothing to show!
 	if ( ( false === $pmproemd_show_billing_address && false === $pmproemd_show_shipping_address )  ||
 	     ( empty( $pmproemd_has_billing_fields ) && empty( $pmproemd_has_shipping_fields ) ) )
 	{
-		error_log("No fields or settings found?");
 		return;
 	}
-	
-	error_log("Show or Hide the billing address? " . ( $pmproemd_show_billing_address ? "Show" : "Hide" ) );
-	error_log("Show or Hide the shipping address? " . ( $pmproemd_show_shipping_address ? "Show" : "Hide" ) );
-	error_log( "Billing fields: " . print_r( $pmproemd_has_billing_fields, true ));
-	error_log( "Shipping fields: " . print_r( $pmproemd_has_shipping_fields, true ));
-	
+ 
 	?>
 	<div class="pmproemd_address_section">
 	<?php if ( true === $pmproemd_show_billing_address && !empty( $pmproemd_has_billing_fields )): ?>
