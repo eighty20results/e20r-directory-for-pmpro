@@ -1,9 +1,9 @@
 === Paid Memberships Pro - Member Directory Add On ===
 Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
-Requires at least: 3.5
-Tested up to: 4.8.3
-Stable tag: 1.6
+Requires at least: 4.4
+Tested up to: 4.9
+Stable tag: 2.0
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -28,6 +28,8 @@ Shortcode attributes for `[pmpro_member_directory]` include:
 1. show_search: Display a search form (searches on member display name or email address); default: true (accepts 'true' or 'false').
 1. show_startdate: Display the user's membership start date for their current level; default: true (accepts 'true' or 'false').
 1. show_roles: Display the users if they have been assigned the role(s) listed (default: null, accepts comma separated list of role names)
+1. members_only_link: Show the link to the profile details page to logged in and active members only (default: 'false', accepts 'true' or 'false')
+1. editable_profile: If the user is logged in, they are shown both a view and edit link for their profile page (default: 'false', accepts 'true' or 'false'). Caution: The edit link may direct the user to the WordPress backend unless a front-end profile plugin is installed (For example: Theme My Login)
 
 Shortcode attributes for `[pmpro_member_profile]` include:	
 
@@ -42,6 +44,8 @@ Shortcode attributes for `[pmpro_member_profile]` include:
 1. show_search: Display a search form (searches on member display name or email address); default: true (accepts 'true' or 'false').
 1. show_startdate: Display the user's membership start date for their current level; default: true (accepts 'true' or 'false').
 1. user_id: Show a specific member's profile; default: none (accepts any numeric uesr id, i.e. user_id="125").
+1. billing_address: Show the PMPro Billing information in a separate section of the profile page. Requires the presence of the 'pmpro_b*' user metadata fields in the 'fields=""' attribute (see above). default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Billing Address", but can be modified with the 'pmpro-member-profile-billing-header' filter. The filter returns the text of the heading.
+1. shipping_address: Show the PMPro Shipping information in a separate section of the profile page. Requires the presence of the 'pmpro_s*' user metadata fields in the 'fields=""' attribute (see above). default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Shippping Address", but it can be modified with the 'pmpro-member-profile-shipping-header' filter. The filter returns the text of the heading.
 
 == Installation ==
 
@@ -80,17 +84,54 @@ Show unique member profiles based on level - hide user phone number and email ad
 [pmpro_member_profile show_email="true" show_phone="true"]
 [/membership]
 
+== Hooks & Filters ==
+=== Filters ===
+1. pmpro_member_profile_shipping_header - Set the heading for the Shipping Information section (if applicable). default: 'Billing Address' - string
+1. pmpro_member_profile_billing_header - Set the heading for the Billing Information section (if applicable). default: 'Shipping Address' - string
+1. pmpromd_extra_search_fields - List (array) of user meta data keys that will have added search input sections on the directory page - default: array() (empty array)
+1. pmpromd_exact_search_values - Whether to wrap the search input in wildcard during DB operation, or use the extact string as typed - default: false (boolean)
+1. pmpromd_membership_statuses - Membership statuses to include in the search result. Default behavior is to only included active member(s) - default: array( 'active' )
+1. pmpro_member_directory_set_order - Directly change the directory search result order (SQL).
+1. pmpro_member_directory_sql - Modify the SQL statement used to search for whom to include in the directory listing
+1. pmpro_member_directory_search_class - Add extra CSS class(es) to the directory listing - default: null
+1. pmpromd_search_placeholder_text - Change the placeholder text in the Search input field - default: "Search Members" - string
+1. pmpro_member_directory_extra_search_input - Add array of HTML to add extra search input fields (and field types) below the main "Search" input.
+1. pmpro_member_profile_fields - Allow user to remove/add additional usermetadata fields & labels programatically
+
+=== Action hooks ===
+1. pmpro_member_directory_extra_search_output - Output HTML so a user can provide input for the specified pmpromd_extra_search_fields search fields
+1. pmproemd_add_extra_profile_output - By default used to output the Shipping & Billing information sections on the user profile page, but can be used to add more data to the profile page for the user. Passes the current user's WP_User object as well as the array of entries from the 'fields=""' attribute (as it was prior to having been passed through the 'pmpro_member_profile_fields' filter).
+
+NOTE: pmpro_member_directory_extra_search_input (filter hook) and pmpro_member_directory_extra_search_output (action hook) are two ways - hooks - of achieving the same thing (the filter is for backwards compatibility reasons). The preferred approach at this point is to use the pmpro_member_directory_extra_search_output action hook.
+
 == Frequently Asked Questions ==
 
 = I found a bug in the plugin. =
 
-Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-member-directory/issues
+Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/eighty20results.com/pmpro-extended-membership-directory/issues
 
 = I need help installing, configuring, or customizing the plugin. =
 
-Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
+Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+= 2.0 =
+
+* BUG FIX: Didn't handle zip codes in billing/shipping info
+* BUG FIX: Don't embed a website if there's a parameter containing the 'url' string in the fields attribute
+* ENHANCEMENT: Add pmporemd_true_false() function to check input values & return true if they're true, false if false.
+* ENHANCEMENT: Set default shortcode attributes
+* ENHANCEMENT: Use pmproemd_true_false for shortcode attributes
+* ENHANCEMENT: Add 'detailed profile page' link optionally activated for current and logged in members only (members_only_link='true', false by default)
+* ENHANCEMENT: Have a `pmpro_member_directory_extra_search_output` action in addition to the filter
+* ENHANCEMENT: Grant a logged in user access to their own (editable) profile and a link to look at the read-only (editable_profile='true', false by default)
+* ENHANCEMENT: Type check the show attributes
+* ENHANCEMENT: Let the current user either view or edit their profile
+* ENHANCEMENT: Support for separate billing and shipping address section. The PMPro Billing & Shipping information metadata fields must be included defined in the 'fields' attribute of the shortcode, and the 'billing_address' and/or the 'shipping_address' attributes have to be set to 'true' ('false' by default. Valid 'true' values are '1', 'true', 'yes'. Valid 'false' values are '0', 'no', 'false' )
+* ENHANCEMENT: Simplified the header filter names (more descriptive) for the Billing & Shipping info sections
+* ENHANCEMENT: Removed debug output
+* ENHANCEMENT: Add basic alignment styles for the shipping/billing sections
+
 = 1.6 =
 
 * ENHANCEMENT: Add check for the other (standard) Member Directory add-on presence
