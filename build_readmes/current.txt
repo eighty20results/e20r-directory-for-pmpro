@@ -1,1 +1,1 @@
-BUG FIX: Not enough space around the Billing/Shipping Info section
+BUG FIX: Didn't remove slashes from escaped characters when displaying the field contents from Register Helper

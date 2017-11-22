@@ -3,7 +3,7 @@ Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -115,6 +115,10 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+= 2.0.2 =
+
+* BUG FIX: Didn't remove slashes from escaped characters when displaying the field contents from Register Helper
+
 = 2.0.1 =
 
 * BUG FIX: Not enough space around the Billing/Shipping Info section
