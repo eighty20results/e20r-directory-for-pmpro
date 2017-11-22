@@ -110,8 +110,13 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	}
 	$end   = $pn * $limit;
 	$start = $end - $limit;
+ 
+	// Member statuses to include in the search (default is 'active' only)
+	$statuses    = apply_filters( 'pmpromd_membership_statuses', array( 'active' ) );
 	
-	$statuses    = apply_filters( 'pmprod_membership_statuses', array( 'active' ) );
+	// Backwards compatibility
+	$statuses = apply_filters( 'pmprod_membership_statuses',  $statuses );
+	
 	$status_list = esc_sql( implode( "', '", $statuses ) );
 	
 	if ( ! empty( $s ) || ! empty( $extra_search_fields ) ) {
