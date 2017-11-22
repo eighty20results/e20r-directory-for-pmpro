@@ -37,7 +37,7 @@ function pmproemd_remove_address_info( $fields, $user ) {
 		return $fields;
 	}
 	
-	$search = "(firstname|lastname|address\d|city|state|country|phone|email)";
+	$search = "(firstname|lastname|address\d|city|state|zipcode|country|phone|email)";
 	
 	foreach( $fields as $key => $field_def ) {
 		
