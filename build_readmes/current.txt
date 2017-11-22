@@ -1,3 +1,14 @@
-ENHANCEMENT: Add check for the other (standard) Member Directory add-on presence
-ENHANCEMENT: Added partial French translation
-BUG FIX: Avoid namespace collisions with standard directory
+BUG FIX: Didn't handle zip codes in billing/shipping info
+BUG FIX: Don't embed a website if there's a parameter containing the 'url' string in the fields attribute
+ENHANCEMENT: Add pmporemd_true_false() function to check input values & return true if they're true, false if false.
+ENHANCEMENT: Set default shortcode attributes
+ENHANCEMENT: Use pmproemd_true_false for shortcode attributes
+ENHANCEMENT: Add 'detailed profile page' link optionally activated for current and logged in members only (members_only_link="true", false by default)
+ENHANCEMENT: Have a `pmpro_member_directory_extra_search_output` action in addition to the filter
+ENHANCEMENT: Grant a logged in user access to their own (editable) profile and a link to look at the read-only (editable_profile="true", false by default)
+ENHANCEMENT: Type check the show attributes
+ENHANCEMENT: Let the current user either view or edit their profile
+ENHANCEMENT: Support for separate billing and shipping address section. The PMPro Billing & Shipping information metadata fields must be included defined in the 'fields' attribute of the shortcode, and the 'billing_address' and/or the 'shipping_address' attributes have to be set to 'true' ('false' by default. Valid 'true' values are '1', 'true', 'yes'. Valid 'false' values are '0', 'no', 'false' )
+ENHANCEMENT: Simplified the header filter names (more descriptive) for the Billing & Shipping info sections
+ENHANCEMENT: Removed debug output
+ENHANCEMENT: Add basic alignment styles for the shipping/billing sections
