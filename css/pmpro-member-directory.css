@@ -41,6 +41,10 @@ div.pmpro_member_profile strong { display: block; }
 }
 .pmpro_member_directory [class*="column"] + [class*="column"]:last-child { float: right; }
 .pmpro_member_directory [class*="column"] + [class*="column"].pmpro_member_directory .end { float: left; }
+.pmproemd_address_section { width: 100%; }
+.pmproemd_address_section .pmproemd-address label { min-width: 150px; max-width: 300px; width: 45%; padding-right: 10px; display: inline-block; }
+.pmpro_member_directory_billing_address { margin-bottom: 2em; }
+.pmpro_member_directory_shipping_address { margin-bottom: 2em; }
 @media only screen {
     .pmpro_member_directory .column,
     .pmpro_member_directory .columns {
