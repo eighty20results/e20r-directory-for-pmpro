@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Extended Member Directory and Profile Pages
 Plugin URI: https://eighty20results.com/wordpress-plugins/pmpro-extended-membership-directory
 Description: Replaces and extends the functionality of the Paid Memberships Pro - Member Directory and Profile Pages add-on
-Version: 2.0.2
+Version: 2.1
 Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
 Text Domain: pmpro-extended-membership-directory
@@ -23,7 +23,7 @@ if ( ! defined( "PMPRO_EXTENDED_DIRECTORY" ) ) {
 }
 
 if ( ! defined( "PMPROED_VER" ) ) {
-	define( 'PMPROED_VER', "2.0.2" );
+	define( 'PMPROED_VER', "2.1" );
 }
 
 /**
@@ -140,32 +140,44 @@ add_action( 'pmpro_extra_page_settings', 'pmproemd_extra_page_settings', 10 );
 //show the option to hide from directory on edit user profile
 function pmproemd_show_extra_profile_fields( $user ) {
 	global $pmpro_pages;
-	?>
-    <h3><?php echo get_the_title( $pmpro_pages['directory'] ); ?></h3>
-    <table class="form-table">
-        <tbody>
-        <tr class="user-hide-directory-wrap">
-            <th scope="row"></th>
-            <td>
-                <label for="hide_directory">
-                    <input name="hide_directory" type="checkbox" id="hide_directory" <?php checked( get_user_meta( $user->ID, 'pmpromd_hide_directory', true ), 1 ); ?> value="1"><?php printf( __( 'Hide from %s?', 'pmpro-member-directory' ), get_the_title( $pmpro_pages['directory'] ) ); ?>
-                </label>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-	<?php
+	
+	$is_admin = current_user_can( 'manage_options' );
+	
+	if ( (
+	        true === apply_filters( 'pmpro_member_directory_non_admin_profile_settings', true ) &&
+            false === $is_admin
+         ) || true === $is_admin
+    ) {
+		?>
+        <h3><?php echo get_the_title( $pmpro_pages['directory'] ); ?></h3>
+        <table class="form-table">
+            <tbody>
+            <tr class="user-hide-directory-wrap">
+                <th scope="row"></th>
+                <td>
+                    <label for="pmproed_hide_directory">
+                        <input name="pmproed_hide_directory" type="checkbox"
+                               id="pmproed_hide_directory" <?php checked( get_user_meta( $user->ID, 'pmpromd_hide_directory', true ), 1 ); ?>
+                               value="1"><?php printf( __( 'Hide from %s?', 'pmpro-member-directory' ), get_the_title( $pmpro_pages['directory'] ) ); ?>
+                    </label>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+		<?php
+	}
 }
 
 add_action( 'show_user_profile', 'pmproemd_show_extra_profile_fields', 10 );
 add_action( 'edit_user_profile', 'pmproemd_show_extra_profile_fields', 10 );
 
 function pmproemd_save_extra_profile_fields( $user_id ) {
-	if ( ! current_user_can( 'edit_user', $user_id ) ) {
+	
+    if ( ! current_user_can( 'edit_user', $user_id ) ) {
 		return false;
 	}
 	
-	if ( isset( $_POST['hide_directory'] ) ) {
+	if ( isset( $_POST['pmproed_hide_directory'] ) ) {
 		update_user_meta( $user_id, 'pmpromd_hide_directory', true );
 	}
 }
