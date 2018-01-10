@@ -1,1 +1,1 @@
-BUG FIX: Didn't remove slashes from escaped characters when displaying the field contents from Register Helper
+ENHANCEMENT: Add filter to hide the "hide from member directory" option on the user's profile page for non-admins

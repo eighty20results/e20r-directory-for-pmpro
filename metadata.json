@@ -1,13 +1,13 @@
 {
   "name" : "Extended Membership Directory for Paid Memberships Pro",
   "slug" : "pmpro-extended-membership-directory",
-  "download_url" : "https://eighty20results.com/protected-content/pmpro-extended-membership-directory/pmpro-extended-membership-directory-2.0.2.zip",
-  "version" : "2.0.2",
-  "tested": "4.9",
+  "download_url" : "https://eighty20results.com/protected-content/pmpro-extended-membership-directory/pmpro-extended-membership-directory-2.1.zip",
+  "version" : "2.1",
+  "tested": "4.9.1",
   "requires": "4.4",
   "author" : "eighty20results",
   "author_homepage": "https://eighty20results.com/thomas-sjolshagen",
-  "last_updated": "2017-11-22 12:55:00",
+  "last_updated": "2018-01-10 12:00:00",
   "homepage": "https://eighty20results.com/paid-memberships-pro/do-it-for-me/",
   "sections" : {
     "description" : "<p>Exending the Paid Memberships Pro - Member Directory and Profile pages plugin to support filtered custom search fields for user meta data separate billing and shipping sections on the  .</p>.",
