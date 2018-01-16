@@ -671,6 +671,10 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
                                         </p>
 									<?php } ?>
 									<?php
+									// Save a copy of the extracted fields (for the pmproemd_add_extra_directory_output action)
+									$real_fields_array = $fields_array;
+									//filter the fields
+									$fields_array = apply_filters( 'pmpro_member_profile_fields', $fields_array, $the_user );
 									if ( ! empty( $fields_array ) ) {
 										foreach ( $fields_array as $field ) {
 											$meta_field = wp_unslash( $the_user->{$field[1]} );
@@ -712,6 +716,8 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 											}
 										}
 									}
+									
+									do_action( 'pmproemd_add_extra_directory_output', $real_fields_array, $the_user );
 									?>
 									<?php if ( true === $show_link && true === $link && ! empty( $pmpro_pages['profile'] ) ) { ?>
                                         <p class="pmpro_member_directory_link">
