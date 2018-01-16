@@ -119,6 +119,11 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+= 2.2 =
+
+* ENHANCEMENT: Add pmproemd_add_extra_directory_output action hook in directory template (Include stuff at bottom of directory entry for user/entity)
+* BUG FIX: Didn't include extra search input fields/selections is search portion of profile page
+
 = 2.0.2 =
 
 * BUG FIX: Didn't remove slashes from escaped characters when displaying the field contents from Register Helper

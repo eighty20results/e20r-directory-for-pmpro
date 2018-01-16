@@ -1,1 +1,2 @@
-ENHANCEMENT: Add filter to hide the "hide from member directory" option on the user's profile page for non-admins
+ENHANCEMENT: Add pmproemd_add_extra_directory_output action hook in directory template (Include stuff at bottom of directory entry for user/entity)
+BUG FIX: Didn't include extra search input fields/selections is search portion of profile page
