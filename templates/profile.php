@@ -239,6 +239,19 @@ function pmproemd_profile_shortcode( $atts, $content = null, $code = "" ) {
 				       } ?>" title="<?php _e( "Search Members", "pmpro-member-directory" ); ?>"/>
                 <input type="hidden" name="limit" value="<?php echo esc_attr( $limit ); ?>"/>
             </label>
+	        <?php
+	        $search_fields = apply_filters( 'pmpro_member_directory_extra_search_input', array() );
+	
+	        if ( ! empty( $search_fields ) ) {
+		
+		        if ( ! empty( $search_fields ) && is_array( $search_fields ) ) {
+			        foreach ( $search_fields as $search_field ) {
+				        printf( '%s', $search_field );
+			        }
+		        }
+	        }
+	        do_action( 'pmpro_member_directory_extra_search_output' );
+	        ?>
             <input type="submit" class="search-submit"
                    value="<?php _e( "Search Members", "pmpro-member-directory" ); ?>">
         </form>
