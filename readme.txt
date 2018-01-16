@@ -3,7 +3,7 @@ Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 4.4
 Tested up to: 4.9.1
-Stable tag: 2.1
+Stable tag: 2.2
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -102,6 +102,9 @@ Show unique member profiles based on level - hide user phone number and email ad
 === Action hooks ===
 1. pmpro_member_directory_extra_search_output - Output HTML so a user can provide input for the specified pmpromd_extra_search_fields search fields
 1. pmproemd_add_extra_profile_output - By default used to output the Shipping & Billing information sections on the user profile page, but can be used to add more data to the profile page for the user. Passes the current user's WP_User object as well as the array of entries from the 'fields=""' attribute (as it was prior to having been passed through the 'pmpro_member_profile_fields' filter).
+1. pmproemd_add_extra_profile_output - Output HTML at the bottom of the profile page entry for the selected member. Accepts 2 arguments: $real_fields_array (array of fields from Register Helper) and $profile_user (WP_User object for the member/user)
+1. pmproemd_add_extra_directory_output - Output HTML at the bottom of the directory entry for the current user. Accepts 2 arguments: $real_fields_array (array of fields from Register Helper) and $the_user (WP_User object for the member/user)
+
 
 NOTE: pmpro_member_directory_extra_search_input (filter hook) and pmpro_member_directory_extra_search_output (action hook) are two ways - hooks - of achieving the same thing (the filter is for backwards compatibility reasons). The preferred approach at this point is to use the pmpro_member_directory_extra_search_output action hook.
 
