@@ -1,2 +1,3 @@
-ENHANCEMENT: Add pmproemd_add_extra_directory_output action hook in directory template (Include stuff at bottom of directory entry for user/entity)
-BUG FIX: Didn't include extra search input fields/selections is search portion of profile page
+BUG FIX: Generate proper pagination links for Directory page
+BUG FIX: Didn't preserve extra search field settings when generating pagination value(s)
+ENHANCEMENT: Adding PHPDoc blocks for functions
