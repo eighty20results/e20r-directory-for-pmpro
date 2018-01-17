@@ -104,6 +104,32 @@ function pmproemd_true_false( $value, $type = 'false' ) {
     }
 }
 
+/**
+ * Include existing REQUEST arguments (when they belong to the 'extra search fields')
+ *
+ * @param array $arguments
+ *
+ * @return array
+ */
+function pmproemd_pagination_args( $arguments ) {
+    
+    $extra_search_fields = apply_filters( 'pmpromd_extra_search_fields', array() );
+    
+    foreach( $extra_search_fields as $ef_name ) {
+        
+        $req_value = ( isset( $_REQUEST[$ef_name] ) && !empty(  $_REQUEST[$ef_name] ) ? sanitize_text_field(  $_REQUEST[$ef_name] ) : null );
+        
+	    if ( ! isset( $addl_arguments[$ef_name] ) && ! is_null( $req_value ) ) {
+	        $arguments[$ef_name] = $req_value;
+        }
+    }
+    
+    return $arguments;
+}
+
+/**
+ * Register/load Directory/Profile page styles as/when needed
+ */
 function pmproemd_register_styles() {
 	//load stylesheet (check child theme, then parent theme, then plugin folder)	
 	if ( file_exists( get_stylesheet_directory() . "/paid-memberships-pro/member-directory/css/pmpro-member-directory.css" ) ) {
@@ -120,6 +146,13 @@ function pmproemd_register_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'pmproemd_register_styles', 10 );
 
+/**
+ * Load pages to include on "Memberships" -> "Page Settings" page for Paid Memberships Pro
+ *
+ * @param array $pages
+ *
+ * @return array
+ */
 function pmproemd_extra_page_settings( $pages ) {
 	$pages['directory'] = array(
 		'title'   => __( 'Directory', 'pmpro-member-directory' ),
@@ -137,7 +170,11 @@ function pmproemd_extra_page_settings( $pages ) {
 
 add_action( 'pmpro_extra_page_settings', 'pmproemd_extra_page_settings', 10 );
 
-//show the option to hide from directory on edit user profile
+/**
+ * Let user decide to show/hide their entry in the directory via their profile
+ *
+ * @param \WP_User $user
+ */
 function pmproemd_show_extra_profile_fields( $user ) {
 	global $pmpro_pages;
 	
@@ -171,6 +208,13 @@ function pmproemd_show_extra_profile_fields( $user ) {
 add_action( 'show_user_profile', 'pmproemd_show_extra_profile_fields', 10 );
 add_action( 'edit_user_profile', 'pmproemd_show_extra_profile_fields', 10 );
 
+/**
+ * Save the 'exclude from directory' setting for the user
+ *
+ * @param int $user_id
+ *
+ * @return bool
+ */
 function pmproemd_save_extra_profile_fields( $user_id ) {
 	
     if ( ! current_user_can( 'edit_user', $user_id ) ) {
@@ -185,9 +229,17 @@ function pmproemd_save_extra_profile_fields( $user_id ) {
 add_action( 'personal_options_update', 'pmproemd_save_extra_profile_fields', 10 );
 add_action( 'edit_user_profile_update', 'pmproemd_save_extra_profile_fields', 10 );
 
-
+/**
+ * Display the correct media type
+ *
+ * @param array $meta_field
+ *
+ * @return string
+ */
 function pmproemd_display_file_field( $meta_field ) {
+ 
 	$meta_field_file_type = wp_check_filetype( $meta_field['fullurl'] );
+	
 	switch ( $meta_field_file_type['type'] ) {
 		case 'image/jpeg':
 		case 'image/png':
@@ -222,9 +274,14 @@ function pmproemd_display_file_field( $meta_field ) {
 	}
 }
 
-/*
-Function to add links to the plugin row meta
-*/
+/**
+ * Include our plugin's links in the plugin row meta of the plugins.php page
+ *
+ * @param array $links
+ * @param string $file
+ *
+ * @return array
+ */
 function pmproemd_plugin_row_meta( $links, $file ) {
 	if ( strpos( $file, 'pmpro-extended-member-directory.php' ) !== false ) {
 		$new_links = array(
