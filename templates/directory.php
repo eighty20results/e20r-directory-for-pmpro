@@ -768,24 +768,28 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	?>
     <div class="pmpro_pagination">
 		<?php
-		//prev
-		if ( $pn > 1 ) {
-			?>
-            <span class="pmpro_prev"><a href="<?php echo esc_url( add_query_arg( array(
-					"ps"    => $s,
-					"pn"    => $pn - 1,
-					"limit" => $limit,
-				), get_permalink( $post->ID ) ) ); ?>">&laquo; <?php _e( "Previous", "pmpro-member-directory" ); ?></a></span>
+        
+        // Configure the basics of the Pagination arguments
+        $pn_args = array(
+	        "ps"    => $s,
+	        "limit" => $limit,
+        );
+		
+		// Link to previous page
+        if ( $pn > 1 ) {
+            
+            // Decrement the page counter by 1
+	        $pn_args['pn'] = $pn - 1; ?>
+            <span class="pmpro_prev"><a href="<?php echo esc_url( add_query_arg( pmproemd_pagination_args( $pn_args ), get_permalink( $post->ID ) ) ); ?>">&laquo; <?php _e( "Previous", "pmpro-member-directory" ); ?></a></span>
 			<?php
 		}
-		//next
+		
+		// Link to next page
 		if ( $totalrows > $end ) {
-			?>
-            <span class="pmpro_next"><a href="<?php echo esc_url( add_query_arg( array(
-					"ps"    => $s,
-					"pn"    => $pn + 1,
-					"limit" => $limit,
-				), get_permalink( $post->ID ) ) ); ?>"> <?php _e( "Next", "pmpro-member-directory" ); ?>
+   
+			// Increment the page counter by 1
+			$pn_args['pn'] = $pn + 1; ?>
+            <span class="pmpro_next"><a href="<?php echo esc_url( add_query_arg( pmproemd_pagination_args( $pn_args ), get_permalink( $post->ID ) ) ); ?>"> <?php _e( "Next", "pmpro-member-directory" ); ?>
                     &raquo;</a></span>
 			<?php
 		}
