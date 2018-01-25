@@ -58,8 +58,8 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	
 	$levels = empty( $levels ) && ! empty( $level ) ? $level : $levels;
 	
-	// Present the level list as an array
-	if ( !is_array( $levels ) ) {
+	// Present a non-empty level ID list as an array
+	if ( !empty( $levels ) && !is_array( $levels ) ) {
 	    $levels = array( $levels );
     }
 	
@@ -238,6 +238,9 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 		}
 		
 		if ( !empty( $levels ) ) {
+			if ( WP_DEBUG ) {
+				error_log( "Levels entry " . print_r( $levels, true ) );
+			}
 			$sqlQuery .= " AND mu.membership_id IN ( " . implode( ',', $levels ) . ") ";
 		}
 		
@@ -283,6 +286,9 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 		}
 		
 		if ( !empty( $levels ) ) {
+			if ( WP_DEBUG ) {
+				error_log( "Levels entry " . print_r( $levels, true ) );
+			}
 			$sqlQuery .= " AND mu.membership_id IN ( " . implode( ',', $levels ) . " ) ";
 		}
 	}
