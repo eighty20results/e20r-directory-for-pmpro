@@ -52,7 +52,19 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	
 	global $wpdb, $post, $pmpro_pages, $pmprorh_registration_fields, $current_user;
 	
+	// Sanitize input from shortcode
+	$levels = !empty( $levels ) ? array_map( 'intval', array_map( 'trim', explode( ',', $levels ) ) ) : null;
+	$level = !empty( $level ) ? intval( $level ) : null;
+	
 	$levels = empty( $levels ) && ! empty( $level ) ? $level : $levels;
+	
+	// Present the level list as an array
+	if ( !is_array( $levels ) ) {
+	    $levels = array( $levels );
+    }
+    
+	// Should we exclude users from certain membership level(s)?
+	$levels = apply_filters( 'pmpromd_included_levels', $levels );
 	
 	$link              = pmproemd_true_false( $link );
 	$show_avatar       = pmproemd_true_false( $show_avatar );
@@ -219,8 +231,8 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 			$sqlQuery .= " AND mu.membership_id >= 0";
 		}
 		
-		if ( $levels ) {
-			$sqlQuery .= " AND mu.membership_id IN(" . esc_sql( $levels ) . ") ";
+		if ( !empty( $levels ) ) {
+			$sqlQuery .= " AND mu.membership_id IN ( " . implode( ',', $levels ) . ") ";
 		}
 		
 		$sqlQuery .= " GROUP BY u.ID ";
@@ -264,10 +276,9 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 			$sqlQuery .= " AND mu.membership_id >= 0";
 		}
 		
-		if ( $levels ) {
-			$sqlQuery .= " AND mu.membership_id IN(" . esc_sql( $levels ) . ") ";
+		if ( !empty( $levels ) ) {
+			$sqlQuery .= " AND mu.membership_id IN ( " . implode( ',', $levels ) . " ) ";
 		}
-		
 	}
 	
 	$sort_sql = " ORDER BY " . esc_sql( $order_by ) . " " . esc_sql( $order );
@@ -467,6 +478,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 					<?php
 					$count = 0;
 					foreach ( $theusers as $the_user ) {
+					 
 						$the_user                   = get_userdata( $the_user->ID );
 						$the_user->membership_level = pmpro_getMembershipLevelForUser( $the_user->ID );
 						$count ++;
