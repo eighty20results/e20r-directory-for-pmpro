@@ -62,9 +62,15 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	if ( !is_array( $levels ) ) {
 	    $levels = array( $levels );
     }
-    
-	// Should we exclude users from certain membership level(s)?
-	$levels = apply_filters( 'pmpromd_included_levels', $levels );
+	
+	/**
+	 * Let developer set/update/override the levels to include
+     *
+     * @filter pmpro_member_directory_included_levels
+     *
+     * @param int[] $levels - The membership level IDs to include user(s) for
+     */
+	$levels = apply_filters( 'pmpro_member_directory_included_levels', $levels );
 	
 	$link              = pmproemd_true_false( $link );
 	$show_avatar       = pmproemd_true_false( $show_avatar );
