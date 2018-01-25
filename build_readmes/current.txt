@@ -1,3 +1,1 @@
-BUG FIX: Generate proper pagination links for Directory page
-BUG FIX: Didn't preserve extra search field settings when generating pagination value(s)
-ENHANCEMENT: Adding PHPDoc blocks for functions
+BUG FIX: Didn't return any records

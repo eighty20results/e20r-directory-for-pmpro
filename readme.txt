@@ -3,7 +3,7 @@ Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 4.4
 Tested up to: 4.9.2
-Stable tag: 2.3
+Stable tag: 2.5
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -98,6 +98,7 @@ Show unique member profiles based on level - hide user phone number and email ad
 1. pmpro_member_directory_extra_search_input - Add array of HTML to add extra search input fields (and field types) below the main "Search" input.
 1. pmpro_member_profile_fields - Allow user to remove/add additional usermetadata fields & labels programatically
 1. pmpro_member_directory_non_admin_profile_settings - Set to false in order to hide the "Hide from Member Directory?" setting on the user's WordPress profile page, unless they're assigned the administrator role.
+1. 'pmpro_member_directory_included_levels' - Allow admin to configure which membership level(s) to include for directory
 
 === Action hooks ===
 1. pmpro_member_directory_extra_search_output - Output HTML so a user can provide input for the specified pmpromd_extra_search_fields search fields
@@ -119,6 +120,16 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 2.5 =
+
+* BUG FIX: Didn't return any records
+
+= 2.4 =
+
+* BUG FIX: Sanitize the level & levels attributes to avoid SQL injections
+* ENHANCEMENT: Add 'pmpromd_included_levels' filter to configure the level(s) to include members for.
+* ENHANCEMENT: Renamed 'pmpromd_included_levels' to 'pmpro_member_directory_included_levels'
 
 = 2.3 =
 
