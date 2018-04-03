@@ -350,7 +350,9 @@ function pmproemd_profile_shortcode( $atts, $content = null, $code = "" ) {
 					if ( empty( $field[0] ) ) {
 						break;
 					}
-					$meta_field = wp_unslash( $profile_user->{$field[1]} );
+					error_log("Field info: " . print_r($field,true));
+					
+					$meta_field = wp_unslash( apply_filters( 'pmpro_member_directory_metafield_value', $profile_user->{$field[1]}, $field[1], $profile_user ) );
 					if ( ! empty( $meta_field ) ) {
 						?>
                         <p class="pmpro_member_directory_<?php echo esc_attr( $field[1] ); ?>">
@@ -370,12 +372,12 @@ function pmproemd_profile_shortcode( $atts, $content = null, $code = "" ) {
 								}
 								?>
                                 <strong><?php esc_attr_e( $field[0] ); ?></strong>
-								<?php echo implode( ", ", $meta_field ); ?>
+								<?php echo apply_filters( 'pmpro_member_directory_metafield_value', implode( ", ", $meta_field ), $field[1], $profile_user ); ?>
 								<?php
 							} else {
 								if ( false !== stripos( $field[1],  'url' ) ) {
 									?>
-                                    <a href="<?php echo esc_url( $meta_field ); ?>"
+                                    <a href="<?php echo esc_url( apply_filters( 'pmpro_member_directory_metafield_value', $meta_field, $field[1], $profile_user ) ); ?>"
                                        target="_blank"><?php esc_html_e( $field[0] ); ?></a>
 									<?php
 								} else {
@@ -384,9 +386,9 @@ function pmproemd_profile_shortcode( $atts, $content = null, $code = "" ) {
 									<?php
 									$meta_field_embed = wp_oembed_get( $meta_field );
 									if ( ! empty( $meta_field_embed ) ) {
-										echo $meta_field_embed;
+										echo apply_filters( 'pmpro_member_directory_metafield_value', $meta_field_embed, $field[1], $profile_user );
 									} else {
-										echo make_clickable( $meta_field );
+										echo make_clickable( apply_filters( 'pmpro_member_directory_metafield_value', $meta_field, $field[1], $profile_user ) );
 									}
 									?>
 									<?php

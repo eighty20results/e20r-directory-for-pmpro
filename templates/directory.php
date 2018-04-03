@@ -538,7 +538,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
                                 <td class="pmpro_member_directory_additional">
 									<?php
 									foreach ( $fields_array as $field ) {
-										$meta_field = wp_unslash( $the_user->{$field[1]} );
+										$meta_field = wp_unslash( apply_filters( 'pmpro_member_directory_metafield_value', $the_user->{$field[1]}, $field[1], $the_user ) );
 										if ( ! empty( $meta_field ) ) {
 											?>
                                             <p class="pmpro_member_directory_<?php esc_attr_e( $field[1] ); ?>">
@@ -558,7 +558,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 													}
 													?>
                                                     <strong><?php esc_html_e( $field[0] ); ?></strong>
-													<?php echo implode( ", ", $meta_field ); ?>
+													<?php echo apply_filters( 'pmpro_member_directory_metafield_value', implode( ", ", $meta_field ), $field[1], $the_user ); ?>
 													<?php
 												} else {
 													if ( $field[1] == 'user_url' ) {
@@ -701,7 +701,8 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 									$fields_array = apply_filters( 'pmpro_member_profile_fields', $fields_array, $the_user );
 									if ( ! empty( $fields_array ) ) {
 										foreach ( $fields_array as $field ) {
-											$meta_field = wp_unslash( $the_user->{$field[1]} );
+										 
+											$meta_field = wp_unslash( apply_filters( 'pmpro_member_directory_metafield_value', $the_user->{$field[1]}, $field[1], $the_user ) );
 											if ( ! empty( $meta_field ) ) {
 												?>
                                                 <p class="pmpro_member_directory_<?php echo esc_attr( $field[1] ); ?>">
@@ -721,17 +722,17 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 														}
 														?>
                                                         <strong><?php echo esc_attr( $field[0] ); ?></strong>
-														<?php echo implode( ", ", $meta_field ); ?>
+														<?php echo apply_filters( 'pmpro_member_directory_metafield_value', implode( ", ", $meta_field ), $field[1], $the_user ); ?>
 														<?php
 													} else if ( $field[1] == 'user_url' ) {
 														?>
-                                                        <a href="<?php echo esc_attr( $the_user->{$field[1]} ); ?>"
+                                                        <a href="<?php echo esc_attr( apply_filters( 'pmpro_member_directory_metafield_value', $meta_field, $field[1], $the_user ) ); ?>"
                                                            target="_blank"><?php echo esc_attr( $field[0] ); ?></a>
 														<?php
 													} else {
 														?>
                                                         <strong><?php echo esc_attr( $field[0] ); ?>:</strong>
-														<?php echo make_clickable( $the_user->{$field[1]} ); ?>
+														<?php echo make_clickable( apply_filters( 'pmpro_member_directory_metafield_value', $meta_field, $field[1], $the_user ) ); ?>
 														<?php
 													}
 													?>
