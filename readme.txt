@@ -3,7 +3,7 @@ Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 4.4
 Tested up to: 4.9.2
-Stable tag: 2.5
+Stable tag: 2.6
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -99,6 +99,7 @@ Show unique member profiles based on level - hide user phone number and email ad
 1. pmpro_member_profile_fields - Allow user to remove/add additional usermetadata fields & labels programatically
 1. pmpro_member_directory_non_admin_profile_settings - Set to false in order to hide the "Hide from Member Directory?" setting on the user's WordPress profile page, unless they're assigned the administrator role.
 1. 'pmpro_member_directory_included_levels' - Allow admin to configure which membership level(s) to include for directory
+1. 'pmpro_member_directory_metafield_value' - Used to format/modify the displayed usermeta value (Register Helper field value). Useful when using select/select2 fields and you need to translate a value to a label or if the stored value consists of an array. In that case, the default behavior is to let the value to display as a comma-separated list).
 
 === Action hooks ===
 1. pmpro_member_directory_extra_search_output - Output HTML so a user can provide input for the specified pmpromd_extra_search_fields search fields
@@ -120,6 +121,10 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 2.6 =
+
+* ENHANCEMENT: Added 'pmpro_member_directory_metafield_value' filter - Used to format/modify the displayed usermeta value(s). Basically a Register Helper field value 'translator' filter.
 
 = 2.5 =
 

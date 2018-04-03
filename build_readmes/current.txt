@@ -1,1 +1,1 @@
-BUG FIX: Didn't return any records
+ENHANCEMENT: Added 'pmpro_member_directory_metafield_value' filter - Used to format/modify the displayed usermeta value(s). Basically a Register Helper field value 'translator' filter.
