@@ -1,1 +1,2 @@
-ENHANCEMENT: Added 'pmpro_member_directory_metafield_value' filter - Used to format/modify the displayed usermeta value(s). Basically a Register Helper field value 'translator' filter.
+ENHANCEMENT: More precise search for meta values
+ENHANCEMENT: Use filter to determine whether to include the 'Show all members' directory link ('pmpro_member_directory_profile_show_return_link')
