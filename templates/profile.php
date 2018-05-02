@@ -407,7 +407,7 @@ function pmproemd_profile_shortcode( $atts, $content = null, $code = "" ) {
             <div class="pmpro_clear"></div>
         </div>
         <hr/>
-		<?php if ( ! empty( $directory_url ) ) { ?>
+		<?php if ( apply_filters( 'pmpro_member_directory_profile_show_return_link', true ) && ! empty( $directory_url ) ) { ?>
             <div align="center"><a class="more-link"
                                    href="<?php echo esc_url_raw( $directory_url ); ?>"><?php _e( 'View All Members', 'pmpro-member-directory' ); ?></a>
             </div>
