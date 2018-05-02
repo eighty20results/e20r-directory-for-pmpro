@@ -96,19 +96,27 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	 * Add support for user defined search fields & tables (array value = usermeta field name)
 	 * Can be array of field names (usermeta fields)
 	 *
-	 * @filter pmpromd_extra_search_fields
+	 * @filter pmpro_member_directory_extra_search_fields
 	 * @param array
 	 */
-	$extra_search_fields = apply_filters( 'pmpromd_extra_search_fields', array() );
+	$extra_search_fields = apply_filters( 'pmpro_member_directory_extra_search_fields', array() );
+	/**
+	 * Backwards compatibility
+	 */
+	$extra_search_fields = apply_filters( 'pmpromd_extra_search_fields', $extra_search_fields );
 	
 	/**
 	 * Whether to use the exact value specified (useful for drop-down based metavalues)
 	 *
-	 * @filter pmpromd_exact_search_values
+	 * @filter pmpro_member_directory_exact_search_values
 	 *
 	 * @param bool - False (uses 'LIKE' with wildcard comparisons for metadata
 	 */
-	$use_precise_values = apply_filters( 'pmpromd_exact_search_values', false );
+	$use_precise_values = apply_filters( 'pmpro_member_directory_exact_search_values', false );
+	/**
+	 * Backwards compatibility
+	 */
+	$use_precise_values = apply_filters( 'pmpromd_exact_search_values', $use_precise_values );
 	
 	if ( ! empty( $extra_search_fields ) && ! is_array( $extra_search_fields ) ) {
 		$extra_search_fields = array( $extra_search_fields );
@@ -128,14 +136,19 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	}
 	$end   = $pn * $limit;
 	$start = $end - $limit;
- 
-	// Member statuses to include in the search (default is 'active' only)
-	$statuses    = apply_filters( 'pmpromd_membership_statuses', array( 'active' ) );
+	
+	/**
+     * Member statuses to include in the search (default is 'active' only)
+     *
+	 * @filter pmpro_member_directory_statuses
+     * @param array $statuses
+	 */
+	$statuses    = apply_filters( 'pmpro_member_directory_statuses', array( 'active' ) );
 	
 	// Backwards compatibility
-	$statuses = apply_filters( 'pmprod_membership_statuses',  $statuses );
+	$statuses = apply_filters( 'pmpromd_membership_statuses',  $statuses );
 	
-	$status_list = esc_sql( implode( "', '", $statuses ) );
+	$status_list = implode( "', '", $wpdb->_escape( $statuses ) );
 	
 	if ( ! empty( $s ) || ! empty( $extra_search_fields ) ) {
 		$sqlQuery = "
@@ -178,73 +191,93 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 			}
 		}
 		
-		$sqlQuery .= " WHERE mu.status IN ('{$status_list}')
-			AND (umh.meta_value IS NULL
-				OR umh.meta_value <> '1')
-				";
+		$sqlQuery .= " ";
+		$where_clause = ' ';
+		$search_where = null;
+		$extra_fields_where = null;
+		$levels_where = null;
+		
+		$where_status = sprintf( 'WHERE mu.status IN (\'%s\') AND (umh.meta_value IS NULL OR umh.meta_value <> \'1\')', $wpdb->_escape( $status_list ) );
+		$where_status = apply_filters( 'pmpro_member_directory_sql_where_statuses', $where_status, $status_list, $statuses );
+		
+		$where_clause .= " {$where_status}";
 		
 		if ( ! empty( $s ) ) {
-			$sqlQuery .= " AND (u.user_login LIKE '%" . esc_sql( $s ) . "%'
-				OR u.user_email LIKE '%" . esc_sql( $s ) . "%'
-				OR u.display_name LIKE '%" . esc_sql( $s ) . "%'
-				OR um.meta_value LIKE '%" . esc_sql( $s ) . "%') ";
+		    
+		    $search_where = sprintf( ' AND (u.user_login LIKE \'\%%1$s\%\' OR u.user_email LIKE \'%%%1$s%%\' OR u.display_name LIKE \'%%%1$s%%\' OR um.meta_value LIKE \'%%%1$s%\') ',   $wpdb->_escape( $s ) );
+		    $search_where = apply_filters( 'pmpro_member_directory_sql_where_search', $search_where, $s );
 		}
+		
+		$where_clause .= " {$search_where}";
 		
 		if ( ! empty( $extra_search_fields ) ) {
 			$cnt = 1;
+			$extra_fields_where = '';
 			
-			foreach ( $extra_search_fields as $f ) {
-				if ( is_array( ${$f} ) && ! empty( ${$f} ) ) {
-					$sqlQuery .= " AND (";
+			foreach ( $extra_search_fields as $field ) {
+				if ( is_array( ${$field} ) && ! empty( ${$field} ) ) {
+					$extra_fields_where .= " AND (";
 					
-					$max_v = count( ${$f} ) - 1;
+					$max_v = count( ${$field} ) - 1;
 					$i     = 0;
 					
-					foreach ( ${$f} as $v ) {
+					foreach ( ${$field} as $v ) {
 						
 						if ( false === $use_precise_values ) {
-							$sqlQuery .= " umrh_{$cnt}.meta_value LIKE '%{$v}%' ";
+							$extra_fields_where .= " umrh_{$cnt}.meta_value LIKE '%{$v}%' ";
 						} else {
-							$sqlQuery .= " umrh_{$cnt}.meta_value = '{$v}' ";
+							$extra_fields_where .= " umrh_{$cnt}.meta_value = '{$v}' ";
 						}
 						
 						if ( $max_v > $i ) {
-							$sqlQuery .= " OR ";
+							$extra_fields_where .= " OR ";
 							++ $i;
 						}
 					}
 					
-					$sqlQuery .= ")
+					$extra_fields_where .= ")
 					";
-				} else if ( ! empty( ${$f} ) ) {
-					$sqlQuery .= " AND (";
+				} else if ( ! empty( ${$field} ) ) {
+					$extra_fields_where .= " AND (";
 					if ( false === $use_precise_values ) {
-						$sqlQuery .= " umrh_{$cnt}.meta_value LIKE '%{${$f}}%' ";
+						$extra_fields_where .= " umrh_{$cnt}.meta_value LIKE '%{${$field}}%' ";
 					} else {
-						$sqlQuery .= " umrh_{$cnt}.meta_value = '{${$f}}' ";
+						$extra_fields_where .= " umrh_{$cnt}.meta_value = '{${$field}}' ";
 					}
-					$sqlQuery .= " )
+					$extra_fields_where .= " )
 					";
 				}
 				
 				++ $cnt;
 			}
+			
+			$extra_fields_where = apply_filters( 'pmpro_member_directory_sql_where_extra_fields', $extra_fields_where, $extra_search_fields, $use_precise_values );
 		}
 		
+		$where_clause .= " {$extra_fields_where}";
+		
 		if ( count( $statuses ) == 1 && in_array( 'active', $statuses ) ) {
-			$sqlQuery .= " AND mu.membership_id > 0";
+			$where_clause .= " AND mu.membership_id > 0";
 		} else {
-			$sqlQuery .= " AND mu.membership_id >= 0";
+			$where_clause .= " AND mu.membership_id >= 0";
 		}
 		
 		if ( !empty( $levels ) ) {
+		    $levels_where = '';
+		    
 			if ( WP_DEBUG ) {
 				error_log( "Levels entry " . print_r( $levels, true ) );
 			}
-			$sqlQuery .= " AND mu.membership_id IN ( " . implode( ',', $levels ) . ") ";
+			
+			$levels_where .= " AND mu.membership_id IN ( " . implode( ',', array_map( 'intval', $levels ) ) . ") ";
+			$levels_where = apply_filters( 'pmpro_member_directory_sql_where_levels', $levels_where, $levels );
 		}
 		
-		$sqlQuery .= " GROUP BY u.ID ";
+		$where_clause .= " {$levels_where}";
+		
+		$where_clause = apply_filters( 'pmpro_member_directory_sql_where', $where_clause, $sqlQuery, $levels, $extra_search_fields, $statuses );
+		
+		$sqlQuery .= " {$where_clause} GROUP BY u.ID ";
 		
 		
 	} else {
@@ -293,11 +326,11 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 		}
 	}
 	
-	$sort_sql = " ORDER BY " . esc_sql( $order_by ) . " " . esc_sql( $order );
+	$sort_sql = " ORDER BY " . $wpdb->_escape( $order_by ) . " " . $wpdb->_escape( $order );
 	$sqlQuery .= apply_filters( 'pmpro_member_directory_set_order', $sort_sql, $order_by, $order );
 	
-	$start = esc_sql( $start );
-	$limit = esc_sql( $limit );
+	$start = $wpdb->_escape( $start );
+	$limit = $wpdb->_escape( $limit );
 	
 	$sqlQuery .= " LIMIT {$start}, {$limit}";
 	
