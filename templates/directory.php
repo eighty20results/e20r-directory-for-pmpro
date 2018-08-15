@@ -203,8 +203,12 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 		$where_clause .= " {$where_status}";
 		
 		if ( ! empty( $s ) ) {
+			
+		    $esc_like = $wpdb->esc_like( $s );
+		    $esc_like = "'%%{$esc_like}%%'";
 		    
-		    $search_where = sprintf( ' AND (u.user_login LIKE \'\%%1$s\%\' OR u.user_email LIKE \'%%%1$s%%\' OR u.display_name LIKE \'%%%1$s%%\' OR um.meta_value LIKE \'%%%1$s%\') ',   $wpdb->_escape( $s ) );
+		    $search_where = sprintf( ' AND (u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s OR um.meta_value LIKE %s) ',   $esc_like,$esc_like, $esc_like, $esc_like );
+		    
 		    $search_where = apply_filters( 'pmpro_member_directory_sql_where_search', $search_where, $s );
 		}
 		
@@ -424,8 +428,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
                 <input type="submit" class="search-submit"
                        value="<?php _e( "Search Members", "pmpro-member-directory" ); ?>">
             </div>
-			<?php if ( ! empty( $search_string ) ) {
-				error_log( "Something in the search string!" ); ?>
+			<?php if ( ! empty( $search_string ) ) {?>
                 <div class="search-button clear">
                     <a class="button button-secondary"
                        href="<?php echo esc_url( pmpro_url( 'directory' ) ); ?>"><?php _e( "Reset", "pmpro-member-directory" ); ?></a>
@@ -755,8 +758,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 														}
 														?>
                                                         <strong><?php echo esc_attr( $field[0] ); ?></strong>
-														<?php echo apply_filters( 'pmpro_member_directory_metafield_value', implode( ", ", $meta_field ), $field[1], $the_user ); ?>
-														<?php
+														<?php echo apply_filters( 'pmpro_member_directory_metafield_value', implode( ", ", $meta_field ), $field[1], $the_user );
 													} else if ( $field[1] == 'user_url' ) {
 														?>
                                                         <a href="<?php echo esc_attr( apply_filters( 'pmpro_member_directory_metafield_value', $meta_field, $field[1], $the_user ) ); ?>"
