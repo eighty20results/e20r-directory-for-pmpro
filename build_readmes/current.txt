@@ -1,2 +1,3 @@
-ENHANCEMENT: More precise search for meta values
-ENHANCEMENT: Use filter to determine whether to include the 'Show all members' directory link ('pmpro_member_directory_profile_show_return_link')
+ENHANCEMENT: Added PHPDoc blocks for address-section.php
+BUG FIX: User meta data search triggered SQL error
+BUG FIX: Would debug log when WP_DEBUG wasn't defined
