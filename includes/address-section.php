@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017 - Eighty / 20 Results by Wicked Strong Chicks.
+ * Copyright (c) 2017-2018 - Eighty / 20 Results by Wicked Strong Chicks.
  * ALL RIGHTS RESERVED
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,13 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-error_log("Loading address section display code");
+if ( WP_DEBUG ) {
+	error_log( "Loading address section display code" );
+}
 
 global $pmproemd_has_billing_fields;
 global $pmproemd_has_shipping_fields;
 global $pmproemd_show_billing_address;
 global $pmproemd_show_shipping_address;
 
+/**
+ * Remove shipping and billing address info
+ *
+ * @param array $fields
+ * @param \WP_User $user
+ *
+ * @return array
+ */
 function pmproemd_remove_address_info( $fields, $user ) {
 	
 	global $pmproemd_has_billing_fields;
@@ -33,7 +43,9 @@ function pmproemd_remove_address_info( $fields, $user ) {
 	
 	
 	if ( false === $pmproemd_show_billing_address && false === $pmproemd_show_shipping_address ) {
-		error_log( "Not expecting there to be any fields to process!");
+		if ( WP_DEBUG ) {
+			error_log( "Not expecting there to be any fields to process!" );
+		}
 		return $fields;
 	}
 	
@@ -73,6 +85,12 @@ function pmproemd_remove_address_info( $fields, $user ) {
 
 add_filter( 'pmpro_member_profile_fields', 'pmproemd_remove_address_info', 99, 2 );
 
+/**
+ * Add Billing and Shipping fields
+ *
+ * @param array $fields
+ * @param \WP_User $user
+ */
 function pmproemd_add_address_section( $fields, $user ) {
 	
 	global $pmproemd_has_billing_fields;
