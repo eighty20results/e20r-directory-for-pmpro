@@ -12,6 +12,7 @@ License: GPL2
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
+namespace E20R\MemberDirectory;
 /**
  * @credit https://www.paidmembershipspro.com
  */
@@ -30,38 +31,39 @@ if ( ! defined( "PMPROED_VER" ) ) {
  * Check for the original PMPro Member Directory add-on
  */
 function pmproemd_init() {
- 
-    if ( function_exists( 'pmpromd_register_styles' ) ) {
-        
-        pmpro_setMessage( __( "The 'Member Directory & Profile Pages' add-on for Paid Memberships Pro is currently active. You'll need to deactivate it in order to activate this Extended version of the plugin.", 'pmpro-member-directory' ), 'error' );
-        
-        return;
-    }
+	
+	if ( function_exists( 'pmpromd_register_styles' ) ) {
+		
+		pmpro_setMessage( __( "The 'Member Directory & Profile Pages' add-on for Paid Memberships Pro is currently active. You'll need to deactivate it in order to activate this Extended version of the plugin.", 'pmpro-member-directory' ), 'error' );
+		
+		return;
+	}
 }
 
 /**
  * Show error notice(s) if found
  */
-function pmproemd_admin_notice( ) {
-    
-    global $pmpro_msg;
-    global $pmpro_msgt;
-    
-    if ( !empty( $pmpro_msg ) ) {
-        ?>
+function pmproemd_admin_notice() {
+	
+	global $pmpro_msg;
+	global $pmpro_msgt;
+	
+	if ( ! empty( $pmpro_msg ) ) {
+		?>
         <div class="notice notice-<?php esc_attr_e( $pmpro_msgt ); ?> is-dismissible">
             <p><?php esc_html_e( $pmpro_msg ); ?></p>
         </div>
-        <?php
-    }
+		<?php
+	}
 }
+
 add_action( 'admin_init', 'pmproemd_admin_notice', 10 );
 add_action( 'plugins_loaded', 'pmproemd_init', 99 );
 
-$path                  = dirname( __FILE__ );
-$custom_dir            = get_stylesheet_directory() . "/paid-memberships-pro/pmpro-member-directory/";
+/*
 $custom_directory_file = $custom_dir . "directory.php";
 $custom_profile_file   = $custom_dir . "profile.php";
+
 
 //load custom or default templates
 if ( file_exists( $custom_directory_file ) ) {
@@ -75,33 +77,79 @@ if ( file_exists( $custom_profile_file ) ) {
 	require_once( $path . "/templates/profile.php" );
 }
 
+*/
+
+/**
+ * Load directory location (list?) where we may find the PMPro Directory add-on templates
+ *
+ * @param array $paths
+ * @param string $page
+ * @param string $type
+ * @param string $where
+ * @param string $ext
+ *
+ * @return array
+ */
+function pmproemd_directory_template_paths( $paths, $page, $type, $where, $ext ) {
+	
+	if ( 1 !== preg_match( '/directory|profile/i', $page ) ) {
+		return $paths;
+	}
+	
+	$list = array(
+		get_template_directory() . "/paid-memberships-pro/pmpro-member-directory/",
+		get_stylesheet_directory() . "/paid-memberships-pro/pmpro-member-directory/",
+		dirname( __FILE__ ) . '/templates/'
+	);
+	
+	foreach( $list as $key => $path ) {
+		
+		if ( ! file_exists( "{$path}{$page}.{$ext}" ) ) {
+			unset( $list[$key] );
+		}
+	}
+	
+	return $paths;
+}
+
+add_filter( 'pmpro_page_custom_template_path', 'pmproemd_directory_template_paths', 99, 5 );
+
+$path = dirname( __FILE__ );
+
+if ( function_exists( 'pmpro_loadTemplate' ) ) {
+	pmpro_loadTemplate( 'directory', 'local', 'pages', 'php' );
+	pmpro_loadTemplate( 'profile', 'local', 'pages', 'php' );
+}
+
 // Add localization feature(s)
-require_once( "{$path}/includes/localization.php");
+require_once( "{$path}/includes/localization.php" );
 
 /**
  * Check if the value is one of the valid responses for the boolean type
  *
  * @param int|string $value
- * @param string $type
+ * @param string     $type
  *
  * @return bool
  */
 function pmproemd_true_false( $value, $type = 'false' ) {
-    
-    
-    switch( $type ) {
-        case 'true':
-	        // Return true if we found one of the 'true' values
-	        $found = in_array( $value,array( 'yes', '1', 'true' ) );
-	        error_log("Checking for true: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
-	        return ( true === $found ? true : false );
-            break;
-        default:
-	        // Return false if we found one of the 'false' values
-	        $found = in_array( $value,array( 'no', 'false', '0' ) );
-	        error_log("Checking for false: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
-            return ( true === $found ? false : true );
-    }
+	
+	
+	switch ( $type ) {
+		case 'true':
+			// Return true if we found one of the 'true' values
+			$found = in_array( $value, array( 'yes', '1', 'true' ) );
+			error_log( "Checking for true: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
+			
+			return ( true === $found ? true : false );
+			break;
+		default:
+			// Return false if we found one of the 'false' values
+			$found = in_array( $value, array( 'no', 'false', '0' ) );
+			error_log( "Checking for false: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
+			
+			return ( true === $found ? false : true );
+	}
 }
 
 /**
@@ -112,26 +160,27 @@ function pmproemd_true_false( $value, $type = 'false' ) {
  * @return array
  */
 function pmproemd_pagination_args( $arguments ) {
-    
-    $extra_search_fields = apply_filters( 'pmpromd_extra_search_fields', array() );
-    
-    foreach( $extra_search_fields as $ef_name ) {
-        
-        $req_value = ( isset( $_REQUEST[$ef_name] ) && !empty(  $_REQUEST[$ef_name] ) ? sanitize_text_field(  $_REQUEST[$ef_name] ) : null );
-        
-	    if ( ! isset( $addl_arguments[$ef_name] ) && ! is_null( $req_value ) ) {
-	        $arguments[$ef_name] = $req_value;
-        }
-    }
-    
-    return $arguments;
+	
+	$extra_search_fields = apply_filters( 'pmpromd_extra_search_fields', array() );
+	
+	foreach ( $extra_search_fields as $ef_name ) {
+		
+		$req_value = ( isset( $_REQUEST[ $ef_name ] ) && ! empty( $_REQUEST[ $ef_name ] ) ? sanitize_text_field( $_REQUEST[ $ef_name ] ) : null );
+		
+		if ( ! isset( $addl_arguments[ $ef_name ] ) && ! is_null( $req_value ) ) {
+			$arguments[ $ef_name ] = $req_value;
+		}
+	}
+	
+	return $arguments;
 }
 
 /**
  * Register/load Directory/Profile page styles as/when needed
  */
 function pmproemd_register_styles() {
-	//load stylesheet (check child theme, then parent theme, then plugin folder)	
+	
+    //load stylesheet (check child theme, then parent theme, then plugin folder)
 	if ( file_exists( get_stylesheet_directory() . "/paid-memberships-pro/member-directory/css/pmpro-member-directory.css" ) ) {
 		wp_register_style( 'pmpro-member-directory-styles', get_stylesheet_directory_uri() . "/paid-memberships-pro/member-directory/css/pmpro-member-directory.css", null, PMPROED_VER );
 	} else if ( file_exists( get_template_directory() . "/paid-memberships-pro/member-directory/css/pmpro-member-directory.css" ) ) {
@@ -144,6 +193,7 @@ function pmproemd_register_styles() {
 	
 	wp_enqueue_style( 'pmpro-member-directory-styles' );
 }
+
 add_action( 'wp_enqueue_scripts', 'pmproemd_register_styles', 10 );
 
 /**
@@ -181,10 +231,10 @@ function pmproemd_show_extra_profile_fields( $user ) {
 	$is_admin = current_user_can( 'manage_options' );
 	
 	if ( (
-	        true === apply_filters( 'pmpro_member_directory_non_admin_profile_settings', true ) &&
-            false === $is_admin
-         ) || true === $is_admin
-    ) {
+		     true === apply_filters( 'pmpro_member_directory_non_admin_profile_settings', true ) &&
+		     false === $is_admin
+	     ) || true === $is_admin
+	) {
 		?>
         <h3><?php echo get_the_title( $pmpro_pages['directory'] ); ?></h3>
         <table class="form-table">
@@ -217,7 +267,7 @@ add_action( 'edit_user_profile', 'pmproemd_show_extra_profile_fields', 10 );
  */
 function pmproemd_save_extra_profile_fields( $user_id ) {
 	
-    if ( ! current_user_can( 'edit_user', $user_id ) ) {
+	if ( ! current_user_can( 'edit_user', $user_id ) ) {
 		return false;
 	}
 	
@@ -237,7 +287,7 @@ add_action( 'edit_user_profile_update', 'pmproemd_save_extra_profile_fields', 10
  * @return string
  */
 function pmproemd_display_file_field( $meta_field ) {
- 
+	
 	$meta_field_file_type = wp_check_filetype( $meta_field['fullurl'] );
 	
 	switch ( $meta_field_file_type['type'] ) {
@@ -265,9 +315,9 @@ function pmproemd_display_file_field( $meta_field ) {
 			return sprintf(
 				'<a href="%s" title="%s" target="_blank"><img class="subtype-%s" src="%s"><br />%s</a>',
 				$meta_field['fullurl'],
-                $meta_field['filename'],
-                $meta_field_file_type['ext'],
-                wp_mime_type_icon( $meta_field_file_type['type'] ),
+				$meta_field['filename'],
+				$meta_field_file_type['ext'],
+				wp_mime_type_icon( $meta_field_file_type['type'] ),
 				$meta_field['filename']
 			);
 			break;
@@ -277,7 +327,7 @@ function pmproemd_display_file_field( $meta_field ) {
 /**
  * Include our plugin's links in the plugin row meta of the plugins.php page
  *
- * @param array $links
+ * @param array  $links
  * @param string $file
  *
  * @return array
@@ -285,8 +335,8 @@ function pmproemd_display_file_field( $meta_field ) {
 function pmproemd_plugin_row_meta( $links, $file ) {
 	if ( strpos( $file, 'pmpro-extended-member-directory.php' ) !== false ) {
 		$new_links = array(
-			sprintf( '<a href="%s" title="%s">%s</a>', esc_url( 'http://www.paidmembershipspro.com/add-ons/plugins-on-github/pmpro-member-directory/' ),__( 'View Documentation', 'paid-memberships-pro' ), __( 'Docs', 'paid-memberships-pro' )  ),
-			sprintf( '<a href="%s" title="%s">%s</a>',esc_url( 'http://paidmembershipspro.com/support/' ),__( 'Visit Customer Support Forum', 'pmpro' ),  __( 'Support', 'paid-memberships-pro' ) ),
+			sprintf( '<a href="%s" title="%s">%s</a>', esc_url( 'http://www.paidmembershipspro.com/add-ons/plugins-on-github/pmpro-member-directory/' ), __( 'View Documentation', 'paid-memberships-pro' ), __( 'Docs', 'paid-memberships-pro' ) ),
+			sprintf( '<a href="%s" title="%s">%s</a>', esc_url( 'http://paidmembershipspro.com/support/' ), __( 'Visit Customer Support Forum', 'pmpro' ), __( 'Support', 'paid-memberships-pro' ) ),
 		);
 		$links     = array_merge( $links, $new_links );
 	}

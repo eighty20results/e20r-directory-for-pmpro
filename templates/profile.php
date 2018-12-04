@@ -1,4 +1,7 @@
 <?php
+
+namespace E20R\MemberDirectory\Templates;
+
 /**
  * This shortcode will display the profile for the user ID specified in the URL and
  * additional content based on the defined attributes.

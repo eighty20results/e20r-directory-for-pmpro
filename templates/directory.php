@@ -1,4 +1,7 @@
 <?php
+
+namespace E20R\MemberDirectory\Templates;
+
 /**
  * This shortcode will display the members list and additional content based on the defined attributes.
  * @credit https://www.paidmembershipspro.com
@@ -148,7 +151,7 @@ function pmproemd_shortcode( $atts, $content = null, $code = "" ) {
 	// Backwards compatibility
 	$statuses = apply_filters( 'pmpromd_membership_statuses',  $statuses );
 	
-	$status_list = implode( "', '", $wpdb->_escape( $statuses ) );
+	$status_list = $wpdb->_escape(implode( "', '",  $statuses  ) );
 	
 	if ( ! empty( $s ) || ! empty( $extra_search_fields ) ) {
 		$sqlQuery = "
