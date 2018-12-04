@@ -1,3 +1,4 @@
-ENHANCEMENT: Added PHPDoc blocks for address-section.php
-BUG FIX: User meta data search triggered SQL error
-BUG FIX: Would debug log when WP_DEBUG wasn't defined
+ENHANCEMENT: Move to E20R\MemberDirectory namespace
+ENHANCEMENT: Start transition and start using Select() class to build SQL queries
+ENHANCEMENT: Use pmpro_loadTemplate() function to load directory & profile pages
+BUG FIX: Properly escape status values from DB in Directory

@@ -3,7 +3,7 @@ Contributors: strangerstudios, eighty20results
 Tags: pmpro, paid memberships pro, members, directory
 Requires at least: 4.4
 Tested up to: 4.9.8
-Stable tag: 2.8
+Stable tag: 2.9
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
@@ -122,6 +122,13 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 2.9 =
+
+* ENHANCEMENT: Move to E20R\MemberDirectory namespace
+* ENHANCEMENT: Start transition and start using Select() class to build SQL queries
+* ENHANCEMENT: Use pmpro_loadTemplate() function to load directory & profile pages
+* BUG FIX: Properly escape status values from DB in Directory
 
 = 2.8 =
 
