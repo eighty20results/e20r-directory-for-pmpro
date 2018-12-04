@@ -12,7 +12,6 @@ License: GPL2
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
-namespace E20R\MemberDirectory;
 /**
  * @credit https://www.paidmembershipspro.com
  */
@@ -60,25 +59,6 @@ function pmproemd_admin_notice() {
 add_action( 'admin_init', 'pmproemd_admin_notice', 10 );
 add_action( 'plugins_loaded', 'pmproemd_init', 99 );
 
-/*
-$custom_directory_file = $custom_dir . "directory.php";
-$custom_profile_file   = $custom_dir . "profile.php";
-
-
-//load custom or default templates
-if ( file_exists( $custom_directory_file ) ) {
-	require_once( $custom_directory_file );
-} else {
-	require_once( $path . "/templates/directory.php" );
-}
-if ( file_exists( $custom_profile_file ) ) {
-	require_once( $custom_profile_file );
-} else {
-	require_once( $path . "/templates/profile.php" );
-}
-
-*/
-
 /**
  * Load directory location (list?) where we may find the PMPro Directory add-on templates
  *
@@ -112,17 +92,7 @@ function pmproemd_directory_template_paths( $paths, $page, $type, $where, $ext )
 	return $paths;
 }
 
-add_filter( 'pmpro_page_custom_template_path', 'pmproemd_directory_template_paths', 99, 5 );
-
-$path = dirname( __FILE__ );
-
-if ( function_exists( 'pmpro_loadTemplate' ) ) {
-	pmpro_loadTemplate( 'directory', 'local', 'pages', 'php' );
-	pmpro_loadTemplate( 'profile', 'local', 'pages', 'php' );
-}
-
-// Add localization feature(s)
-require_once( "{$path}/includes/localization.php" );
+// add_filter( 'pmpro_page_custom_template_path', 'pmproemd_directory_template_paths', 99, 5 );
 
 /**
  * Check if the value is one of the valid responses for the boolean type
@@ -345,6 +315,37 @@ function pmproemd_plugin_row_meta( $links, $file ) {
 }
 
 add_filter( 'plugin_row_meta', 'pmproemd_plugin_row_meta', 10, 2 );
+
+$pmpromd_path = dirname( __FILE__ );
+$custom_dir = get_stylesheet_directory()."/paid-memberships-pro/pmpro-member-directory/";
+
+$custom_directory_file = $custom_dir . "directory.php";
+$custom_profile_file   = $custom_dir . "profile.php";
+
+//load custom or default templates
+if ( file_exists( $custom_directory_file ) ) {
+	require_once( $custom_directory_file );
+} else {
+	require_once( $pmpromd_path . "/templates/directory.php" );
+}
+if ( file_exists( $custom_profile_file ) ) {
+	require_once( $custom_profile_file );
+} else {
+	require_once( $pmpromd_path . "/templates/profile.php" );
+}
+
+
+/*
+if ( function_exists( 'pmpro_loadTemplate' ) ) {
+    error_log("Loading templates for Directory");
+    
+	pmpro_loadTemplate( 'directory', 'local', 'pages', 'php' );
+	pmpro_loadTemplate( 'profile', 'local', 'pages', 'php' );
+}
+*/
+
+// Add localization feature(s)
+require_once( "{$pmpromd_path}/includes/localization.php" );
 
 if ( ! class_exists( '\\PucFactory' ) ) {
 	require_once( plugin_dir_path( __FILE__ ) . 'plugin-updates/plugin-update-checker.php' );

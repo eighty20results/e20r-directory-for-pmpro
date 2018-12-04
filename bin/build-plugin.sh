@@ -6,7 +6,7 @@
 #
 short_name="pmpro-extended-membership-directory"
 server="eighty20results.com"
-include=(css includes languages plugin-updates templates ${short_name}.php readme.txt)
+include=(class css includes languages plugin-updates templates ${short_name}.php readme.txt)
 exclude=(*.yml *.phar composer.* vendor)
 build=(plugin-updates/vendor/*.php)
 plugin_path="${short_name}"

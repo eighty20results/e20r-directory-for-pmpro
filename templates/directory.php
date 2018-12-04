@@ -1,7 +1,5 @@
 <?php
 
-namespace E20R\MemberDirectory\Templates;
-
 /**
  * This shortcode will display the members list and additional content based on the defined attributes.
  * @credit https://www.paidmembershipspro.com
