@@ -1,4 +1,3 @@
-ENHANCEMENT: Move to E20R\MemberDirectory namespace
-ENHANCEMENT: Start transition and start using Select() class to build SQL queries
-ENHANCEMENT: Use pmpro_loadTemplate() function to load directory & profile pages
-BUG FIX: Properly escape status values from DB in Directory
+BUG FIX: Deactivate namespace use
+BUG FIX: Not loading directory or profile short code contents
+BUG FIX: Include class directory in build
