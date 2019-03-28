@@ -18,8 +18,6 @@ then
     ssh docker.local "cd ./www/docker-images/docker4wordpress/ ; make down ; make up"
     ssh docker.local "cd ./www/docker-images/docker4wordpress/ ; chmod +x ./import-db.sh ; nohup ./import-db.sh"
     ssh docker.local "cd ./www/docker-images/docker4wordpress/ ; make wp plugin activate ${PLUGIN_LIST}"
-    DOCKER_CONTAINER=$(ssh docker.local docker ps | grep ${PROJECT_NAME}_php | awk '{print $1}')
-    ssh docker.local "cd ./www/docker-images/docker4wordpress/ ; docker exec ${DOCKER_CONTAINER} wp config set MPMS_TESTING_ENABLED true --add --raw --type=constant"
 else
     echo "Not at home (using the local laptop docker env)"
     mkdir -p /Volumes/Development/www/docker-images/docker4wordpress/mariadb-init
@@ -34,9 +32,7 @@ else
     make up
     chmod +x ./import-db.sh
     nohup ./import-db.sh
-    make wp plugin activate ${PROJECT_NAME}
-    DOCKER_CONTAINER=$(docker ps | grep ${PROJECT_NAME}_php | awk '{print $1}')
-    docker exec ${DOCKER_CONTAINER} wp config set MPMS_TESTING_ENABLED true --add --raw --type=constant
+    make wp plugin activate ${PLUGIN_LIST}
     # ./import-db.sh
     cd ${CURRENT_DIR}
 fi
