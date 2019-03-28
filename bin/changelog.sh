@@ -4,7 +4,7 @@
 #
 # Copyright (c) 2015 - 2016 Eighty/20 Results by Wicked Strong Chicks, LLC
 #
-short_name="pmpro-extended-membership-directory"
+short_name="e20r-directory-for-pmpro"
 server="eighty20results.com"
 sed=/usr/bin/sed
 readme_path="../build_readmes/"

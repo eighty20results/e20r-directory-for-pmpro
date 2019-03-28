@@ -4,9 +4,9 @@
 #
 # Copyright (c) 2015 - 2016 Eighty/20 Results by Wicked Strong Chicks, LLC
 #
-short_name="pmpro-extended-membership-directory"
+short_name="e20r-directory-for-pmpro"
 server="eighty20results.com"
-include=(class css includes languages plugin-updates templates ${short_name}.php readme.txt)
+include=(css includes languages ${short_name}.php readme.txt)
 exclude=(*.yml *.phar composer.* vendor)
 build=(plugin-updates/vendor/*.php)
 plugin_path="${short_name}"
@@ -44,10 +44,10 @@ done
 
 cd ${dst_path}/..
 zip -r ${kit_name}.zip ${plugin_path}
-ssh ${server} "cd ./www/protected-content/ ; mkdir -p \"${short_name}\""
-scp ${kit_name}.zip ${server}:./www/protected-content/${short_name}/
-scp ${metadata} ${server}:./www/protected-content/${short_name}/
-ssh ${server} "cd ./www/protected-content/ ; ln -sf \"${short_name}\"/\"${short_name}\"-\"${version}\".zip \"${short_name}\".zip"
+ssh ${server} "cd ./${server}/protected-content/ ; mkdir -p \"${short_name}\""
+scp ${kit_name}.zip ${server}:./${server}/protected-content/${short_name}/
+scp ${metadata} ${server}:./${server}/protected-content/${short_name}/
+ssh ${server} "cd ./${server}/protected-content/ ; ln -sf \"${short_name}\"/\"${short_name}\"-\"${version}\".zip \"${short_name}\".zip"
 rm -rf ${dst_path}
 
 
