@@ -1,0 +1,4 @@
+[submodule "includes/class/Utilities"]
+	path = includes/class/Utilities
+	url = git@github.com:eighty20results/Utilities.git
+	branch = master
