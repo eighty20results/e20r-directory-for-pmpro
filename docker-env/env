@@ -4,7 +4,7 @@
 
 ### PROJECT SETTINGS
 
-PROJECT_NAME=e20r-member-directory-for-pmpro
+PROJECT_NAME=e20r-directory-for-pmpro
 PROJECT_BASE_URL=development.local
 
 DB_NAME=wordpress

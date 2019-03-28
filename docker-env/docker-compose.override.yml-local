@@ -12,8 +12,7 @@ services:
       - ./:/var/www/html:cached
       - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:cached
       - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:cached
-      - /Volumes/Development/www/clean.local/wp-content/plugins/pmpro-email-templates:/var/www/html/wp-content/plugins/pmpro-email-templates:cached
-      - /Volumes/Development/www/clean.local/wp-content/plugins/move-pmpro-member-subscriptions:/var/www/html/wp-content/plugins/move-pmpro-member-subscriptions:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/e20r-directory-for-pmpro:/var/www/html/wp-content/plugins/e20r-directory-for-pmpro:cached
     ports:
     - target: 80 # Web server
       published: 80
@@ -52,8 +51,7 @@ services:
     - ./:/var/www/html
     - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:cached
     - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:cached
-    - /Volumes/Development/www/clean.local/wp-content/plugins/pmpro-email-templates:/var/www/html/wp-content/plugins/pmpro-email-templates:cached
-    - /Volumes/Development/www/clean.local/wp-content/plugins/move-pmpro-member-subscriptions:/var/www/html/wp-content/plugins/move-pmpro-member-subscriptions:cached
+    - /Volumes/Development/www/clean.local/wp-content/plugins/e20r-directory-for-pmpro:/var/www/html/wp-content/plugins/e20r-directory-for-pmpro:cached
     labels:
     - "traefik.enable=true"
     - "traefik.frontend.rule=Host:development.local"

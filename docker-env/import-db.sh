@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-PROJECT_NAME='e20r-member-directory-for-pmpro'
+PROJECT_NAME='e20r-directory-for-pmpro'
 echo "Importing database for ${PROJECT_NAME}"
 sleep 30;
 echo $(pwd)

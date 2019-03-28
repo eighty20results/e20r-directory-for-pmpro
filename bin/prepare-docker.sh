@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 DEV_ENVIRONMENT=$(ipconfig getifaddr en0) ; export DEV_ENVIRONMENT
-PROJECT_NAME='e20r-member-directory-for-pmpro' ; export PROJECT_NAME
+PROJECT_NAME='e20r-directory-for-pmpro' ; export PROJECT_NAME
 PLUGIN_DIR=../docker-env
 PLUGIN_LIST="paid-memberships-pro ${PROJECT_NAME}"
 CURRENT_DIR=$(pwd)
