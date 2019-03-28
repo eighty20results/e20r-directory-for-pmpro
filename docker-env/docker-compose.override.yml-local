@@ -1,0 +1,77 @@
+version: "3.2"
+
+services:
+  mariadb:
+    image: wodby/mariadb:$MARIADB_TAG
+    volumes:
+    - /Volumes/Development/www/docker-images/docker4wordpress/mariadb-init:/docker-entrypoint-initdb.d # Place init .sql file(s) here.
+
+  nginx:
+    volumes:
+      - files:/mnt/files:cached
+      - ./:/var/www/html:cached
+      - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/pmpro-email-templates:/var/www/html/wp-content/plugins/pmpro-email-templates:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/move-pmpro-member-subscriptions:/var/www/html/wp-content/plugins/move-pmpro-member-subscriptions:cached
+    ports:
+    - target: 80 # Web server
+      published: 80
+      protocol: tcp
+      mode: host
+    - target: 443
+      published: 443
+      protocol: tcp
+      mode: host
+
+  php:
+    image: wodby/wordpress:$WORDPRESS_TAG
+    #    networks:
+    #    - host
+    #    ports:
+    #    - "80:80"
+    #    - "443:443"
+    # user: apache
+    environment:
+      PHP_FPM_CLEAR_ENV: "no"
+      DB_NAME: clean
+      PHP_FPM_USER: wodby
+      PHP_FPM_GROUP: wodby
+      ## Read instructions at https://wodby.com/stacks/wordpress/docs/local/xdebug/
+      PHP_XDEBUG: 1
+      PHP_XDEBUG_DEFAULT_ENABLE: 1
+      PHP_XDEBUG_REMOTE_AUTOSTART: 1
+      PHP_XDEBUG_REMOTE_CONNECT_BACK: 1
+      PHP_IDE_CONFIG: serverName=my-ide
+      PHP_XDEBUG_REMOTE_LOG: /tmp/php-xdebug.log
+      # PHP_XDEBUG_REMOTE_HOST: 172.17.0.1 # Linux
+      PHP_XDEBUG_REMOTE_HOST: ts-laptop.local # macOS
+    #      PHP_XDEBUG_REMOTE_HOST: 10.0.75.1 # Windows
+    volumes:
+    - files:/mnt/files
+    - ./:/var/www/html
+    - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:cached
+    - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:cached
+    - /Volumes/Development/www/clean.local/wp-content/plugins/pmpro-email-templates:/var/www/html/wp-content/plugins/pmpro-email-templates:cached
+    - /Volumes/Development/www/clean.local/wp-content/plugins/move-pmpro-member-subscriptions:/var/www/html/wp-content/plugins/move-pmpro-member-subscriptions:cached
+    labels:
+    - "traefik.enable=true"
+    - "traefik.frontend.rule=Host:development.local"
+
+  traefik:
+    image: traefik:alpine
+    ports:
+    #      - '127.0.0.1:80:192.168.1.202:8000/tcp'
+    #      - '127.0.0.1:443:192.168.1.202:8443/tcp'
+    #      - '127.0.0.1:8080:192.168.1.202:8081/tcp'
+    - target: 8080
+      published: 8081
+      protocol: tcp
+      mode: host
+    # - '80:8000'
+    # - '8081:8080' # Dashboard
+#    volumes:
+#      - ./traefik:/etc
+
+volumes:
+  files:
