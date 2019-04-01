@@ -1,0 +1,159 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: E20R Directory For PMPro\n"
+"POT-Creation-Date: 2016-11-17 19:53-0500\n"
+"PO-Revision-Date: 2019-03-27 09:02-0500\n"
+"Last-Translator: Max <max@liro.ca>\n"
+"Language-Team: Max <max@liro.ca>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: e20r-directory-for-pmpro.php\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_;_e;_ex;_x;_n\n"
+"_n_noop: 1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: templates\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: e20r-directory-for-pmpro.php:63
+#, php-format
+msgid "Hide from %s?"
+msgstr "Cacher de %s ?"
+
+#: e20r-directory-for-pmpro.php:110
+msgid "View Documentation"
+msgstr "Voir la documentation"
+
+#: e20r-directory-for-pmpro.php:110
+msgid "Docs"
+msgstr "Documents"
+
+#: e20r-directory-for-pmpro.php:111
+msgid "Visit Customer Support Forum"
+msgstr "Consultez le forum de support"
+
+#: e20r-directory-for-pmpro.php:111
+msgid "Support"
+msgstr "Soutien"
+
+#: includes/Templates/class-Directory_Page.php:134 includes/Templates/class-Profile_Page.php:210
+msgid "Search for:"
+msgstr "Rechercher"
+
+#: includes/Templates/class-Directory_Page.php:135 includes/Templates/class-Directory_Page.php:138
+#: includes/Templates/class-Profile_Page.php:211 includes/Templates/class-Profile_Page.php:214
+msgid "Search Members"
+msgstr "Recherchez les membres"
+
+#: includes/Templates/class-Directory_Page.php:144
+#, php-format
+msgid "Profiles Within <em>%s</em>."
+msgstr "Profils au sein de <em>%s</em>."
+
+#: includes/Templates/class-Directory_Page.php:146
+msgid "Viewing All Profiles"
+msgstr "Tous les profils"
+
+#: includes/Templates/class-Directory_Page.php:152
+msgid "Showing 1 Result"
+msgstr "1 résultat trouvé."
+
+#: includes/Templates/class-Directory_Page.php:154
+#, php-format
+msgid "Showing %s-%s of %s Results"
+msgstr "Liste de %s -%s des %s résultats"
+
+#: includes/Templates/class-Directory_Page.php:195
+msgid "Avatar"
+msgstr "Avatar"
+
+#: includes/Templates/class-Directory_Page.php:199
+msgid "Member"
+msgstr "Membre"
+
+#: includes/Templates/class-Directory_Page.php:203 includes/Templates/class-Directory_Page.php:403
+#: includes/Templates/class-Profile_Page.php:263
+msgid "Email Address"
+msgstr "Courriel"
+
+#: includes/Templates/class-Directory_Page.php:208
+msgid "More Information"
+msgstr "Plus de détails"
+
+#: includes/Templates/class-Directory_Page.php:213 includes/Templates/class-Directory_Page.php:409
+#: includes/Templates/class-Profile_Page.php:269
+msgid "Level"
+msgstr "Niveau"
+
+#: includes/Templates/class-Directory_Page.php:218 includes/Templates/class-Directory_Page.php:415
+#: includes/Templates/class-Profile_Page.php:275
+msgid "Start Date"
+msgstr "Date de début"
+
+#: includes/Templates/class-Directory_Page.php:336 includes/Templates/class-Directory_Page.php:472
+msgid "View Profile"
+msgstr "Voir le profil"
+
+#: includes/Templates/class-Directory_Page.php:493
+msgid "No matching profiles found"
+msgstr "Aucun profils trouvé"
+
+#: includes/Templates/class-Directory_Page.php:497
+#, php-format
+msgid "within <em>%s</em>."
+msgstr "au sein de <em>%s</em>."
+
+#: includes/Templates/class-Directory_Page.php:501 includes/Templates/class-Profile_Page.php:368
+msgid "View All Members"
+msgstr "Voir tous les membres"
+
+#: includes/Templates/class-Directory_Page.php:522
+msgid "Previous"
+msgstr "Précédent"
+
+#: includes/Templates/class-Directory_Page.php:529
+msgid "Next"
+msgstr "Suiv."
+
+#: includes/Templates/class-Profile_Page.php:257
+msgid "Biographical Info"
+msgstr "Biographie"
+
+#: includes/Templates/class-Profile_Page.php:281
+msgid "Address"
+msgstr "Adresse"
+
+#: includes/Templates/class-Profile_Page.php:295
+msgid "Phone Number"
+msgstr "Téléphone"
+
+#. Plugin Name of the plugin/theme
+msgid "E20R Directory for PMPro"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://eighty20results.com/paid-memberships-pro/e20r-directory-for-pmpro/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Short codes to display a member directory list and member profiles on your site."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Eighty/20 Results by Wicked Strong Chicks, LLC"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://eighty20results.com/"
+msgstr ""
+
+#~ msgid "Viewing All Profiles!"
+#~ msgstr "Tous les profils"
+
+#~ msgid "Viewing All Profiles."
+#~ msgstr "Tous les profils"

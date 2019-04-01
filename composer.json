@@ -1,0 +1,24 @@
+{
+  "config": {
+    "vendor-dir": "includes/"
+  },
+  "name": "eight20results/e20r-directory-for-pmpro",
+  "type": "plugin",
+  "description": "Better Member Directory for Paid Memberships Pro",
+  "keywords": ["wordpress", "paid memberships pro", "directory", "profile"],
+  "minimum-stability": "stable",
+  "homepage": "https://eighty20results.com",
+  "license": "GPLv2",
+  "authors": [
+    {
+      "name": "Thomas Sjolshagen",
+      "email": "thomas@eighty20results.com",
+      "homepage": "https://eighty20results.com/thomas-sjolshagen",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "yahnis-elsts/plugin-update-checker": ">=4.5"
+  }
+}

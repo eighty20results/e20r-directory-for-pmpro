@@ -1,0 +1,107 @@
+/*
+ *    Copyright (c) 2017-2019. - Eighty / 20 Results by Wicked Strong Chicks. ALL RIGHTS RESERVED
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+@charset "UTF-8";
+/* CSS Document */
+h3#e20r-directory-for-pmpro_subheading { clear: both; margin-top: 0; }
+.search-form .search-submit { position: relative !important; }
+form.e20r-directory-for-pmpro_search label input { clear: both; width: 90%; }
+form.e20r-directory-for-pmpro_search { float: right; margin-bottom: 1rem; clear: both; width: 300px; min-width: 300px; max-width: 300px; }
+input.select2-search__field { width: 100% !important; }
+form.e20r-directory-for-pmpro_search input[type=text] { }
+form.e20r-directory-for-pmpro_search input[type=submit] { margin: 10px 0; width: 100%; }
+.e20r-directory-for-pmpro { clear: both; }
+.e20r-directory-for-pmpro hr { margin: 3rem 0; }
+.pmpro_pagination { margin-bottom: 1em; }
+.pmpro_pagination .pmpro_prev { float: left; width: 250px; }
+.pmpro_pagination .pmpro_next { float: right; width: 250px; text-align: right; }
+/* div/column type layous */
+div.e20r-directory-for-pmpro div h3 { clear: none; }
+div.e20r-directory-for-pmpro div p { margin: .5rem 0 0 0; }
+div.e20r-member-profile strong { display: block; }
+/* table type layous */
+.e20r-directory-for-pmpro table h3.e20r-directory-for-pmpro_display-name { margin-top: 0; }
+.e20r-directory-for-pmpro table tbody td { vertical-align: top; }
+.e20r-directory-for-pmpro table tbody td p { margin: 0 0 .5rem 0; }
+/* Columns - based on Foundation 5 Grid v5.5.2 by ZURB: http://foundation.zurb.com/docs/components/grid.html */
+.e20r-directory-for-pmpro .row {
+    width: auto;
+    margin-left: -1em;
+    margin-right: -1em;
+    margin-top: 0;
+    margin-bottom: 0;
+    max-width: none;
+}
+.e20r-directory-for-pmpro .row:before, .e20r-directory-for-pmpro .row:after { content: " "; display: table; }
+.e20r-directory-for-pmpro .row:after { clear: both; }
+.e20r-directory-for-pmpro .column,
+.e20r-directory-for-pmpro .columns {
+    box-sizing: border-box;
+    padding-left: 1em;
+    padding-right: 1em;
+    width: 100%;
+    float: left;
+}
+.e20r-directory-for-pmpro [class*="column"] + [class*="column"]:last-child { float: right; }
+.e20r-directory-for-pmpro [class*="column"] + [class*="column"].e20r-directory-for-pmpro .end { float: left; }
+.e20rmd_address_section { width: 100%; margin: 20px 0; }
+.e20rmd_address_section .pmproemd-address label { min-width: 150px; max-width: 300px; width: 45%; padding-right: 10px; display: inline-block; }
+.e20r-directory-for-pmpro_billing_address { margin-bottom: 2em; }
+.e20r-directory-for-pmpro_shipping_address { margin-bottom: 2em; }
+/* .e20r-directory-address-entry label { margin-right: 20px; display: inline-block; width: 90px; } */
+.clear { clear: left; display: block; }
+@media only screen {
+    .e20r-directory-for-pmpro .column,
+    .e20r-directory-for-pmpro .columns {
+        position: relative;
+        padding-left: 1em;
+        padding-right: 1em;
+        float: left;
+    }
+    .e20r-directory-for-pmpro .column.end,
+    .e20r-directory-for-pmpro .columns.end { float: left !important; }
+}
+@media only screen and (min-width: 40.063em) {
+    .e20r-directory-for-pmpro .column,
+    .e20r-directory-for-pmpro .columns {
+        position: relative;
+        padding-left: 1em;
+        padding-right: 1em;
+        float: left;
+    }
+    .e20r-directory-for-pmpro .medium-1 { width: 8.33333%; }
+    .e20r-directory-for-pmpro .medium-2 { width: 16.66667%; }
+    .e20r-directory-for-pmpro .medium-3 { width: 25%; }
+    .e20r-directory-for-pmpro .medium-4 { width: 33.33333%; }
+    .e20r-directory-for-pmpro .medium-5 { width: 41.66667%; }
+    .e20r-directory-for-pmpro .medium-6 { width: 50%; }
+    .e20r-directory-for-pmpro .medium-7 { width: 58.33333%; }
+    .e20r-directory-for-pmpro .medium-8 { width: 66.66667%; }
+    .e20r-directory-for-pmpro .medium-9 { width: 75%; }
+    .e20r-directory-for-pmpro .medium-10 { width: 83.33333%; }
+    .e20r-directory-for-pmpro .medium-11 { width: 91.66667%; }
+    .e20r-directory-for-pmpro .medium-12 { width: 100%; }
+}
+@media only screen and (min-width: 64.063em) {
+    .e20r-directory-for-pmpro .column,
+    .e20r-directory-for-pmpro .columns {
+        position: relative;
+        padding-left: 1em;
+        padding-right: 1em;
+        float: left;
+    }
+}
+
