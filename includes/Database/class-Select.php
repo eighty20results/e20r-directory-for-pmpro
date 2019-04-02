@@ -594,7 +594,7 @@ if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
 			
 			$tables_found = $wpdb->get_results( "SHOW TABLES LIKE '{$table_name}'" );
 			
-			Utilities::get_instance()->log( "Found for {$table_name}: " . print_r( $tables_found, true ) );
+			Utilities::get_instance()->log( "Found for {$table_name}");
 			
 			if ( ! empty( $tables_found ) ) {
 				return true;
