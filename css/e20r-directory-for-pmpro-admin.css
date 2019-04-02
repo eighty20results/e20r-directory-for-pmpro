@@ -56,3 +56,9 @@ td.e20r-directory-page-pair-border {
 .e20r-admin-header {
     font-weight: bolder;
 }
+.e20r-directory-pair-delete {
+    display: inline;
+}
+button.e20r-directory-pair-delete {
+    color: red !important;
+}
