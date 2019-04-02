@@ -1,0 +1,58 @@
+/*
+ *    Copyright (c) 2019. - Eighty / 20 Results by Wicked Strong Chicks. ALL RIGHTS RESERVED
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+input.e20r-directory-for-pmpro-input {
+    width: 50%;
+    max-width: 200px;
+    min-width: 200px;
+}
+td.e20r-directory-page-pair {
+    width: 100%;
+}
+.e20r-directory-arrow {
+    display: inline-block;
+    width: 2%;
+    max-width: 20px;
+    min-width: 10px;
+}
+.e20r-profile-page {
+    display: inline-block;
+    width: 45%;
+    max-width: 310px;
+    min-width: 150px;
+}
+.e20r-directory-page {
+    display: inline-block;
+    width: 45%;
+    max-width: 310px;
+    min-width: 150px;
+}
+.e20r-directory-add-row {
+    display: inline-block;
+    width: 8%;
+}
+td.e20r-directory-page-pair-border {
+    margin: 0;
+    padding: 0;
+    height: 2px;
+    width: 100%;
+    max-width: 640px;
+    min-width: 310px
+}
+.e20r-admin-header {
+    font-weight: bolder;
+}
