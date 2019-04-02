@@ -36,6 +36,10 @@ namespace E20R\Member_Directory;
 
 global $e20rmd_options;
 
+use E20R\Member_Directory\Settings\Membership;
+use E20R\Member_Directory\Settings\Options;
+use E20R\Member_Directory\Settings\Page_Pairing;
+use E20R\Member_Directory\Settings\PMPro_PageSettings;
 use E20R\Member_Directory\Tools\Billing_Information;
 use E20R\Utilities\Cache;
 use E20R\Utilities\Utilities;
@@ -53,6 +57,22 @@ if ( ! defined( "E20RED_VER" ) ) {
  * @package E20R\Member_Directory
  */
 class E20R_Directory_For_PMPro {
+	
+	const plugin_slug = 'e20r-directory-for-pmpro';
+	
+	/**
+	 * The URL to the JS library(/ies)
+	 *
+	 * @var null|string $LIBRARY_URL
+	 */
+	public static $LIBRARY_URL = null;
+	
+	/**
+	 * The version number for this plugin
+	 *
+	 * @var float $Version
+	 */
+	public static $Version = 3.0;
 	
 	/**
 	 * The only instance of this class
@@ -176,6 +196,9 @@ class E20R_Directory_For_PMPro {
 		
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
+			
+			// Set the path to the libraries we need/use
+			self::$LIBRARY_URL = plugin_dir_url( __FILE__ ) . "/includes";
 		}
 		
 		return self::$instance;
@@ -244,27 +267,202 @@ class E20R_Directory_For_PMPro {
 	}
 	
 	/**
+	 * Load page URLs for the Directory and Profile page(s)
+	 */
+	public static function setPageURLs() {
+		
+		$options = Options::get( 'page_pairs' );
+		$class   = self::getInstance();
+		$utils   = Utilities::get_instance();
+		
+		if ( empty( $options ) ) {
+			$options            = array();
+			$options['default'] = array( 'directory' => - 1, 'profile' => - 1 );
+		}
+		
+		$directory_page_id = (int) $options['default']['directory'];
+		$profile_page_id   = (int) $options['default']['profile'];
+		
+		if ( - 1 === $profile_page_id ) {
+			$utils->log( "Have to create a Profile page for the site!" );
+			$profile_page_id               = $class->createPage( 'profile' );
+			$options['default']['profile'] = $profile_page_id;
+		}
+		
+		if ( - 1 === $directory_page_id ) {
+			$utils->log( "Have to create a Directory page for the site" );
+			$directory_page_id               = $class->createPage( 'directory' );
+			$options['default']['directory'] = $directory_page_id;
+		}
+		
+		foreach ( $options as $page_id => $settings ) {
+			
+			if ( 'default' === $page_id ) {
+				$page_id = $settings['directory'];
+			}
+			
+			$urls = array(
+				'directory' => get_permalink( $settings['directory'] ),
+				'profile'   => get_permalink( $settings['profile'] ),
+			);
+			
+			Directory_Page::addURL( $settings['directory'], get_permalink( $settings['directory'] ) );
+			Profile_Page::addURL( $settings['profile'], $urls );
+		}
+		
+		$directory_page = get_post( $directory_page_id );
+		
+		
+		$profile_page = get_post( $profile_page_id );
+		Profile_Page::setURL( get_permalink( $profile_page ) );
+		
+		if ( false === Options::set( 'page_pairs', $options ) ) {
+			$utils->log( "Unable to (re) save the Option settings for the page pairs" );
+		}
+	}
+	
+	/**
+	 * Create default Profile and Directory page(s)
+	 *
+	 * @param string $type
+	 *
+	 * @return bool|int
+	 */
+	private function createPage( $type ) {
+		
+		global $pmpro_pages;
+		global $current_user;
+		
+		$utils  = Utilities::get_instance();
+		$parent = 0; // Default is "no parent page"
+		
+		// Place the page(s) under the PMPro account page if the PMPro account page exists;
+		if ( ! empty( $pmpro_pages['account'] ) ) {
+			$parent = $pmpro_pages['account'];
+		}
+		
+		switch ( $type ) {
+			case 'directory':
+				$content = '[e20r-member-directory]';
+				$title   = __( 'Member Directory', self::plugin_slug );
+				break;
+			
+			case 'profile':
+				$content = '[e20r-member-profile]';
+				$title   = __( 'Member Profile', self::plugin_slug );
+				break;
+			default:
+				$title   = null;
+				$content = null;
+		}
+		
+		if ( empty( $title ) ) {
+			return false;
+		}
+		
+		if ( empty( $content ) ) {
+			return false;
+		}
+		
+		$page_params = array(
+			'post_title'     => $title,
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'post_content'   => $content,
+			'comment_status' => 'closed',
+			'ping_status'    => 'closed',
+			'post_parent'    => $parent,
+			'post_author'    => $current_user->ID,
+		);
+		
+		$page_id = wp_insert_post( $page_params, true );
+		
+		if ( is_wp_error( $page_id ) ) {
+			$utils->log( "Error generating {$title} page: " . $page_id->get_error_message() );
+			
+			return false;
+		}
+		
+		return $page_id;
+	}
+	
+	/**
+	 * Return the URL for the specified page ID
+	 *
+	 * @param string     $type - 'profile' or 'directory'
+	 * @param int|string $page_id
+	 *
+	 * @return bool|string
+	 */
+	public static function getURL( $type, $page_id = 'default' ) {
+		
+		$utils         = Utilities::get_instance();
+		$has_shortcode = false;
+		
+		if ( 'default' === $page_id ) {
+			$page_ids = Options::get( 'page_ids' );
+			$page_id  = $page_ids['default'][ $type ];
+		}
+		
+		// Make sure the page has a valid/expected short code
+		switch ( $type ) {
+			case 'profile':
+				$has_shortcode = Profile_Page::hasShortcode( get_post( $page_id ) );
+				break;
+			case 'directory':
+				$has_shortcode = Directory_Page::hasShortcode( get_post( $page_id ) );
+				break;
+		}
+		
+		if ( false === $has_shortcode ) {
+			$utils->log( "No short code found for {$type}" );
+			
+			return false;
+		}
+		
+		return get_permalink( $page_id );
+	}
+	
+	/**
 	 * Add action/filter handler hooks
 	 */
 	public function loadHooks() {
 		
+		add_action( 'plugins_loaded', array( PMPro_PageSettings::getInstance(), 'loadHooks' ), 19 );
 		add_action( 'plugins_loaded', array( Directory_Page::getInstance(), 'loadHooks' ), 20 );
 		add_action( 'plugins_loaded', array( Profile_Page::getInstance(), 'loadHooks' ), 20 );
+		add_action( 'plugins_loaded', array( Page_Pairing::getInstance(), 'loadHooks' ), 21 );
+		add_action( 'plugins_loaded', array( $this, 'init' ), 99 );
 		
 		add_action( 'e20rmd_add_extra_profile_output', array(
 			Billing_Information::getInstance(),
 			'addAddressSection',
 		), 5, 2 );
 		
-		add_filter( 'e20r-member-profile_fields', array( Billing_Information::getInstance(), 'fixAddressInfo' ), 99, 2 );
+		add_filter( 'e20r-member-profile_fields', array(
+			Billing_Information::getInstance(),
+			'fixAddressInfo',
+		), 99, 2 );
 		
 		add_action( 'init', 'E20R\\Member_Directory\\Tools\\I18N::loadTextDomain', 1 );
 		
+		/*
+		add_action( 'template_redirect', array( Directory_Page::getInstance(), 'loadDirectoryURL' ), 5 );
+		add_action( 'template_redirect', array( Profile_Page::getInstance(), 'loadProfileURL' ), 5 );
+		*/
+		
 		add_action( 'admin_init', array( $this, 'adminNotice' ), 10 );
-		add_action( 'plugins_loaded', array( $this, 'init' ), 99 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'loadAdminScriptsStyles' ), 10 );
+		
 		add_action( 'wp_enqueue_scripts', array( $this, 'registerStyles' ), 10 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueueStyles' ), 20 );
-		add_action( 'pmpro_extra_page_settings', array( $this, 'extraPageSettings' ), 10 );
+		
+		// add_action( 'pmpro_extra_page_settings', array( $this, 'extraPageSettings' ), 10 );
+		
+		// Get rid of the PMPro Directory/Profile pages settings (if needed)
+		if ( true == has_action( 'pmpro_extra_page_settings', 'pmpromd_extra_page_settings' ) ) {
+			remove_action( 'pmpro_extra_page_settings', 'pmpromd_extra_page_settings', 10 );
+		}
 		
 		add_action( 'show_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
 		add_action( 'edit_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
@@ -277,11 +475,49 @@ class E20R_Directory_For_PMPro {
 		
 		add_filter( 'plugin_row_meta', array( $this, 'pluginRowMeta' ), 10, 2 );
 		
-		add_action( 'profile_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 999 );
-		add_action( 'edit_user_profile_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 999 );
-		add_action( 'personal_options_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 999 );
+		// add_action( 'profile_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 999 );
+		add_action( 'edit_user_profile_update', array(
+			Billing_Information::getInstance(),
+			'maybeSaveBillingInfo',
+		), 999 );
+		add_action( 'personal_options_update', array(
+			Billing_Information::getInstance(),
+			'maybeSaveBillingInfo',
+		), 999 );
 		
 		// add_filter( 'pmpro_page_custom_template_path', array( $this, 'directory_template_paths' ), 99, 5 );
+		
+		add_action( 'wp_ajax_e20r_directory_load_new_row', array( Page_Pairing::getInstance(), 'loadNewRow' ) );
+	}
+	
+	/**
+	 * Load Admin side scripts & styles
+	 */
+	public function loadAdminScriptsStyles() {
+		
+		$utils           = Utilities::get_instance();
+		$is_pagesettings = $utils->get_variable( 'page', null );
+		
+		if ( empty( $is_pagesettings ) ) {
+			return;
+		}
+		
+		if ( 'pmpro-pagesettings' !== $is_pagesettings ) {
+			return;
+		}
+		
+		$utils->log( "Loading admin scripts/styles for PMPro Page Settings" );
+		wp_enqueue_style( 'e20r-directory-for-pmpro', plugins_url( 'css/e20r-directory-for-pmpro-admin.css', __FILE__ ), array( 'dashicons' ), self::$Version );
+		
+		wp_register_script( 'e20r-directory-for-pmpro', plugins_url( 'javascript/e20r-directory-for-pmpro-admin.js', __FILE__ ), array( 'jquery' ), self::$Version );
+		wp_localize_script( 'e20r-directory-for-pmpro', 'e20rdir', array(
+			'ajax' => array(
+				'timeout' => apply_filters( 'e20r-directory-ajax-timeout', 15 ),
+				'url'     => admin_url( 'admin-ajax.php' ),
+			),
+		) );
+		
+		wp_enqueue_script( 'e20r-directory-for-pmpro' );
 	}
 	
 	/**
