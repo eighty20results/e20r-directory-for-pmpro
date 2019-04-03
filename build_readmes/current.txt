@@ -1,3 +1,1 @@
-BUG FIX: Deactivate namespace use
-BUG FIX: Not loading directory or profile short code contents
-BUG FIX: Include class directory in build
+ENHANCEMENT: Initial release of v3.0 of the E20R Directory for PMPro plugin

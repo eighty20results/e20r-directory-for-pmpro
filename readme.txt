@@ -1,18 +1,35 @@
 === E20R Directory for PMPro ===
-Contributors: eighty20results, strangerstudios
+Contributors: eighty20results
 Tags: pmpro, paid memberships pro, members, directory, eighty/20 results
 Requires at least: 4.4
 Tested up to: 5.1.1
 Stable tag: 3.0
 
-Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
+Add a enhanced and more robust Member Directory and Profiles to your Membership Site - with attributes to customize the display.
 
 == Description ==
-The Member Directory Add On enhances your membership site with a public or private, searchable directory and member profiles.
 
-This plugin creates 2 short codes for a Member Directory and Member Profile pages, which can be defined in Memberships > Page Settings of the WordPress admin.
+The E20R Directory for PMPro plugin enhances your membership site with a public or private, searchable member directory and member profiles.
 
-Shortcode attributes for `[e20r-directory-for-pmpro]` include:
+This plugin creates 2 short codes for a Member Directory and Member Profile pages, which can be defined in Memberships > Settings > Pages of the WordPress admin.
+
+It has support for a number of additional attributes/features beyond what the PMPro add-on offers (see list).
+
+Unlike the PMPro add-on, this version of the member directory supports multiple directory/profile page combinations. As a result,
+it's possible to configure more than one "Directory" page and have it linked to it's own "Profile" page. This means you can
+create multiple directories with different settings. One use case is to have People and Business memberships where the People directory consists solely of users/members. The "Business directory", on the other hand, consists solely of businesses.
+
+With the activation of this plugin, you will see a Billing Address and Shipping Address section on the user's WordPress
+profile page (backend). This section will let your members update their PMPro billing and shipping address(es).
+
+The shipping address section is only available if the PMPro Shipping Address add-on is installed and active (or has been).
+
+The [pmpro_member_directory] and [pmpro_member_profile] short codes are fully supported.
+
+Credit: Loosely based on the PMPro Member Directory and Profiles add-on from the Paid Memberships Team.
+
+=== Shortcodes ===
+Shortcode attributes for `[e20r-member-directory]` include:
 
 1. avatar_size: The square pixel dimensions of the avatar to display. Requires the "show_avatar" attribute to be set to 'true'. default: '128' (accepts any numerical value).
 1. fields: Display additional user meta fields. default: none (accepts a list of label names and field IDs, i.e. fields="Company,company;Website,user_url").
@@ -49,8 +66,8 @@ Shortcode attributes for `[e20r-member-profile]` include:
 1. show_search: Display a search form (searches on member display name or email address); default: true (accepts 'true' or 'false').
 1. show_startdate: Display the user's membership start date for their current level; default: true (accepts 'true' or 'false').
 1. user_id: Show a specific member's profile; default: none (accepts any numeric uesr id, i.e. user_id="125").
-1. billing_address: Show the PMPro Billing information in a separate section of the profile page. Requires the presence of the 'pmpro_b*' user metadata fields in the 'fields=""' attribute (see above). default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Billing Address", but can be modified with the 'pmpro-member-profile-billing-header' filter. The filter returns the text of the heading.
-1. shipping_address: Show the PMPro Shipping information in a separate section of the profile page. Requires the presence of the 'pmpro_s*' user metadata fields in the 'fields=""' attribute (see above). default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Shippping Address", but it can be modified with the 'pmpro-member-profile-shipping-header' filter. The filter returns the text of the heading.
+1. billing_address: Show the PMPro Billing information in a separate section of the profile page. Default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Billing Address", but can be modified with the 'e20r-directory-profile-billing-header' filter. The filter returns the text of the heading.
+1. shipping_address: Show the PMPro Shipping information in a separate section of the profile page. Default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Shippping Address", but it can be modified with the 'e20r-directory-profile-shipping-header' filter. The filter returns the text of the heading.
 1. directory_page_slug: The page slug for the directory page to use when allowing a user to return
 
 == Installation ==
@@ -63,32 +80,36 @@ Shortcode attributes for `[e20r-member-profile]` include:
 
 == Examples ==
 Show only level IDs 1 and 4, hide avatars and email address:
-[e20r-directory-for-pmpro levels="1,4" show_avatar="false" show_email="false"]
+[e20r-member-directory levels="1,4" show_avatar="false" show_email="false"]
 
 Show all level IDs, hide level name and start date:
-[e20r-directory-for-pmpro show_level="false" show_startdate="false"]
+[e20r-member-directory show_level="false" show_startdate="false"]
 
 Show a unique member directory by level. Level 1 Members can only see other Level 1 Members...:
 [membership level="1"]
-[e20r-directory-for-pmpro levels="1"]
+[e20r-member-directory levels="1"]
 [/membership]
 
 [membership level="2"]
-[e20r-directory-for-pmpro levels="2"]
+[e20r-member-directory levels="2"]
 [/membership]
 
 [membership level="3"]
-[e20r-directory-for-pmpro levels="3"]
+[e20r-member-directory levels="3"]
 [/membership]
 
-Show unique member profiles based on level - hide user phone number and email address.
-[membership level="1"]
-[e20r-member-profile show_email="false" show_phone="false"]
+Show unique member profiles based on level - hide user phone number and email address for member listings belonging to
+ membership level ID 1. Show the same data for membership levels belonging to membership level ID 2.
+
+ On Page #1 (show to visitors who haven't logged in):
+[membership level="-l"]
+[e20r-member-directory levels="1" show_email="false" show_phone="false"]
 [/membership]
 
-[membership level="2"]
-[e20r-member-profile show_email="true" show_phone="true"]
-[/membership]
+On Page #2 (show to logged in users):
+[membership level="l"]
+[e20r-member-profile levels="2" show_email="true" show_phone="true"]
+/[membership]
 
 == Hooks & Filters ==
 === Filters ===
@@ -128,6 +149,10 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 3.0 =
+
+* ENHANCEMENT: Initial release of v3.0 of the E20R Directory for PMPro plugin
 
 = 2.9.1 =
 
