@@ -65,6 +65,11 @@ class Page_Pairing {
 		$page_pairs = Options::get( 'page_pairs' ); ?>
         <tr>
             <td class="e20r-directory-page-pair" colspan="2">
+                <h2><?php _e( 'Member Directory', Controller::plugin_slug ); ?></h2>
+            </td>
+        </tr>
+        <tr>
+            <td class="e20r-directory-page-pair" colspan="2">
                 <p>
 					<?php _e( 'Use the following settings to configure how directory page(s) and profile page(s) relate to each other.', Controller::plugin_slug ); ?>
                     <br/>
