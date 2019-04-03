@@ -6,8 +6,8 @@
 #
 short_name="e20r-directory-for-pmpro"
 server="eighty20results.com"
-include=(css includes languages ${short_name}.php readme.txt)
-exclude=( includes/composer includes/kriswallsmith includes/robloach includes/symfony *.yml *.phar composer.* vendor)
+include=(components css inc includes/yahnis-elsts languages ${short_name}.php readme.txt)
+exclude=( *.yml *.phar composer.* vendor)
 #build=()
 plugin_path="${short_name}"
 version=$(egrep "^Version:" ../${short_name}.php | sed 's/[[:alpha:]|(|[:space:]|\:]//g' | awk -F- '{printf "%s", $1}')
@@ -21,6 +21,7 @@ echo "Building kit for version ${version}"
 
 mkdir -p ${kit_path}
 mkdir -p ${dst_path}
+mkdir -p ${src_path}/includes
 
 if [[ -f  ${kit_name} ]]
 then
@@ -30,7 +31,12 @@ then
 fi
 
 for p in ${include[@]}; do
-	cp -R ${src_path}${p} ${dst_path}
+    if [[ 'includes/yahnis-elsts' == ${p} ]]; then
+        cp -R ${src_path}${p} ${dst_path}/includes
+    else
+       cp -R ${src_path}${p} ${dst_path}
+    fi
+
 done
 
 #mkdir -p ${dst_path}/plugin-updates/vendor/

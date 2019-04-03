@@ -1,4 +1,4 @@
-[submodule "includes/class/Utilities"]
-	path = includes/class/Utilities
+[submodule "inc/Utilities"]
+	path = inc/Utilities
 	url = git@github.com:eighty20results/Utilities.git
 	branch = master
