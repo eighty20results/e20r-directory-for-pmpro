@@ -65,7 +65,7 @@ class Page_Pairing {
 		$page_pairs = Options::get( 'page_pairs' ); ?>
         <tr>
             <td class="e20r-directory-page-pair" colspan="2">
-                <h2><?php _e( 'Member Directory', Controller::plugin_slug ); ?></h2>
+                <h2><?php _e( 'E20R Member Directory Settings', Controller::plugin_slug ); ?></h2>
             </td>
         </tr>
         <tr>
@@ -81,6 +81,17 @@ class Page_Pairing {
                 </p>
             </td>
         </tr>
+        <tr>
+        <?php if ( isset( $page_pairs['default'] ) && -1 !== (int) $page_pairs['default']['directory'] ) { ?>
+        <tr>
+            <td class="e20r-directory-page-pair" colspan="2">
+                <p class="e20r-directory-default">
+                    <?php printf(__( 'The default directory page is: "%1$s" (Page id: %2$d) '), get_the_title( $page_pairs['default']['directory'] ), $page_pairs['default']['directory'] ); ?><br/>
+	                <?php printf(__( 'The default profile page is: "%1$s" (Page id: %2$d) '), get_the_title( $page_pairs['default']['profile'] ), $page_pairs['default']['profile'] ); ?>
+                </p>
+            </td>
+        </tr>
+        <?php } ?>
         <tr>
             <td class="e20r-directory-page-pair" colspan="2">
                 <div class="e20r-directory-page e20r-admin-header"><?php _e( 'Directory Page', Controller::plugin_slug ); ?></div>
