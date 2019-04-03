@@ -225,7 +225,7 @@ class E20R_Directory_For_PMPro {
 		$parts  = explode( '\\', $class_name );
 		$c_name = $is_e20r ? preg_replace( '/_/', '-', $parts[ ( count( $parts ) - 1 ) ] ) : $parts[ ( count( $parts ) - 1 ) ];
 		
-		$base_path = plugin_dir_path( __FILE__ ) . 'includes/';
+		$base_path = plugin_dir_path( __FILE__ ) . 'inc/';
 		
 		if ( $is_e20r ) {
 			$filename = strtolower( "class.{$c_name}.php" );
