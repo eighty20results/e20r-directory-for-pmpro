@@ -164,17 +164,91 @@ class Page_Pairing {
 		$profile_page->set( 'select_options', self::getInstance()->getPageList() );
 		$profile_page->set( 'default_value', - 1 );
 		
+		$directory_edit_link = null;
+		$directory_view_link = null;
+		$profile_edit_link   = null;
+		$profile_view_link   = null;
+		
+		if ( - 1 !== $directory_page_id ) {
+			$directory_edit_link = add_query_arg( '', $directory_page_id, admin_url( 'edit.php' ) );
+			$directory_view_link = get_permalink( $directory_page_id );
+		}
+		
+		if ( - 1 !== $profile_page_id ) {
+			$profile_edit_link = add_query_arg( '', $profile_page_id, admin_url( 'edit.php' ) );
+			$profile_view_link = get_permalink( $profile_page_id );
+		}
+		
 		ob_start(); ?>
         <tr class="e20r-directory-page-pair-setting">
             <td class="e20r-directory-page-pair" colspan="2">
-                <div class="e20r-directory-page"><?php Select::render( $directory_page->getSettings() ); ?></div>
+                <div class="e20r-directory-page">
+					<?php Select::render( $directory_page->getSettings() );
+					if ( ! empty( $directory_view_link ) ) { ?>
+                        <small class="e20r-directory-view-link">
+						<?php
+						printf(
+							'%1$sView page%2$s',
+							sprintf(
+								'<a href="%1$s" target="_blank" title="%2$s">',
+								$directory_view_link,
+								__( 'View this Directory page', Controller::plugin_slug )
+							), '</a>' );
+						?>
+                        </small><?php
+					}
+					if ( ! empty( $directory_edit_link ) ) { ?>
+                        <small class="e20r-directory-edit-link">
+							<?php
+							printf(
+								'%1$sEdit page%2$s',
+								sprintf(
+									'<a href="%1$s" target="_blank" title="%2$s">',
+									$directory_edit_link,
+									__( 'Edit this Directory page', Controller::plugin_slug )
+								), '</a>' );
+							?>
+                        </small>
+					<?php } ?>
+                </div>
                 <div class="e20r-directory-arrow"><?php
 					is_rtl() ?
 						_e( '&#8592;', Controller::plugin_slug ) : // Left Arrow (for RTL)
 						_e( '&#8594;', Controller::plugin_slug );  // Right Arrow (for LTR)
 					?></div>
-                <div class="e20r-profile-page"><?php Select::render( $profile_page->getSettings() ); ?></div>
-                <div class="e20r-directory-pair-delete"><button class="e20r-directory-pair-delete button"><span class="dashicons dashicons-no"></span></button></div>
+                <div class="e20r-profile-page">
+					<?php Select::render( $profile_page->getSettings() );
+					if ( ! empty( $directory_view_link ) ) { ?>
+                        <small class="e20r-profile-view-link">
+						<?php
+						printf(
+							'%1$sView page%2$s',
+							sprintf(
+								'<a href="%1$s" target="_blank" title="%2$s">',
+								$profile_view_link,
+								__( 'View this Profile page', Controller::plugin_slug )
+							), '</a>' );
+						?>
+                        </small><?php
+					}
+					if ( ! empty( $profile_edit_link ) ) { ?>
+                        <small class="e20r-profile-edit-link">
+							<?php
+							printf(
+								'%1$sEdit page%2$s',
+								sprintf(
+									'<a href="%1$s" target="_blank" title="%2$s">',
+									$profile_edit_link,
+									__( 'Edit this Profile page', Controller::plugin_slug )
+								), '</a>' );
+							?>
+                        </small>
+					<?php } ?>
+                </div>
+                <div class="e20r-directory-pair-delete">
+                    <button class="e20r-directory-pair-delete button"><span class="dashicons dashicons-no"></span>
+                    </button>
+                </div>
             </td>
         </tr>
 		<?php
