@@ -72,6 +72,7 @@ class Options {
 		}
 		
 		$class->{$parameter} = $value;
+		$class->maybeFixPagePairs( $parameter, $value );
 		
 		return true;
 	}
@@ -129,6 +130,62 @@ class Options {
 	}
 	
 	/**
+	 * Fix the page_pairs setting so it always includes the 'default' setting...
+	 *
+	 * @param string $parameter
+	 * @param mixed  $value
+	 */
+	private function maybeFixPagePairs( $parameter, $value ) {
+		
+		// Not processing the page pairs parameter
+		if ( 'page_pairs' !== $parameter ) {
+			return;
+		}
+		
+		// Only need to fix if the number of page pairs is 1
+		if ( 1 != count( $this->{$parameter} ) ) {
+			return;
+		}
+		
+		// Default entry is present, so nothing more to do..
+		if ( isset( $class->{$parameter}['default'] ) ) {
+			return;
+		}
+		
+		// Grab the single pair (so we can restore it as the default setting
+		$pair = array_pop( $this->page_pairs );
+		
+		// Very unexpected, but we have nothing to do so...
+		if ( empty( $pair ) ) {
+			return;
+		}
+		
+		$this->{$parameter}['default'] = $pair;
+		
+		if ( ! function_exists( 'pmpro_setOption' ) ) {
+			return;
+		}
+		
+		// Configure and save the PMPro setting(s) if necessary
+		global $pmpro_pages;
+		
+		if ( isset( $pmpro_pages['directory'] ) && ! empty( $pmpro_pages['directory'] ) ) {
+			return;
+		}
+		
+		if ( isset( $pmpro_pages['profile'] ) && ! empty( $pmpro_pages['profile'] ) ) {
+			return;
+		}
+		
+		$pmpro_pages['directory'] = $this->{$parameter}['default']['directory'];
+		$pmpro_pages['profile']   = $this->{$parameter}['default']['profile'];
+		
+		pmpro_setOption( "directory_page_id", $pmpro_pages['directory'] );
+		pmpro_setOption( "profile_page_id", $pmpro_pages['profile'] );
+		
+	}
+	
+	/**
 	 * Return the Directory Page ID that is linked to the profile page ID
 	 *
 	 * @param int|string $profile_page_id
@@ -147,7 +204,7 @@ class Options {
 		$location   = null;
 		
 		$utils->log( "Page pairs are: " . print_r( $page_pairs, true ) );
-
+		
 		if ( 'default' === $profile_page_id ) {
 			$utils->log( "Looking for the default directory page..." );
 			
@@ -162,16 +219,43 @@ class Options {
 			}
 			
 			if ( (int) $profile_page_id === (int) $settings['profile'] ) {
-				$utils->log("Found the matching profile ID for the supplied argument: {$profile_page_id}");
+				$utils->log( "Found the matching profile ID for the supplied argument: {$profile_page_id}" );
 				$location = $settings['directory'];
 				break;
 			}
 		}
 		
-		if ( empty( $location ) ) {
+		if ( empty( $location ) && $profile_page_id !== $page_pairs['default']['profile'] ) {
 			$utils->log( "Directory page is not found for profile page ID {$profile_page_id}" );
 			
 			return false;
+		}
+		
+		// We're processing the default profile page
+		if ( empty( $location ) && $profile_page_id === $page_pairs['default']['profile'] ) {
+			$utils->log( "Processing the default page pair" );
+			
+			// Load the PMPro pages array (in case other add-ons rely on finding the directory/profile page IDs in it)
+			global $pmpro_pages;
+			
+			if ( ! isset( $pmpro_pages['directory'] ) ||
+			     ( isset( $pmpro_pages['directory'] ) && ! empty( $pmpro_pages['directory'] ) )
+			) {
+				$pmpro_pages['directory'] = $page_pairs['default']['directory'];
+			}
+			
+			if ( ! isset( $pmpro_pages['profile'] ) ||
+			     ( isset( $pmpro_pages['profile'] ) && ! empty( $pmpro_pages['profile'] ) )
+			) {
+				$pmpro_pages['profile'] = $page_pairs['default']['profile'];
+			}
+			
+			$location = $page_pairs['default']['directory'];
+			
+		}
+		
+		if ( ! isset( $page_pairs[$location] ) && $location === $page_pairs['default']['directory'] ) {
+			$location = 'default';
 		}
 		
 		return $page_pairs[ $location ]['directory'];
@@ -195,11 +279,23 @@ class Options {
 		 */
 		$page_pairs = $class->page_pairs;
 		
-		if ( 'default' === $directory_page_id ) {
-			$utils->log( "Looking for the default profile page..." );
+		if ( empty( $page_pairs ) ) {
+			$utils->log( "No page pair(s) found yet" );
 			
-			return $page_pairs['default']['profile'];
+			return false;
 		}
+		
+		// We're looking for the default (none specified)
+		if ( empty( $directory_page_id ) ) {
+			$directory_page_id = 'default';
+		}
+		
+		// Is the directory page ID the same as the one for the default value(s)?
+		if ( ! isset( $page_pairs[$directory_page_id] ) && $directory_page_id === $page_pairs['default']['directory'] ) {
+			$directory_page_id = 'default';
+		}
+		
+		// $utils->log( "Directory page ID: " . print_r( $directory_page_id, true ) );
 		
 		if ( false === array_key_exists( $directory_page_id, $page_pairs ) ) {
 			$utils->log( "Profile page ID is not found for directory page {$directory_page_id}" );
@@ -224,6 +320,8 @@ class Options {
 		if ( false === $class->isValidParameter( $parameter ) ) {
 			return false;
 		}
+		
+		$class->maybeFixPagePairs( $parameter, $class->page_pairs );
 		
 		return $class->{$parameter};
 	}
