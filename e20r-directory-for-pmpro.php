@@ -690,7 +690,7 @@ class E20R_Directory_For_PMPro {
 		) {
 			// FIXME: Uses $pmpro_pages['directory'] value...
 			?>
-            <h3><?php echo get_the_title( $pmpro_pages['directory'] ); ?></h3>
+            <h3><?php _e( 'Member Directory', self::plugin_slug );?></h3>
             <table class="form-table">
                 <tbody>
                 <tr class="user-hide-directory-wrap">
@@ -699,7 +699,7 @@ class E20R_Directory_For_PMPro {
                         <label for="e20red_hide_directory">
                             <input name="e20red_hide_directory" type="checkbox"
                                    id="e20red_hide_directory" <?php checked( get_user_meta( $user->ID, 'e20red_hide_directory', true ), 1 ); ?>
-                                   value="1"><?php printf( __( 'Hide from %s?', 'e20r-directory-for-pmpro' ), get_the_title( $pmpro_pages['directory'] ) ); ?>
+                                   value="1"><?php printf( __( 'Hide from %s?', 'e20r-directory-for-pmpro' ), __('Member Directory', self::plugin_slug) ); ?>
                         </label>
                     </td>
                 </tr>
@@ -753,7 +753,7 @@ class E20R_Directory_For_PMPro {
 				'<a href="%s" title="%s">%s</a>',
 				esc_url( 'http://eighty20results.com/support/' ),
 				__( 'Submit Customer Support Question', 'e20r-directory-for-pmpro' ),
-				__( 'Support', 'paid-memberships-pro' )
+				__( 'Support', 'e20r-directory-for-pmpro' )
 			),
 		);
 		
