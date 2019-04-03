@@ -474,8 +474,14 @@ class E20R_Directory_For_PMPro {
 		add_action( 'show_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
 		add_action( 'edit_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
 		
-		add_action( 'personal_options_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 99 );
-		add_action( 'edit_user_profile_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 99 );
+		add_action( 'personal_options_update', array(
+			Billing_Information::getInstance(),
+			'maybeSaveBillingInfo',
+		), 99 );
+		add_action( 'edit_user_profile_update', array(
+			Billing_Information::getInstance(),
+			'maybeSaveBillingInfo',
+		), 99 );
 		
 		// Clear the Member List cache whenever a user's membership level or a checkout completes
 		add_action( 'pmpro_after_change_membership_level', array( $this, 'clearMemberCache' ), 99999 );
@@ -496,9 +502,51 @@ class E20R_Directory_For_PMPro {
 		// add_filter( 'pmpro_page_custom_template_path', array( $this, 'directory_template_paths' ), 99, 5 );
 		
 		add_action( 'wp_ajax_e20r_directory_load_new_row', array( Page_Pairing::getInstance(), 'loadNewRow' ) );
+		add_action( 'init', array( $this, 'areSettingsEmpty' ), 10 );
 	}
 	
 	/**
+	 * Post notice when Member Directory settings haven't been configured (are empty).
+	 */
+	public function areSettingsEmpty() {
+	    
+	    $utils      = Utilities::get_instance();
+		
+		if ( ! is_admin() ) {
+			$utils->log( "Not in WordPress backend!" );
+			return;
+		}
+		
+		// Load page pair settings
+		$page_pairs = Options::get( 'page_pairs' );
+		
+		if ( ! empty( $page_pairs ) ) {
+			$utils->log("Page pair settings is not empty.. ");
+			return;
+		}
+		
+		$utils->add_message(
+			sprintf(
+				__(
+					'Please configure the PMPro %1$sPages settings%2$s for the Member Directory',
+					self::plugin_slug
+				),
+				sprintf(
+					'<a href="%1$s" title="%2$s">',
+					add_query_arg( 'page', 'pmpro-pagesettings', admin_url( 'admin.php' ) ),
+					__( 'Click for the PMPro -> Settings -> Pages settings page' )
+				),
+				'</a>'
+			
+			),
+			'warning',
+			'backend'
+		);
+	}
+	
+	/**
+	 * Add Billing and Shipping Address field(s) to the WP User Profile page
+	 *
 	 * @param \WP_User $user
 	 */
 	public function showBillingInfoFields( $user ) {
@@ -514,7 +562,7 @@ class E20R_Directory_For_PMPro {
 		$e20rmd_show_billing_address  = true;
 		$e20rmd_show_shipping_address = true;
 		
-		$bi              = Billing_Information::getInstance();
+		$bi                         = Billing_Information::getInstance();
 		$e20rmd_has_billing_fields  = Billing_Information::getBillingFields();
 		$e20rmd_has_shipping_fields = Billing_Information::getShippingFields();
 		
@@ -529,10 +577,16 @@ class E20R_Directory_For_PMPro {
 	 */
 	public function loadAdminScriptsStyles( $hook ) {
 		
-		$utils           = Utilities::get_instance();
+		$utils = Utilities::get_instance();
 		
-		if ( 'admin_page_pmpro-pagesettings' !== $hook && 'user-edit.php' !== $hook  ) {
-		    $utils->log("Not on the profile or PMPro Settings page: {$hook}");
+		if ( ! is_admin() ) {
+		    $utils->log("Not in WP backend!");
+		    return;
+        }
+        
+		if ( 'admin_page_pmpro-pagesettings' !== $hook && 'user-edit.php' !== $hook ) {
+			$utils->log( "Not on the profile or PMPro Settings page: {$hook}" );
+			
 			return;
 		}
 		
