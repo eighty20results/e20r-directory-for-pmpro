@@ -2,7 +2,7 @@
 /*
 Plugin Name: E20R Directory for PMPro
 Plugin URI: https://eighty20results.com/wordpress-plugins/e20r-directory-for-pmpro
-Description: Free member directory and profile pages for Paid Memberships Pro
+Description: Better member directory and profile pages for Paid Memberships Pro
 Version: 3.0
 Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
@@ -36,7 +36,6 @@ namespace E20R\Member_Directory;
 
 global $e20rmd_options;
 
-use E20R\Member_Directory\Settings\Membership;
 use E20R\Member_Directory\Settings\Options;
 use E20R\Member_Directory\Settings\Page_Pairing;
 use E20R\Member_Directory\Settings\PMPro_PageSettings;
@@ -630,9 +629,17 @@ class E20R_Directory_For_PMPro {
 	 */
 	public function init() {
 		
-		if ( function_exists( 'pmpromd_register_styles' ) ) {
+	    $utils = Utilities::get_instance();
+		if ( function_exists( 'pmpromd_register_styles' ) && is_admin() ) {
 			
-			pmpro_setMessage( __( "The 'Member Directory & Profile Pages' add-on for Paid Memberships Pro is currently active. You should deactivate it before you activate this plugin.", 'e20r-directory-for-pmpro' ), 'error' );
+			$utils->add_message(
+			        __(
+			                "The 'Member Directory & Profile Pages' add-on for Paid Memberships Pro is currently active. You should deactivate it before you activate this plugin.",
+                            self::plugin_slug
+                    ),
+                    'error',
+                    'backend'
+            );
 			
 			return;
 		}
@@ -691,9 +698,7 @@ class E20R_Directory_For_PMPro {
 	 * Register/load Directory/Profile page styles as/when needed
 	 */
 	public function registerStyles() {
-		
-		$utils = Utilities::get_instance();
-		
+	 
 		$css_list = apply_filters( 'e20r-directory-for-pmpro-css-file-paths', array(
 				'child_theme'  => array(
 					'file' => get_stylesheet_directory() . '/paid-memberships-pro/member-directory/css/e20r-directory-for-pmpro.css',
@@ -735,7 +740,7 @@ class E20R_Directory_For_PMPro {
 	}
 	
 	/**
-	 * Load pages to include on "Memberships" -> "Page Settings" page for Paid Memberships Pro
+	 * Load pages to include on "Memberships" -> "Pages" settings page for Paid Memberships Pro
 	 *
 	 * @param array $pages
 	 *
@@ -800,13 +805,22 @@ class E20R_Directory_For_PMPro {
 	 */
 	public function saveExtraProfileFields( $user_id ) {
 		
+		$pmpro_hide_directory = (bool) get_user_meta( $user_id, 'pmpro_hide_directory', true );
+		
+		// Transition the user from the PMPro 'hide_directory' variable (if necessary)
+		if ( $pmpro_hide_directory ) {
+		    update_user_meta( $user_id, 'e20red_hide_directory', $pmpro_hide_directory );
+		    delete_user_meta( $user_id, 'pmpro_hide_directory' );
+        }
+        
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
 		
-		if ( isset( $_POST['e20red_hide_directory'] ) ) {
-			update_user_meta( $user_id, 'e20red_hide_directory', true );
-		}
+		$utils = Utilities::get_instance();
+		$hide_directory = (bool) $utils->get_variable( 'e20red_hide_directory', false );
+		
+		update_user_meta( $user_id, 'e20red_hide_directory', $hide_directory );
 	}
 	
 	/**
