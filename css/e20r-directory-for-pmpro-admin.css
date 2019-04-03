@@ -28,6 +28,10 @@ td.e20r-directory-page-pair {
     width: 2%;
     max-width: 20px;
     min-width: 10px;
+    vertical-align: top;
+    margin-top: 7px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .e20r-profile-page {
     display: inline-block;
@@ -78,4 +82,14 @@ button.e20r-directory-pair-delete {
     display: inline-block;
     max-width: 250px;
     min-width: 150px;
+}
+small.e20r-profile-view-link,
+small.e20r-directory-view-link {
+    float: left;
+    padding-left: 10px;
+}
+small.e20r-profile-edit-link,
+small.e20r-directory-edit-link {
+    float: right;
+    padding-right: 10px;
 }
