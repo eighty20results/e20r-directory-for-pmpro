@@ -2,13 +2,13 @@
 #
 # Build script for Eighty/20 Results - Extended Membership Directory for Paid Memberships Pro
 #
-# Copyright (c) 2015 - 2016 Eighty/20 Results by Wicked Strong Chicks, LLC
+# Copyright (c) 2015 - 2019 Eighty/20 Results by Wicked Strong Chicks, LLC
 #
 short_name="e20r-directory-for-pmpro"
 server="eighty20results.com"
 include=(css includes languages ${short_name}.php readme.txt)
-exclude=(*.yml *.phar composer.* vendor)
-build=(plugin-updates/vendor/*.php)
+exclude=( includes/composer includes/kriswallsmith includes/robloach includes/symfony *.yml *.phar composer.* vendor)
+#build=()
 plugin_path="${short_name}"
 version=$(egrep "^Version:" ../${short_name}.php | sed 's/[[:alpha:]|(|[:space:]|\:]//g' | awk -F- '{printf "%s", $1}')
 metadata="../metadata.json"
@@ -33,13 +33,13 @@ for p in ${include[@]}; do
 	cp -R ${src_path}${p} ${dst_path}
 done
 
+#mkdir -p ${dst_path}/plugin-updates/vendor/
+#for b in ${build[@]}; do
+#    cp ${src_path}${b} ${dst_path}/plugin-updates/vendor/
+#done
+
 for e in ${exclude[@]}; do
     find ${dst_path} -type d -iname ${e} -exec rm -rf {} \;
-done
-
-mkdir -p ${dst_path}/plugin-updates/vendor/
-for b in ${build[@]}; do
-    cp ${src_path}${b} ${dst_path}/plugin-updates/vendor/
 done
 
 cd ${dst_path}/..
