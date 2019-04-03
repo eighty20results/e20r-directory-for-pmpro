@@ -18,6 +18,7 @@
 
 namespace E20R\Member_Directory;
 
+use E20R\Member_Directory\Settings\Options;
 use E20R\Utilities\Utilities;
 
 /**
@@ -40,9 +41,19 @@ class Profile_Page {
 	 */
 	private static $instance = null;
 	
-	private $profile_url = null;
+	/**
+	 * List of URLs by post ID for the Profile page(s) (key: paired directory page ID)
+	 *
+	 * @var string[int] $profile_url
+	 */
+	private $profile_url = array();
 	
-	private $directory_url = null;
+	/**
+	 * List of URLs by post ID for the Directory page(s) (key: paired profile page ID)
+	 *
+	 * @var string[int] $this->directory_url
+	 */
+	private $directory_url = array();
 	
 	private $limit = null;
 	
@@ -65,6 +76,47 @@ class Profile_Page {
 	private $fields_array = array();
 	
 	/**
+	 * Add the Profile page URL for the specific page (if applicable)
+	 *
+	 * @param int    $page_id
+	 * @param string $url
+	 *
+	 * @return bool
+	 */
+	public static function addURL( $page_id, $url ) {
+		
+		$class = self::getInstance();
+		$utils = Utilities::get_instance();
+		
+		if ( false === wp_http_validate_url( $url ) ) {
+			return false;
+		}
+		
+		// Get the base URL for the site (used to find the page slug)
+		$base_url = preg_quote( get_site_url() );
+		
+		// Get rid of the base URL so we're left with the page slug
+		$page_slug    = preg_replace( "/{$base_url}/", '', $url );
+		$profile_page = get_page_by_path( $page_slug );
+		
+		if ( empty( $profile_page ) ) {
+			$utils->log( "Page {$page_slug} not found?!?!" );
+			
+			return false;
+		}
+		
+		if ( false === self::hasShortcode( $profile_page ) ) {
+			$utils->log( "Not processing a page with a profile short code on it" );
+			
+			return false;
+		}
+		
+		$class->profile_url[ $page_id ] = $url;
+		
+		return true;
+	}
+	
+	/**
 	 * Return or instantiate and return the E20R_Profile class instance
 	 *
 	 * @return Profile_Page|null
@@ -72,10 +124,57 @@ class Profile_Page {
 	public static function getInstance() {
 		
 		if ( true === is_null( self::$instance ) ) {
-			self::$instance = new self();
+			self::$instance                = new self();
 		}
 		
 		return self::$instance;
+	}
+	
+	/**
+	 * Does the supplied WP_Post (page) have one of the directory short codes embedded?
+	 *
+	 * @param \WP_Post $page
+	 *
+	 * @return bool
+	 */
+	public static function hasShortcode( $page ) {
+		
+		$utils = Utilities::get_instance();
+		
+		if ( ! isset( $page->post_content ) ) {
+			$utils->log( "Post argument is empty!" );
+			
+			return false;
+		}
+		
+		// Make sure we're processing a WP_Post object
+		if ( ! is_a( $page, '\WP_Post' ) ) {
+			$utils->log( "The supplied page argument isn't a WordPress Post object!" );
+			
+			return false;
+		}
+		
+		if ( has_shortcode( $page->post_content, 'e20r_member_profile' ) ) {
+			$utils->log( "Found the 'e20r_member_profile' short code" );
+			
+			return true;
+		}
+		
+		if ( has_shortcode( $page->post_content, 'e20r-member-profile' ) ) {
+			$utils->log( "Found the 'e20r-member-profile' short code" );
+			
+			return true;
+		}
+		
+		if ( has_shortcode( $page->post_content, 'pmpro_member_profile' ) ) {
+			$utils->log( "Found the 'pmpro_member_profile' short code" );
+			
+			return true;
+		}
+		
+		$utils->log( "Could not locate a profile short code!" );
+		
+		return false;
 	}
 	
 	/**
@@ -85,6 +184,7 @@ class Profile_Page {
 		
 		add_shortcode( 'e20r-member-profile', array( $this, 'profileShortCode' ) );
 		add_shortcode( 'e20r_member_profile', array( $this, 'profileShortCode' ) );
+		add_shortcode( 'pmpro_member_profile', array( $this, 'profileShortCode' ) );
 		
 		add_action( 'wp', array( $this, 'profilePreHeader' ), 1 );
 		
@@ -98,35 +198,47 @@ class Profile_Page {
 	 * @param string   $title
 	 * @param null|int $post_id
 	 *
-	 * @return null|string
+	 * @return string
 	 */
 	public function theTitle( $title, $post_id = null ) {
 		
-		global $main_post_id, $current_user;
+		global $main_post_id;
+		global $current_user;
+		global $wpdb;
 		
-		if ( $post_id == $main_post_id ) {
-			
-			if ( ! empty( $_REQUEST['pu'] ) ) {
-				
-				global $wpdb;
-				$user_nicename = sanitize_text_field( $_REQUEST['pu'] );
-				$display_name  = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT u.display_name
-                                      FROM {$wpdb->users} AS u
-                                      WHERE u.user_nicename = %s
-                                      LIMIT 1",
-						$user_nicename
-					)
-				);
-				
-			} else if ( ! empty( $current_user ) ) {
-				$display_name = $current_user->display_name;
-			}
-			if ( ! empty( $display_name ) ) {
-				$title = $display_name;
-			}
+		$utils = Utilities::get_instance();
+		
+		if ( (int) $post_id !== (int) $main_post_id ) {
+			return $title;
 		}
+		
+		$user_nicename = $utils->get_variable( 'pu', null );
+		
+		if ( empty( $user_nicename ) ) {
+			return $title;
+		}
+		
+		if ( is_user_logged_in() ) {
+			$display_name = $current_user->display_name;
+			
+		} else {
+			
+			$display_name = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT u.display_name
+                              FROM {$wpdb->users} AS u
+                              WHERE u.user_nicename = %s
+                              LIMIT 1",
+					$user_nicename
+				)
+			);
+		}
+		
+		if ( empty( $display_name ) ) {
+			return $title;
+		}
+		
+		$title = $display_name;
 		
 		return $title;
 	}
@@ -148,86 +260,179 @@ class Profile_Page {
 		global $post;
 		global $current_user;
 		
-		if ( $post->ID == $main_post_id ) {
-			
-			$user_nicename = $utils->get_variable( 'pu', null );
-			
-			if ( ! empty( $user_nicename ) ) {
-				
-				$display_name = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT u.display_name
-                                      FROM {$wpdb->users} AS u
-                                      WHERE u.user_nicename = %s
-                                      LIMIT 1",
-						$user_nicename
-					)
-				);
-			} else if ( ! empty( $current_user ) ) {
-				$display_name = $current_user->display_name;
-			}
-			if ( ! empty( $display_name ) ) {
-				$title = $display_name . ' ' . $sep . ' ';
-			}
-			$title .= get_bloginfo( 'name' );
+		if ( (int) $post->ID !== (int) $main_post_id ) {
+			return $title;
 		}
+		
+		$user_nicename = $utils->get_variable( 'pu', null );
+		
+		if ( empty( $user_nicename ) && ! is_user_logged_in() ) {
+			return $title;
+		}
+		
+		$display_name = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT u.display_name
+                  FROM {$wpdb->users} AS u
+                  WHERE u.user_nicename = %s
+                  LIMIT 1",
+				$user_nicename
+			)
+		);
+		
+		
+		if ( ! empty( $display_name ) ) {
+			$title = $display_name . ' ' . $sep . ' ';
+		}
+		
+		$title .= get_bloginfo( 'name' );
 		
 		return $title;
 	}
 	
 	/**
 	 * Configure profile page (pre header)
+	 *
+	 * @since v3.0 - Using Directory / Profile page pair settings to identify the correct directory page to return to
 	 */
 	public function profilePreHeader() {
 		
-		global $post, $pmpro_pages, $current_user;
+		global $post;
+		global $current_user;
 		
-		// TODO: Stop using the $pmpro_pages['profile'] to find the profile page
+		$user = null;
 		
-		if ( ! empty( $post->ID ) && $post->ID == $pmpro_pages['profile'] ) {
-			/*
-				Preheader operations here.
-			*/
-			global $main_post_id;
-			$main_post_id = $post->ID;
+		if ( ! isset( $post->ID ) ) {
+			return;
+		}
+		
+		if ( empty( $this->profile_url ) ) {
+		    $this->setProfilePageVariables();
+		}
+		
+		if ( get_permalink( $post ) != $this->profile_url ) {
+			return;
+		}
+		
+		$utils = Utilities::get_instance();
+		/*
+			Pre-header operations here.
+		*/
+		global $main_post_id;
+		
+		$main_post_id = $post->ID;
+		
+		//Get the user request variable (pu)
+		$profile_user = $utils->get_variable( 'pu', '' );
+		
+		if ( empty( $profile_user ) && ! is_user_logged_in() ) {
+			return;
+		}
+		
+		if ( empty( $profile_user ) ) {
+			$profile_user = $current_user->ID;
+		}
+		
+		if ( is_numeric( $profile_user ) ) {
+			$user = get_user_by( 'ID', $profile_user );
+		}
+		
+		if ( empty( $user ) ) {
+			$user = get_user_by( 'slug', $profile_user );
+		}
+		
+		if ( empty( $user ) ) {
+			$user = $current_user;
+		}
+		
+		if ( ! self::hasShortcode( $post ) ) {
+		    return;
+        }
+        
+		$directory_url = get_permalink( Options::getDirectoryIDFromProfile( $post->ID ) );
+		
+		// If no profile user found, go to directory (or home, if no directory is specified)
+		if ( ! isset( $user->ID ) ) {
 			
-			//Get the profile user
-			if ( ! empty( $_REQUEST['pu'] ) && is_numeric( $_REQUEST['pu'] ) ) {
-				$profile_user = get_user_by( 'id', intval( $_REQUEST['pu'] ) );
-			} else if ( ! empty( $_REQUEST['pu'] ) ) {
-				$profile_user = get_user_by( 'slug', sanitize_text_field( $_REQUEST['pu'] ) );
-			} else if ( ! empty( $current_user->ID ) ) {
-				$profile_user = $current_user;
+			if ( ! empty( $directory_url ) ) {
+				wp_redirect( $directory_url );
 			} else {
-				$profile_user = false;
+				wp_redirect( home_url() );
 			}
+			exit;
+		}
+		
+		/*
+			If a level is required for the profile page, make sure the profile user has it.
+		*/
+		$levels = pmpro_getMatches( "/ levels?=[\"']([^\"^']*)[\"']/", $post->post_content, true );
+		
+		if ( ! empty( $levels ) && function_exists( 'pmpro_hasMembershipLevel' ) &&
+		     ! pmpro_hasMembershipLevel( explode( ",", $levels ), $profile_user->ID )
+		) {
 			
-			//If no profile user, go to directory or home
-			if ( empty( $profile_user ) || empty( $profile_user->ID ) ) {
-				if ( ! empty( $pmpro_pages['directory'] ) ) {
-					wp_redirect( get_permalink( $pmpro_pages['directory'] ) );
-				} else {
-					wp_redirect( home_url() );
-				}
-				exit;
+			if ( ! empty( $directory_url ) ) {
+				wp_redirect( $directory_url );
+			} else {
+				wp_redirect( home_url() );
 			}
-			
-			/*
-				If a level is required for the profile page, make sure the profile user has it.
-			*/
-			$levels = pmpro_getMatches( "/ levels?=[\"']([^\"^']*)[\"']/", $post->post_content, true );
-			
-			if ( ! empty( $levels ) && ! pmpro_hasMembershipLevel( explode( ",", $levels ), $profile_user->ID ) ) {
-				if ( ! empty( $pmpro_pages['directory'] ) ) {
-					wp_redirect( get_permalink( $pmpro_pages['directory'] ) );
-				} else {
-					wp_redirect( home_url() );
-				}
-				exit;
-			}
+			exit;
 		}
 	}
 	
+	/**
+	 * Configure the URLs for the directory as it relates to the current page (profile)
+     *
+     * @return bool
+	 */
+	private function setProfilePageVariables() {
+	    
+	    global $post;
+	    $utils = Utilities::get_instance();
+	    
+		// Page variables
+		$directory_page_id = Options::getDirectoryIDFromProfile( $post->ID );
+		$profile_page_id = Options::getProfileIDFromDirectory( $directory_page_id );
+		
+		$utils->log("Got directory ID of {$directory_page_id} for profile ID {$post->ID}");
+		$utils->log("Got profile ID of {$profile_page_id} for directory ID {$directory_page_id}");
+		// Grab the default directory page if none is specified
+  
+		if ( empty( $directory_page_id ) ) {
+			// Get the default directory page ID
+			$directory_page_id = Options::getDirectoryIDFromProfile();
+		}
+		
+		// Grab the default profile page if none is specified
+		if ( empty( $profile_page_id ) ) {
+			// Get the default Profile page ID
+			$profile_page_id = Options::getProfileIDFromDirectory();
+		}
+		
+		// Generate URLs as needed
+		//$this->directory_url = E20R_Directory_For_PMPro::getURL( 'directory', $directory_page_id );
+		//$this->profile_url   = E20R_Directory_For_PMPro::getURL( 'profile', $profile_page_id );
+		
+        $this->directory_url = get_permalink( $directory_page_id );
+		$this->profile_url = get_permalink( $profile_page_id );
+		
+		
+		$utils->log("Profile id: {$profile_page_id} -> {$this->profile_url}");
+		$utils->log("Directory id: {$directory_page_id} -> {$this->directory_url}");
+		
+		if ( empty( $this->directory_url ) ) {
+		    $utils->log("Error: Could not generate the URL for the 'directory' page (ID: {$directory_page_id})!");
+			return false;
+        }
+		
+		if ( empty( $this->profile_url ) ) {
+			$utils->log("Error: Could not generate the URL for the 'profile' page (ID: {$profile_page_id})!");
+			return false;
+		}
+		
+		return true;
+    }
+    
 	/**
 	 * Process the Profile short code
 	 *
@@ -272,13 +477,24 @@ class Profile_Page {
 		global $current_user;
 		global $pmpro_pages;
 		global $pmprorh_registration_fields;
+		global $post;
 		
 		global $e20rmd_show_billing_address;
 		global $e20rmd_show_shipping_address;
 		
-		//some page vars
-		$this->directory_url = ! empty( $pmpro_pages['directory'] ) ? get_permalink( $pmpro_pages['directory'] ) : null;
-		$this->profile_url   = ! empty( $pmpro_pages['profile'] ) ? get_permalink( $pmpro_pages['profile'] ) : null;
+		// Configure the page variables for the Profile page
+		if ( false === $this->setProfilePageVariables() ) {
+		    $utils->add_message(
+		            sprintf(
+		                    __( 'Error loading the "%s" profile page (ID: %d)', E20R_Directory_For_PMPro::plugin_slug ),
+                            $post->post_title,
+                            $post->ID
+                    ),
+                    'error',
+                    'backend'
+            );
+		    return null;
+        }
 		
 		/**
 		 * Use the supplied page slug as the profile page instead (if available)
@@ -291,7 +507,7 @@ class Profile_Page {
 				$utils->add_message(
 					__(
 						'Invalid path given for the E20R Member Directory page! Please change the \'directory_page_slug=""\' attribute on the PMPro Profile page',
-						'e20r-directory-for-pmpro'
+						E20R_Directory_For_PMPro::plugin_slug
 					),
 					'error',
 					'backend'
@@ -307,13 +523,13 @@ class Profile_Page {
 			$utils->add_message(
 				__(
 					'Invalid path given for the E20R Member Directory page! Please update the Profile page settings on the "Memberships" -> "Settings" -> "Pages" page',
-					'e20r-directory-for-pmpro'
+					E20R_Directory_For_PMPro::plugin_slug
 				),
 				'error',
 				'backend'
 			);
-        }
-        
+		}
+		
 		//turn 0's into falses
 		$this->show_avatar      = E20R_Directory_For_PMPro::trueFalse( $this->show_avatar );
 		$this->show_billing     = E20R_Directory_For_PMPro::trueFalse( $this->show_billing );
@@ -390,7 +606,8 @@ class Profile_Page {
 					}
 				}
 				do_action( 'e20r-directory-for-pmpro_extra_search_output' ); ?>
-                <input type="submit" class="search-submit" value="<?php _e( "Search Members", "e20r-directory-for-pmpro" ); ?>">
+                <input type="submit" class="search-submit"
+                       value="<?php _e( "Search Members", "e20r-directory-for-pmpro" ); ?>">
             </form>
             <span class="clear"></span>
 		<?php } ?>
@@ -398,7 +615,7 @@ class Profile_Page {
 		if ( ! empty( $profile_user ) ) {
 			if ( ! empty( $this->fields ) ) {
 				
-			    $this->fields_array = explode( ";", $this->fields );
+				$this->fields_array = explode( ";", $this->fields );
 				
 				if ( ! empty( $this->fields_array ) ) {
 					for ( $i = 0; $i < count( $this->fields_array ); $i ++ ) {
@@ -549,7 +766,7 @@ class Profile_Page {
 			<?php if ( apply_filters( 'e20r-directory-for-pmpro_profile_show_return_link', true ) && ! empty( $this->directory_url ) ) { ?>
                 <div align="center">
                     <a class="more-link" href="<?php echo esc_url_raw( $this->directory_url ); ?>">
-                        <?php _e( 'View All Members', 'e20r-directory-for-pmpro' ); ?>
+						<?php _e( 'View All Members', 'e20r-directory-for-pmpro' ); ?>
                     </a>
                 </div>
 			<?php } ?>
