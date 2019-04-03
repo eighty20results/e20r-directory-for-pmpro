@@ -62,3 +62,20 @@ td.e20r-directory-page-pair-border {
 button.e20r-directory-pair-delete {
     color: red !important;
 }
+.e20rmd-billing-address {
+    width: 50%;
+    max-width: 600px;
+    min-width: 300px;
+}
+.e20rmd-address label {
+    width: 50%;
+    max-width: 250px;
+    min-width: 150px;
+    display: inline-block;
+}
+.e20rmd-address input {
+    width: 50%;
+    display: inline-block;
+    max-width: 250px;
+    min-width: 150px;
+}
