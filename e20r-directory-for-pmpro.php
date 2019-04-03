@@ -466,8 +466,16 @@ class E20R_Directory_For_PMPro {
 		
 		add_action( 'show_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
 		add_action( 'edit_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
+		
 		add_action( 'personal_options_update', array( $this, 'saveExtraProfileFields' ), 10 );
 		add_action( 'edit_user_profile_update', array( $this, 'saveExtraProfileFields' ), 10 );
+		
+		// Add billing info to User Profile page(s)
+		add_action( 'show_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
+		add_action( 'edit_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
+		
+		add_action( 'personal_options_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 99 );
+		add_action( 'edit_user_profile_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 99 );
 		
 		// Clear the Member List cache whenever a user's membership level or a checkout completes
 		add_action( 'pmpro_after_change_membership_level', array( $this, 'clearMemberCache' ), 99999 );
@@ -491,18 +499,40 @@ class E20R_Directory_For_PMPro {
 	}
 	
 	/**
+	 * @param \WP_User $user
+	 */
+	public function showBillingInfoFields( $user ) {
+		
+		global $e20rmd_show_billing_address;
+		global $e20rmd_show_shipping_address;
+		global $e20rmd_has_billing_fields;
+		global $e20rmd_has_shipping_fields;
+		
+		$billing_saved  = $e20rmd_show_billing_address;
+		$shipping_saved = $e20rmd_show_shipping_address;
+		
+		$e20rmd_show_billing_address  = true;
+		$e20rmd_show_shipping_address = true;
+		
+		$bi              = Billing_Information::getInstance();
+		$e20rmd_has_billing_fields  = Billing_Information::getBillingFields();
+		$e20rmd_has_shipping_fields = Billing_Information::getShippingFields();
+		
+		$bi->addAddressSection( array(), $user, false );
+		
+		$e20rmd_show_billing_address  = $billing_saved;
+		$e20rmd_show_shipping_address = $shipping_saved;
+	}
+	
+	/**
 	 * Load Admin side scripts & styles
 	 */
-	public function loadAdminScriptsStyles() {
+	public function loadAdminScriptsStyles( $hook ) {
 		
 		$utils           = Utilities::get_instance();
-		$is_pagesettings = $utils->get_variable( 'page', null );
 		
-		if ( empty( $is_pagesettings ) ) {
-			return;
-		}
-		
-		if ( 'pmpro-pagesettings' !== $is_pagesettings ) {
+		if ( 'toplevel_page_pmpro-pagesettings' !== $hook && 'user-edit.php' !== $hook  ) {
+		    $utils->log("Not on the profile or PMPro Settings page: {$hook}");
 			return;
 		}
 		
@@ -687,10 +717,8 @@ class E20R_Directory_For_PMPro {
 			     true === apply_filters( 'e20r-directory-for-pmpro_non_admin_profile_settings', true ) &&
 			     false === $is_admin
 		     ) || true === $is_admin
-		) {
-			// FIXME: Uses $pmpro_pages['directory'] value...
-			?>
-            <h3><?php _e( 'Member Directory', self::plugin_slug );?></h3>
+		) { ?>
+            <h3><?php _e( 'Member Directory', self::plugin_slug ); ?></h3>
             <table class="form-table">
                 <tbody>
                 <tr class="user-hide-directory-wrap">
@@ -699,7 +727,7 @@ class E20R_Directory_For_PMPro {
                         <label for="e20red_hide_directory">
                             <input name="e20red_hide_directory" type="checkbox"
                                    id="e20red_hide_directory" <?php checked( get_user_meta( $user->ID, 'e20red_hide_directory', true ), 1 ); ?>
-                                   value="1"><?php printf( __( 'Hide from %s?', 'e20r-directory-for-pmpro' ), __('Member Directory', self::plugin_slug) ); ?>
+                                   value="1"><?php printf( __( 'Hide from %s?', 'e20r-directory-for-pmpro' ), __( 'Member Directory', self::plugin_slug ) ); ?>
                         </label>
                     </td>
                 </tr>
