@@ -1,27 +1,28 @@
-=== Paid Memberships Pro - Extended Member Directory Add On ===
-Contributors: strangerstudios, eighty20results
-Tags: pmpro, paid memberships pro, members, directory
+=== E20R Directory for PMPro ===
+Contributors: eighty20results, strangerstudios
+Tags: pmpro, paid memberships pro, members, directory, eighty/20 results
 Requires at least: 4.4
-Tested up to: 4.9.8
-Stable tag: 2.9.1
+Tested up to: 5.1.1
+Stable tag: 3.0
 
 Add a robust Member Directory and Profiles to Your Membership Site - with attributes to customize the display.
 
 == Description ==
 The Member Directory Add On enhances your membership site with a public or private, searchable directory and member profiles.
 
-This plugin creates 2 shortcodes for a Member Directory and Member Profile pages, which can be defined in Memberships > Page Settings of the WordPress admin.
+This plugin creates 2 short codes for a Member Directory and Member Profile pages, which can be defined in Memberships > Page Settings of the WordPress admin.
 
-Shortcode attributes for `[pmpro_member_directory]` include:
+Shortcode attributes for `[e20r-directory-for-pmpro]` include:
 
 1. avatar_size: The square pixel dimensions of the avatar to display. Requires the "show_avatar" attribute to be set to 'true'. default: '128' (accepts any numerical value).
 1. fields: Display additional user meta fields. default: none (accepts a list of label names and field IDs, i.e. fields="Company,company;Website,user_url").
 1. layout: The format of the directory. default: div (accepts 'table', 'div', '2col', '3col', and '4col').
 1. levels: The level ID or a comma-separated list of level IDs to include in the directory. default: all levels (accepts a single level ID or a comma-separated list of IDs).
-1. limit: the number of members to display per page
+1. paginated: Whether to use pagination or not (default: true )
+1. page_size: The number of records per page in a paginated display (default: 15)
 1. link: Optionally link the member directory item to the single member profile page. default: true (accepts 'true' or 'false').
 1. order: Sort the results based on the order_by attribute in ascending or descending order. default: ASC (accepts 'DESC' or 'ASC'). 
-1. order_by: The sort order for the results. default: 'u.display_name' (accepts 'u.user_email', 'u.user_email', 'u.display_name', 'u.user_login', 'u.user_registered', 'mu.membership_id', 'mu.startdate', 'joindate')
+1. order_by: The sort order for the results. default: 'display_name' (accepts 'user_email', 'display_name', 'user_login', 'user_registered', 'membership_id', 'startdate', 'joindate', 'last_name', 'first_name' )
 1. show_avatar: Display the user's avatar generated via Gravatar (https://en.gravatar.com) or user-submitted using a plugin like Simple Local Avatars (https://wordpress.org/plugins/simple-local-avatars/); default: true (accepts 'true' or 'false').
 1. show_email: Display the user's email address; default: true (accepts 'true' or 'false').
 1. show_level: Display the user's membership level; default: true  (accepts 'true' or 'false').
@@ -30,8 +31,12 @@ Shortcode attributes for `[pmpro_member_directory]` include:
 1. show_roles: Display the users if they have been assigned the role(s) listed (default: null, accepts comma separated list of role names)
 1. members_only_link: Show the link to the profile details page to logged in and active members only (default: 'false', accepts 'true' or 'false')
 1. editable_profile: If the user is logged in, they are shown both a view and edit link for their profile page (default: 'false', accepts 'true' or 'false'). Caution: The edit link may direct the user to the WordPress backend unless a front-end profile plugin is installed (For example: Theme My Login)
+1. profile_page_slug: The page slug for the profile page to send the viewer to if they click on the profile for a user. This will allow multiple profile and directory pages on the same server.
+1. filter_key_name: Allows filtering of the directory based on the User Meta key and value (for instance a Register Helper field name and value). This attribute must be used together with the 'filter_key_value' attribute.
+1. filter_key_value: Allows filtering of the directory based on the User Meta key and value (for instance a Register Helper field name and value). This attribute must be use together with the 'filter_key_name' attribute.
 
-Shortcode attributes for `[pmpro_member_profile]` include:	
+
+Shortcode attributes for `[e20r-member-profile]` include:
 
 1. avatar_size: The square pixel dimensions of the avatar to display. Requires the "show_avatar" attribute to be set to 'true'. default: '128' (accepts any numerical value).
 1. fields: Display additional user meta fields. default: none (accepts a list of label names and field IDs, i.e. fields="Company,company;Website,user_url").
@@ -46,10 +51,11 @@ Shortcode attributes for `[pmpro_member_profile]` include:
 1. user_id: Show a specific member's profile; default: none (accepts any numeric uesr id, i.e. user_id="125").
 1. billing_address: Show the PMPro Billing information in a separate section of the profile page. Requires the presence of the 'pmpro_b*' user metadata fields in the 'fields=""' attribute (see above). default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Billing Address", but can be modified with the 'pmpro-member-profile-billing-header' filter. The filter returns the text of the heading.
 1. shipping_address: Show the PMPro Shipping information in a separate section of the profile page. Requires the presence of the 'pmpro_s*' user metadata fields in the 'fields=""' attribute (see above). default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Shippping Address", but it can be modified with the 'pmpro-member-profile-shipping-header' filter. The filter returns the text of the heading.
+1. directory_page_slug: The page slug for the directory page to use when allowing a user to return
 
 == Installation ==
 
-1. Upload the `pmpro-extended-membership-directory` directory to the `/wp-content/plugins/` directory of your site.
+1. Upload the `e20r-directory-for-pmpro` directory to the `/wp-content/plugins/` directory of your site.
 1. Activate the plugin through the `Plugins` menu in WordPress.
 1. Create a page for your directory and set the appropriate shortcode attributes and `Require Membership` settings per your needs.
 1. Create a page for your profile and set the appropriate shortcode attributes and `Require Membership` settings per your needs.
@@ -57,65 +63,65 @@ Shortcode attributes for `[pmpro_member_profile]` include:
 
 == Examples ==
 Show only level IDs 1 and 4, hide avatars and email address:
-[pmpro_member_directory levels="1,4" show_avatar="false" show_email="false"]
+[e20r-directory-for-pmpro levels="1,4" show_avatar="false" show_email="false"]
 
 Show all level IDs, hide level name and start date:
-[pmpro_member_directory show_level="false" show_startdate="false"]
+[e20r-directory-for-pmpro show_level="false" show_startdate="false"]
 
 Show a unique member directory by level. Level 1 Members can only see other Level 1 Members...:
 [membership level="1"]
-[pmpro_member_directory levels="1"]
+[e20r-directory-for-pmpro levels="1"]
 [/membership]
 
 [membership level="2"]
-[pmpro_member_directory levels="2"]
+[e20r-directory-for-pmpro levels="2"]
 [/membership]
 
 [membership level="3"]
-[pmpro_member_directory levels="3"]
+[e20r-directory-for-pmpro levels="3"]
 [/membership]
 
 Show unique member profiles based on level - hide user phone number and email address.
 [membership level="1"]
-[pmpro_member_profile show_email="false" show_phone="false"]
+[e20r-member-profile show_email="false" show_phone="false"]
 [/membership]
 
 [membership level="2"]
-[pmpro_member_profile show_email="true" show_phone="true"]
+[e20r-member-profile show_email="true" show_phone="true"]
 [/membership]
 
 == Hooks & Filters ==
 === Filters ===
-1. pmpro_member_profile_shipping_header - Set the heading for the Shipping Information section (if applicable). default: 'Billing Address' - string
-1. pmpro_member_profile_billing_header - Set the heading for the Billing Information section (if applicable). default: 'Shipping Address' - string
+1. e20r-member-profile_shipping_header - Set the heading for the Shipping Information section (if applicable). default: 'Billing Address' - string
+1. e20r-member-profile_billing_header - Set the heading for the Billing Information section (if applicable). default: 'Shipping Address' - string
 1. pmpromd_extra_search_fields - List (array) of user meta data keys that will have added search input sections on the directory page - default: array() (empty array)
 1. pmpromd_exact_search_values - Whether to wrap the search input in wildcard during DB operation, or use the extact string as typed - default: false (boolean)
 1. pmpromd_membership_statuses - Membership statuses to include in the search result. Default behavior is to only included active member(s) - default: array( 'active' )
-1. pmpro_member_directory_set_order - Directly change the directory search result order (SQL).
-1. pmpro_member_directory_sql - Modify the SQL statement used to search for whom to include in the directory listing
-1. pmpro_member_directory_search_class - Add extra CSS class(es) to the directory listing - default: null
+1. e20r-directory-for-pmpro_set_order - Directly change the directory search result order (SQL).
+1. e20r-directory-for-pmpro_sql - Modify the SQL statement used to search for whom to include in the directory listing
+1. e20r-directory-for-pmpro_search_class - Add extra CSS class(es) to the directory listing - default: null
 1. pmpromd_search_placeholder_text - Change the placeholder text in the Search input field - default: "Search Members" - string
-1. pmpro_member_directory_extra_search_input - Add array of HTML to add extra search input fields (and field types) below the main "Search" input.
-1. pmpro_member_profile_fields - Allow user to remove/add additional usermetadata fields & labels programatically
-1. pmpro_member_directory_non_admin_profile_settings - Set to false in order to hide the "Hide from Member Directory?" setting on the user's WordPress profile page, unless they're assigned the administrator role.
-1. 'pmpro_member_directory_included_levels' - Allow admin to configure which membership level(s) to include for directory
-1. 'pmpro_member_directory_metafield_value' - Used to format/modify the displayed usermeta value (Register Helper field value). Useful when using select/select2 fields and you need to translate a value to a label or if the stored value consists of an array. In that case, the default behavior is to let the value to display as a comma-separated list).
-1. pmpro_member_directory_profile_show_return_link - Allow hiding the "View All Members" link on/from the Member Profile page (template).
+1. e20r-directory-for-pmpro_extra_search_input - Add array of HTML to add extra search input fields (and field types) below the main "Search" input.
+1. e20r-member-profile_fields - Allow user to remove/add additional usermetadata fields & labels programatically
+1. e20r-directory-for-pmpro_non_admin_profile_settings - Set to false in order to hide the "Hide from Member Directory?" setting on the user's WordPress profile page, unless they're assigned the administrator role.
+1. 'e20r-directory-for-pmpro_included_levels' - Allow admin to configure which membership level(s) to include for directory
+1. 'e20r-directory-for-pmpro_metafield_value' - Used to format/modify the displayed usermeta value (Register Helper field value). Useful when using select/select2 fields and you need to translate a value to a label or if the stored value consists of an array. In that case, the default behavior is to let the value to display as a comma-separated list).
+1. e20r-directory-for-pmpro_profile_show_return_link - Allow hiding the "View All Members" link on/from the Member Profile page (template).
 
 === Action hooks ===
-1. pmpro_member_directory_extra_search_output - Output HTML so a user can provide input for the specified pmpromd_extra_search_fields search fields
-1. pmproemd_add_extra_profile_output - By default used to output the Shipping & Billing information sections on the user profile page, but can be used to add more data to the profile page for the user. Passes the current user's WP_User object as well as the array of entries from the 'fields=""' attribute (as it was prior to having been passed through the 'pmpro_member_profile_fields' filter).
-1. pmproemd_add_extra_profile_output - Output HTML at the bottom of the profile page entry for the selected member. Accepts 2 arguments: $real_fields_array (array of fields from Register Helper) and $profile_user (WP_User object for the member/user)
-1. pmproemd_add_extra_directory_output - Output HTML at the bottom of the directory entry for the current user. Accepts 2 arguments: $real_fields_array (array of fields from Register Helper) and $the_user (WP_User object for the member/user)
+1. e20r-directory-for-pmpro_extra_search_output - Output HTML so a user can provide input for the specified pmpromd_extra_search_fields search fields
+1. e20rmd_add_extra_profile_output - By default used to output the Shipping & Billing information sections on the user profile page, but can be used to add more data to the profile page for the user. Passes the current user's WP_User object as well as the array of entries from the 'fields=""' attribute (as it was prior to having been passed through the 'e20r-member-profile_fields' filter).
+1. e20rmd_add_extra_profile_output - Output HTML at the bottom of the profile page entry for the selected member. Accepts 2 arguments: $real_fields_array (array of fields from Register Helper) and $profile_user (WP_User object for the member/user)
+1. e20rmd_add_extra_directory_output - Output HTML at the bottom of the directory entry for the current user. Accepts 2 arguments: $real_fields_array (array of fields from Register Helper) and $the_user (WP_User object for the member/user)
 
 
-NOTE: pmpro_member_directory_extra_search_input (filter hook) and pmpro_member_directory_extra_search_output (action hook) are two ways - hooks - of achieving the same thing (the filter is for backwards compatibility reasons). The preferred approach at this point is to use the pmpro_member_directory_extra_search_output action hook.
+NOTE: e20r-directory-for-pmpro_extra_search_input (filter hook) and e20r-directory-for-pmpro_extra_search_output (action hook) are two ways - hooks - of achieving the same thing (the filter is for backwards compatibility reasons). The preferred approach at this point is to use the e20r-directory-for-pmpro_extra_search_output action hook.
 
 == Frequently Asked Questions ==
 
 = I found a bug in the plugin. =
 
-Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/eighty20results.com/pmpro-extended-membership-directory/issues
+Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/eighty20results.com/e20r-directory-for-pmpro/issues
 
 = I need help installing, configuring, or customizing the plugin. =
 
@@ -145,11 +151,11 @@ Please visit our premium support site at http://www.eighty20results.com for more
 = 2.7 =
 
 * ENHANCEMENT: More precise search for meta values
-* ENHANCEMENT: Use filter to determine whether to include the 'Show all members' directory link ('pmpro_member_directory_profile_show_return_link')
+* ENHANCEMENT: Use filter to determine whether to include the 'Show all members' directory link ('e20r-directory-for-pmpro_profile_show_return_link')
 
 = 2.6 =
 
-* ENHANCEMENT: Added 'pmpro_member_directory_metafield_value' filter - Used to format/modify the displayed usermeta value(s). Basically a Register Helper field value 'translator' filter.
+* ENHANCEMENT: Added 'e20r-directory-for-pmpro_metafield_value' filter - Used to format/modify the displayed usermeta value(s). Basically a Register Helper field value 'translator' filter.
 
 = 2.5 =
 
@@ -159,7 +165,7 @@ Please visit our premium support site at http://www.eighty20results.com for more
 
 * BUG FIX: Sanitize the level & levels attributes to avoid SQL injections
 * ENHANCEMENT: Add 'pmpromd_included_levels' filter to configure the level(s) to include members for.
-* ENHANCEMENT: Renamed 'pmpromd_included_levels' to 'pmpro_member_directory_included_levels'
+* ENHANCEMENT: Renamed 'pmpromd_included_levels' to 'e20r-directory-for-pmpro_included_levels'
 
 = 2.3 =
 
@@ -169,7 +175,7 @@ Please visit our premium support site at http://www.eighty20results.com for more
 
 = 2.2 =
 
-* ENHANCEMENT: Add pmproemd_add_extra_directory_output action hook in directory template (Include stuff at bottom of directory entry for user/entity)
+* ENHANCEMENT: Add e20rmd_add_extra_directory_output action hook in directory template (Include stuff at bottom of directory entry for user/entity)
 * BUG FIX: Didn't include extra search input fields/selections is search portion of profile page
 
 = 2.0.2 =
@@ -186,9 +192,9 @@ Please visit our premium support site at http://www.eighty20results.com for more
 * BUG FIX: Don't embed a website if there's a parameter containing the 'url' string in the fields attribute
 * ENHANCEMENT: Add pmporemd_true_false() function to check input values & return true if they're true, false if false.
 * ENHANCEMENT: Set default shortcode attributes
-* ENHANCEMENT: Use pmproemd_true_false for shortcode attributes
+* ENHANCEMENT: Use e20rmd_true_false for shortcode attributes
 * ENHANCEMENT: Add 'detailed profile page' link optionally activated for current and logged in members only (members_only_link='true', false by default)
-* ENHANCEMENT: Have a `pmpro_member_directory_extra_search_output` action in addition to the filter
+* ENHANCEMENT: Have a `e20r-directory-for-pmpro_extra_search_output` action in addition to the filter
 * ENHANCEMENT: Grant a logged in user access to their own (editable) profile and a link to look at the read-only (editable_profile='true', false by default)
 * ENHANCEMENT: Type check the show attributes
 * ENHANCEMENT: Let the current user either view or edit their profile
@@ -254,10 +260,10 @@ Please visit our premium support site at http://www.eighty20results.com for more
 * FIX: Didn't always handle pagination for the directory correctly
 
 = 1.0 =
-* ENHANCEMENT: Supports better/more extensive search based on user metadata in [pmpro_member_directory] shortcode
+* ENHANCEMENT: Supports better/more extensive search based on user metadata in [e20r-directory-for-pmpro] shortcode
 
 = .4.4 =
-* Added the pmpro_member_directory_sql filter (passes $sqlQuery, $levels, $s, $pn, $limit, $start, $end) that can be used to filter the SQL used to lookup members for the directory page.
+* Added the e20r-directory-for-pmpro_sql filter (passes $sqlQuery, $levels, $s, $pn, $limit, $start, $end) that can be used to filter the SQL used to lookup members for the directory page.
 
 = .4.3 =
 * BUG: Fixed bug where the Address 1 text was appearing under Address 2 on profiles.
@@ -271,15 +277,15 @@ Please visit our premium support site at http://www.eighty20results.com for more
 * BUG: Fixed broken profile links on directory page for certain usernames.
 
 = .4 =
-* Added pmpro_member_profile_fields filter to set or override fields available on the profile pages.
+* Added e20r-member-profile_fields filter to set or override fields available on the profile pages.
 
 = .3.1 =
-* BUG: Fixed css declaration that was affecting elements outside of the pmpro_member_directory div/table
-* ENHANCEMENT: Added ability to load the theme's (child or parent) custom pmpro-member-directory.css in place of default
+* BUG: Fixed css declaration that was affecting elements outside of the e20r-directory-for-pmpro div/table
+* ENHANCEMENT: Added ability to load the theme's (child or parent) custom e20r-directory-for-pmpro.css in place of default
 
 = .3 = 
-* FEATURE: Added [pmpro_member_profile] shortcode
-* ENHANCEMENT: Added additional attributes to the [pmpro_member_directory]
+* FEATURE: Added [e20r-member-profile] shortcode
+* ENHANCEMENT: Added additional attributes to the [e20r-directory-for-pmpro]
 * ENHANCEMENT: Added ability to define Directory and Profile page under Memberships > Pge Settings 
 * ENHANCEMENT: Added user option to hide profile from diretory.
 

@@ -19,6 +19,7 @@
   ],
   "require": {
     "php": ">=7.1",
-    "yahnis-elsts/plugin-update-checker": ">=4.5"
+    "yahnis-elsts/plugin-update-checker": ">=4.5",
+    "select2/select2": ">=4.0.5"
   }
 }

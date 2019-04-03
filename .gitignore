@@ -71,3 +71,7 @@ build_readmes/readme_changelog.txt
 build_readmes/json_changelog.txt
 composer.phar
 composer.lock
+/includes/kriswallsmith/
+/includes/select2/
+/includes/robloach/
+/includes/symfony/
