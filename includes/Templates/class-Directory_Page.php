@@ -19,9 +19,9 @@
 namespace E20R\Member_Directory;
 
 use E20R\Member_Directory\Database\Select;
+use E20R\Member_Directory\Settings\Options;
 use E20R\Utilities\Cache;
 use E20R\Utilities\Utilities;
-use Hamcrest\Util;
 
 /**
  * This shortcode will display the members list and additional content based on the defined attributes.
@@ -107,17 +107,50 @@ class Directory_Page {
 	}
 	
 	/**
-	 * Get or instantiate and return the E20R_Directory class instance
+	 * Does the supplied WP_Post (page) have one of the directory short codes embedded?
 	 *
-	 * @return Directory_Page|null
+	 * @param \WP_Post $page
+	 *
+	 * @return bool
 	 */
-	public static function getInstance() {
+	public static function hasShortcode( $page ) {
 		
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
+		$utils = Utilities::get_instance();
+		
+		if ( ! isset( $page->post_content ) ) {
+			$utils->log( "Post argument is empty!" );
+			
+			return false;
 		}
 		
-		return self::$instance;
+		// Make sure we're processing a WP_Post object
+		if ( ! is_a( $page, '\WP_Post' ) ) {
+			$utils->log( "The supplied page argument isn't a WordPress Post object!" );
+			
+			return false;
+		}
+		
+		if ( has_shortcode( $page->post_content, 'e20r_directory_for_pmpro' ) ) {
+			$utils->log( "Found the 'e20r_directory_for_pmpro' short code" );
+			
+			return true;
+		}
+		
+		if ( has_shortcode( $page->post_content, 'e20r-directory-for-pmpro' ) ) {
+			$utils->log( "Found the 'e20r-directory-for-pmpro' short code" );
+			
+			return true;
+		}
+		
+		if ( has_shortcode( $page->post_content, 'pmpro_member_directory' ) ) {
+			$utils->log( "Found the 'pmpro_member_directory' short code" );
+			
+			return true;
+		}
+		
+		$utils->log( "Could not locate a Directory short code!" );
+		
+		return false;
 	}
 	
 	/**
@@ -125,30 +158,13 @@ class Directory_Page {
 	 */
 	public function loadHooks() {
 		
-		add_shortcode( "e20r_directory_for_pmpro", array( $this, 'shortcode' ) );
-		add_shortcode( "e20r-directory-for-pmpro", array( $this, 'shortcode' ) );
+		add_shortcode( "e20r_member_directory", array( $this, 'shortcode' ) );
+		add_shortcode( "e20r-member-directory", array( $this, 'shortcode' ) );
+		add_shortcode( "pmpro_member_directory", array( $this, 'shortcode' ) );
 	}
 	
 	/**
-	 * Add result string as HTML
-	 */
-	private static function addResultString() {
-	    $class = self::getInstance();
-	    
-	    if ( $class->total_in_db > 0 ) { ?>
-            <small class="muted">
-                (<?php
-				if ( $class->total_in_db == 1 ) {
-					printf( __( 'Showing 1 Result', 'e20r-directory-for-pmpro' ), $class->start + 1, $class->end, $class->total_in_db );
-				} else {
-					printf( __( 'Showing %s-%s of %s results', 'e20r-directory-for-pmpro' ), $class->start + 1, $class->end, $class->total_in_db );
-				} ?>)
-            </small>
-		<?php }
-    }
-    
-	/**
-	 * Generate output for the [e20r_directory_for_pmpro] short code
+	 * Generate output for the [e20r_member_directory] short code
 	 *
 	 * @param array       $atts
 	 * @param null|string $content
@@ -195,12 +211,12 @@ class Directory_Page {
 		
 		// Set & sanitize request values
 		$this->page_number = $utils->get_variable( 'page_number', 1 );
-		$page_size    = $utils->get_variable( 'page_size', null );
+		$page_size         = $utils->get_variable( 'page_size', null );
 		
 		if ( null !== $page_size ) {
-		    $utils->log("Page size value specified in URL");
-		    $this->page_size = $page_size;
-        }
+			$utils->log( "Page size value specified in URL" );
+			$this->page_size = $page_size;
+		}
 		
 		if ( ! empty( $this->page_size ) ) {
 			$utils->log( "Calculating pagination start/end" );
@@ -226,8 +242,22 @@ class Directory_Page {
 		$this->members_only_link = E20R_Directory_For_PMPro::trueFalse( $this->members_only_link );
 		$this->editable_profile  = E20R_Directory_For_PMPro::trueFalse( $this->editable_profile );
 		$this->paginated         = E20R_Directory_For_PMPro::trueFalse( $this->paginated );
-		$this->directory_url     = get_permalink( $post ); // Get the current page URL (which should be the directory page!)
-		$this->profile_url       = ! empty( $pmpro_pages['profile'] ) ? get_permalink( $pmpro_pages['profile'] ) : null;
+		
+		// Configure the page variables for the Profile page
+		if ( false === $this->setDirectoryPageVariables() ) {
+			
+			$utils->add_message(
+				sprintf(
+					__( 'Error loading the "%s" directory page (ID: %d)', E20R_Directory_For_PMPro::plugin_slug ),
+					$post->post_title,
+					$post->ID
+				),
+				'error',
+				'backend'
+			);
+			
+			return null;
+		}
 		
 		/**
 		 * Use the supplied page slug as the profile page instead (if available)
@@ -271,7 +301,7 @@ class Directory_Page {
 		 * @param string $profile_url - The URL to the profile page (default is either the $pmpro_pages['profile'] permalink,
 		 *                            or the page found at the specified 'profile_page_slug' attribute value
 		 */
-		$this->profile_url = apply_filters( 'e20r-directory-for-pmpro-profile-url', $this->profile_url );
+		$this->profile_url = apply_filters( 'e20r-directory-for-pmpro-profile-url', $this->profile_url, $post );
 		
 		/**
 		 * Allow overriding of the URL to the directory page (i.e. override the $pmpro_pages['directory'] setting)
@@ -280,7 +310,7 @@ class Directory_Page {
 		 *
 		 * @param string $directory_url - The URL to the directory page (default is the $pmpro_pages['directory'] permalink)
 		 */
-		$this->directory_url = apply_filters( 'e20r-directory-for-pmpro-directory-url', $this->directory_url );
+		$this->directory_url = apply_filters( 'e20r-directory-for-pmpro-directory-url', $this->directory_url, $post );
 		
 		// Look up the members
 		$members = $this->findMembers();
@@ -371,7 +401,7 @@ class Directory_Page {
 				} ?>
             </p>
 		<?php } ?>
-        <?php self::addResultString(); ?>
+		<?php self::addResultString(); ?>
         <div class="pmpro_pagination">
 			<?php $this->prevNextLinks( $this->page_number, $this->end ); ?>
         </div> <?php
@@ -396,14 +426,14 @@ class Directory_Page {
 			'levels'            => null,
 			'paginated'         => 'true',
 			'link'              => 'true',
-			'order_by'          => 'u.display_name',
+			'order_by'          => 'display_name',
 			'order'             => 'ASC',
 			'show_avatar'       => 'true',
 			'show_email'        => 'true',
 			'show_level'        => 'true',
 			'show_search'       => 'true',
 			'show_startdate'    => 'true',
-			'page_size'          => 15,
+			'page_size'         => 15,
 			'show_roles'        => 'false',
 			'members_only_link' => 'false',
 			'editable_profile'  => 'false',
@@ -415,6 +445,55 @@ class Directory_Page {
 		foreach ( $shortcode_attributes as $name => $value ) {
 			$this->{$name} = $value;
 		}
+	}
+	
+	/**
+	 * Configure the URLs for the directory as it relates to the current page (profile)
+	 *
+	 * @return bool
+	 */
+	private function setDirectoryPageVariables() {
+		
+		global $post;
+		$utils = Utilities::get_instance();
+		
+		// Page variables
+		$directory_page_id = isset( $post->ID ) ? $post->ID : null;
+		$profile_page_id   = Options::getProfileIDFromDirectory( $post->ID );
+		
+		// Grab the default directory page if none is specified
+		if ( empty( $directory_page_id ) ) {
+			
+			// Get the default directory page ID
+			$directory_page_id = Options::getDirectoryIDFromProfile();
+		}
+		
+		// Grab the default profile page if none is specified
+		if ( empty( $profile_page_id ) ) {
+			
+			// Get the default Profile page ID
+			$profile_page_id = Options::getProfileIDFromDirectory();
+		}
+		
+		// Generate URLs
+		// $this->directory_url = E20R_Directory_For_PMPro::getURL( 'directory', $directory_page_id );
+		// $this->profile_url   = E20R_Directory_For_PMPro::getURL( 'profile', $profile_page_id );
+		$this->directory_url = get_permalink( $directory_page_id );
+		$this->profile_url   = get_permalink( $profile_page_id );
+		
+		if ( empty( $this->directory_url ) ) {
+			$utils->log( "Error: Could not generate the URL for the 'directory' page (ID: {$directory_page_id})!" );
+			
+			return false;
+		}
+		
+		if ( empty( $this->profile_url ) ) {
+			$utils->log( "Error: Could not generate the URL for the 'profile' page (ID: {$profile_page_id})!" );
+			
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -758,11 +837,11 @@ class Directory_Page {
 		
 		/**
 		 * @filter e20r-directory-default-column-defs
-         *
+		 *
 		 * @param array $columns - List of column definition(s) to use
 		 *
 		 * $columns = array(
-         *      array(
+		 *      array(
 		 *          'order' => int,
 		 *          'prefix' => string,
 		 *          'column' => string,
@@ -1292,10 +1371,15 @@ class Directory_Page {
 		$utils  = Utilities::get_instance();
 		$column = '';
 		
+		$utils->log( "Looking for {$order_by} in column or alias for the column defs" );
+		
 		foreach ( $this->columns as $id => $column_def ) {
+			
+			$utils->log( "Processing column # {$id}" );
 			
 			$matches_column = ( $order_by == $column_def['column'] );
 			$matches_alias  = ( $order_by == $column_def['alias'] );
+			
 			if ( $matches_alias || $matches_column ) {
 				
 				$utils->log( "Found {$order_by} column data" );
@@ -1314,6 +1398,10 @@ class Directory_Page {
 				
 				break;
 			}
+		}
+		
+		if ( empty( $column ) ) {
+			$column = "u.display_name";
 		}
 		
 		return $column;
@@ -1404,6 +1492,38 @@ class Directory_Page {
         </form>
 		<?php
 		return ob_get_clean();
+	}
+	
+	/**
+	 * Add result string as HTML
+	 */
+	private static function addResultString() {
+		$class = self::getInstance();
+		
+		if ( $class->total_in_db > 0 ) { ?>
+            <small class="muted">
+                (<?php
+				if ( $class->total_in_db == 1 ) {
+					printf( __( 'Showing 1 Result', 'e20r-directory-for-pmpro' ), $class->start + 1, $class->end, $class->total_in_db );
+				} else {
+					printf( __( 'Showing %s-%s of %s results', 'e20r-directory-for-pmpro' ), $class->start + 1, $class->end, $class->total_in_db );
+				} ?>)
+            </small>
+		<?php }
+	}
+	
+	/**
+	 * Get or instantiate and return the E20R_Directory class instance
+	 *
+	 * @return Directory_Page|null
+	 */
+	public static function getInstance() {
+		
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+		
+		return self::$instance;
 	}
 	
 	/**
@@ -1710,17 +1830,17 @@ class Directory_Page {
 				$real_fields_array = $this->fields_array;
 				
 				/**
-                 * Process the received field list from the 'fields=""' attribute
-                 *
+				 * Process the received field list from the 'fields=""' attribute
+				 *
 				 * @filter e20r-member-profile_fields
-                 *
-                 * @param array $this->fields_array
-                 * @param \WP_User $wp_user
+				 *
+				 * @param array    $this ->fields_array
+				 * @param \WP_User $wp_user
 				 */
 				$this->fields_array = apply_filters( 'e20r-member-profile_fields', $this->fields_array, $wp_user );
 				
-				if ( is_array( $this->fields_array) && ! empty( $this->fields_array ) ) {
-				 
+				if ( is_array( $this->fields_array ) && ! empty( $this->fields_array ) ) {
+					
 					foreach ( $this->fields_array as $field ) {
 						
 						$meta_field = wp_unslash( apply_filters( 'e20r-directory-for-pmpro_metafield_value', $wp_user->{$field[1]}, $field[1], $wp_user ) );
@@ -1828,7 +1948,7 @@ class Directory_Page {
 		
 		// Configure the basics of the Pagination arguments
 		$pn_args = array(
-			"ps"    => $this->search,
+			"ps"        => $this->search,
 			"page_size" => $this->page_size,
 		);
 		
