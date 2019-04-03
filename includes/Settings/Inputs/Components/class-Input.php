@@ -19,7 +19,7 @@
 
 namespace E20R\Member_Directory\Settings\Inputs\Components;
 
-use E20R\Sequences\Data\Options;
+use E20R\Member_Directory\Settings\Options;
 
 class Input {
 	
@@ -38,7 +38,7 @@ class Input {
 		$id_label      = ! empty( $settings['id'] ) ? sprintf( 'id="%1$s"', $settings['id'] ) : null;
 		$type          = empty( $settings['type'] ) ? 'text' : $settings['type'];
 		$placeholder   = ! empty( $settings['placeholder'] ) ? $settings['placeholder'] : null;
-		$input_classes = Settings::fixClasses( ( isset( $settings['input_css_classes'] ) ? $settings['input_css_classes'] : null ) );
+		$input_classes = Options::fixClasses( ( isset( $settings['input_css_classes'] ) ? $settings['input_css_classes'] : null ) );
 		
 		$value = $saved_value;
 		

@@ -41,8 +41,8 @@ class Select {
 		$utils = Utilities::get_instance();
 		$utils->log( "Loading Select2 Libraries & sources" );
 		
-		wp_enqueue_script( 'select2', Controller::$LIBRARY_URL . "/select2/select2/dist/js/select2.js", array( 'jquery' ), Controller::$Version );
-		wp_enqueue_style( 'select2', Controller::$LIBRARY_URL . "/select2/select2/dist/css/select2.css", null, Controller::$Version );
+		wp_enqueue_script( 'select2', Controller::$LIBRARY_URL . "/select2/dist/js/select2.js", array( 'jquery' ), Controller::$Version );
+		wp_enqueue_style( 'select2', Controller::$LIBRARY_URL . "/select2/dist/css/select2.css", null, Controller::$Version );
 		
 		$paths['e20r-input-select'] = plugins_url( 'js/input-select.js', __FILE__ );
 		

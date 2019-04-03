@@ -198,7 +198,7 @@ class E20R_Directory_For_PMPro {
 			self::$instance = new self();
 			
 			// Set the path to the libraries we need/use
-			self::$LIBRARY_URL = plugin_dir_url( __FILE__ ) . "/includes";
+			self::$LIBRARY_URL = plugin_dir_url( __FILE__ ) . "/components";
 		}
 		
 		return self::$instance;

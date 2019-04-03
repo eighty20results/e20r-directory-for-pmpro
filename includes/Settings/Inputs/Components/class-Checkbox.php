@@ -19,8 +19,7 @@
 
 namespace E20R\Member_Directory\Settings\Inputs\Components;
 
-use E20R\Member_Directory\Settings\Settings;
-use E20R\Sequences\Data\Options;
+use E20R\Member_Directory\Settings\Options;
 
 
 /**
@@ -42,8 +41,8 @@ class Checkbox {
 		
 		$setting_name  = $settings['setting_category'];
 		$id_label      = ! empty( $settings['id'] ) ? sprintf( 'id="%1$s"', $settings['id'] ) : null;
-		$input_classes = Settings::fixClasses( ( isset( $settings['input_css_classes'] ) ? $settings['input_css_classes'] : null ) );
-		$label_classes = Settings::fixClasses( ( isset( $settings['label_css_classes'] ) ? $settings['label_css_classes'] : null ) );
+		$input_classes = Options::fixClasses( ( isset( $settings['input_css_classes'] ) ? $settings['input_css_classes'] : null ) );
+		$label_classes = Options::fixClasses( ( isset( $settings['label_css_classes'] ) ? $settings['label_css_classes'] : null ) );
 		
 		$html = sprintf(
 			'<input type="checkbox" %1$s name="%2$s[%3$s]" value="%4$s" %6$s %5$s />',
