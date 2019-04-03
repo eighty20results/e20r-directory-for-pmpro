@@ -531,7 +531,7 @@ class E20R_Directory_For_PMPro {
 		
 		$utils           = Utilities::get_instance();
 		
-		if ( 'toplevel_page_pmpro-pagesettings' !== $hook && 'user-edit.php' !== $hook  ) {
+		if ( 'admin_page_pmpro-pagesettings' !== $hook && 'user-edit.php' !== $hook  ) {
 		    $utils->log("Not on the profile or PMPro Settings page: {$hook}");
 			return;
 		}
