@@ -36,6 +36,7 @@ namespace E20R\Member_Directory;
 
 global $e20rmd_options;
 
+use E20R\Member_Directory\Settings\Licensing;
 use E20R\Member_Directory\Settings\Options;
 use E20R\Member_Directory\Settings\Page_Pairing;
 use E20R\Member_Directory\Settings\PMPro_PageSettings;
@@ -427,10 +428,13 @@ class E20R_Directory_For_PMPro {
 	 */
 	public function loadHooks() {
 		
+	    // TODO: Activate licensing module once implemented
+		// add_action( 'plugins_loaded', array( Licensing::get_instance(), 'load_hooks'), 18 );
 		add_action( 'plugins_loaded', array( PMPro_PageSettings::getInstance(), 'loadHooks' ), 19 );
 		add_action( 'plugins_loaded', array( Directory_Page::getInstance(), 'loadHooks' ), 20 );
 		add_action( 'plugins_loaded', array( Profile_Page::getInstance(), 'loadHooks' ), 20 );
 		add_action( 'plugins_loaded', array( Page_Pairing::getInstance(), 'loadHooks' ), 21 );
+		
 		add_action( 'plugins_loaded', array( $this, 'init' ), 99 );
 		
 		add_action( 'e20rmd_add_extra_profile_output', array(
@@ -768,10 +772,17 @@ class E20R_Directory_For_PMPro {
 	 * @param \WP_User $user
 	 */
 	public function showExtraProfileFields( $user ) {
-		global $pmpro_pages;
-		
+	 
 		$is_admin = current_user_can( 'manage_options' );
+		$hide_directory = (bool) get_user_meta( $user->ID, 'e20red_hide_directory', true );
+		$pmpro_hide_directory = (bool) get_user_meta( $user->ID, 'pmpro_hide_directory', true );
 		
+		// Compatibility with the PMPro add-on setting(s)
+		if ( true === $pmpro_hide_directory && false === $hide_directory ) {
+		    $hide_directory = $pmpro_hide_directory;
+		    update_user_meta( $user->ID, 'e20red_hide_directory', $hide_directory );
+        }
+        
 		if ( (
 			     true === apply_filters( 'e20r-directory-for-pmpro_non_admin_profile_settings', true ) &&
 			     false === $is_admin
@@ -785,8 +796,8 @@ class E20R_Directory_For_PMPro {
                     <td>
                         <label for="e20red_hide_directory">
                             <input name="e20red_hide_directory" type="checkbox"
-                                   id="e20red_hide_directory" <?php checked( get_user_meta( $user->ID, 'e20red_hide_directory', true ), 1 ); ?>
-                                   value="1"><?php printf( __( 'Hide from %s?', 'e20r-directory-for-pmpro' ), __( 'Member Directory', self::plugin_slug ) ); ?>
+                                   id="e20red_hide_directory" <?php checked( $hide_directory, 1 ); ?>
+                                   value="1"><?php _e( 'Hide my profile in the Member Directory?', self::plugin_slug ); ?>
                         </label>
                     </td>
                 </tr>
@@ -797,7 +808,7 @@ class E20R_Directory_For_PMPro {
 	}
 	
 	/**
-	 * Save the 'exclude from directory' setting for the user
+	 * Save the 'exclude from directory' setting for the user (default is "don't exclude the user")
 	 *
 	 * @param int $user_id
 	 *
@@ -810,7 +821,6 @@ class E20R_Directory_For_PMPro {
 		// Transition the user from the PMPro 'hide_directory' variable (if necessary)
 		if ( $pmpro_hide_directory ) {
 		    update_user_meta( $user_id, 'e20red_hide_directory', $pmpro_hide_directory );
-		    delete_user_meta( $user_id, 'pmpro_hide_directory' );
         }
         
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
