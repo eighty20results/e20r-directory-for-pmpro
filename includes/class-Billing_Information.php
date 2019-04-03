@@ -19,6 +19,7 @@
 
 namespace E20R\Member_Directory\Tools;
 
+use E20R\Member_Directory\E20R_Directory_For_PMPro;
 use E20R\Utilities\Cache;
 use E20R\Utilities\Utilities;
 
@@ -108,31 +109,31 @@ class Billing_Information {
 			
 			// PMPro billing address fields (standard/default)
 			self::$instance->billing_field_list = apply_filters( 'e20r-directory-billing-address-fields', array(
-					'pmpro_bfirstname' => __( 'First name', 'e20r-directory-for-pmpro' ),
-					'pmpro_blastname'  => __( 'Last name', 'e20r-directory-for-pmpro' ),
-					'pmpro_baddress'   => __( 'Street address', 'e20r-directory-for-pmpro' ),
-					'pmpro_baddress2'  => __( 'Street address 2', 'e20r-directory-for-pmpro' ),
-					'pmpro_bcity'      => __( 'City', 'e20r-directory-for-pmpro' ),
-					'pmpro_bstate'     => apply_filters( 'e20r-directory-state-label', __( 'State', 'e20r-directory-for-pmpro' ) ),
-					'pmpro_bzipcode'   => apply_filters( 'e20r-directory-zipcode-label', __( 'Zip code', 'e20r-directory-for-pmpro' ) ),
-					'pmpro_bcountry'   => __( 'Country', 'e20r-directory-for-pmpro' ),
-					'pmpro_bphone'     => __( 'Phone', 'e20r-directory-for-pmpro' ),
-					'pmpro_bemail'     => __( 'Email address', 'e20r-directory-for-pmpro' ),
+					'pmpro_bfirstname' => __( 'First name:', 'e20r-directory-for-pmpro' ),
+					'pmpro_blastname'  => __( 'Last name:', 'e20r-directory-for-pmpro' ),
+					'pmpro_baddress1'  => __( 'Street address 1:', 'e20r-directory-for-pmpro' ),
+					'pmpro_baddress2'  => __( 'Street address 2:', 'e20r-directory-for-pmpro' ),
+					'pmpro_bcity'      => __( 'City:', 'e20r-directory-for-pmpro' ),
+					'pmpro_bstate'     => apply_filters( 'e20r-directory-state-label', __( 'State:', 'e20r-directory-for-pmpro' ) ),
+					'pmpro_bzipcode'   => apply_filters( 'e20r-directory-zipcode-label', __( 'Zip code:', 'e20r-directory-for-pmpro' ) ),
+					'pmpro_bcountry'   => __( 'Country:', 'e20r-directory-for-pmpro' ),
+					'pmpro_bphone'     => __( 'Phone:', 'e20r-directory-for-pmpro' ),
+					'pmpro_bemail'     => __( 'Email address:', 'e20r-directory-for-pmpro' ),
 				)
 			);
 			
 			// PMPro shipping address fields (standard/default)
 			self::$instance->shipping_field_list = apply_filters( 'e20r-directory-shipping-address-fields', array(
-					'pmpro_sfirstname' => __( 'First name', 'e20r-directory-for-pmpro' ),
-					'pmpro_slastname'  => __( 'Last name', 'e20r-directory-for-pmpro' ),
-					'pmpro_saddress'   => __( 'Street address', 'e20r-directory-for-pmpro' ),
-					'pmpro_saddress2'  => __( 'Street address 2', 'e20r-directory-for-pmpro' ),
-					'pmpro_scity'      => __( 'City', 'e20r-directory-for-pmpro' ),
-					'pmpro_sstate'     => apply_filters( 'e20r-directory-state-label', __( 'State', 'e20r-directory-for-pmpro' ) ),
-					'pmpro_szipcode'   => apply_filters( 'e20r-directory-zipcode-label', __( 'Zip code', 'e20r-directory-for-pmpro' ) ),
-					'pmpro_scountry'   => __( 'Country', 'e20r-directory-for-pmpro' ),
-					'pmpro_sphone'     => __( 'Phone', 'e20r-directory-for-pmpro' ),
-					'pmpro_semail'     => __( 'Email address', 'e20r-directory-for-pmpro' ),
+					'pmpro_sfirstname' => __( 'First name:', 'e20r-directory-for-pmpro' ),
+					'pmpro_slastname'  => __( 'Last name:', 'e20r-directory-for-pmpro' ),
+					'pmpro_saddress1'  => __( 'Street address 1:', 'e20r-directory-for-pmpro' ),
+					'pmpro_saddress2'  => __( 'Street address 2:', 'e20r-directory-for-pmpro' ),
+					'pmpro_scity'      => __( 'City:', 'e20r-directory-for-pmpro' ),
+					'pmpro_sstate'     => apply_filters( 'e20r-directory-state-label', __( 'State:', 'e20r-directory-for-pmpro' ) ),
+					'pmpro_szipcode'   => apply_filters( 'e20r-directory-zipcode-label', __( 'Zip code:', 'e20r-directory-for-pmpro' ) ),
+					'pmpro_scountry'   => __( 'Country:', 'e20r-directory-for-pmpro' ),
+					'pmpro_sphone'     => __( 'Phone:', 'e20r-directory-for-pmpro' ),
+					'pmpro_semail'     => __( 'Email address:', 'e20r-directory-for-pmpro' ),
 				)
 			);
 		}
@@ -298,9 +299,10 @@ class Billing_Information {
 	 *
 	 * @param array    $fields
 	 * @param \WP_User $user
+	 * @param bool     $read_only
 	 *
 	 */
-	public function addAddressSection( $fields, $user ) {
+	public function addAddressSection( $fields, $user, $read_only = true ) {
 		
 		global $e20rmd_has_billing_fields;
 		global $e20rmd_has_shipping_fields;
@@ -322,27 +324,29 @@ class Billing_Information {
 			return;
 		}
 		
-		$b_heading = apply_filters( 'e20r-member-profile_billing_header', __( "Billing Address", "e20r-directory-for-pmpro" ) );
-		$s_heading = apply_filters( 'e20r-member-profile_shipping_header', __( "Shipping Address", "e20r-directory-for-pmpro" ) );
+		$b_heading = apply_filters( 'e20r-member-profile_billing_header', __( "Billing Address", E20R_Directory_For_PMPro::plugin_slug ) );
+		$s_heading = apply_filters( 'e20r-member-profile_shipping_header', __( "Shipping Address", E20R_Directory_For_PMPro::plugin_slug ) );
 		
 		// Nothing to show!
-		if ( ( false === $e20rmd_show_billing_address && false === $e20rmd_show_shipping_address ) ||
-		     ( empty( $e20rmd_has_billing_fields ) && empty( $e20rmd_has_shipping_fields ) ) ) {
+		if ( true === $read_only && ( ( false === $e20rmd_show_billing_address && false === $e20rmd_show_shipping_address ) ||
+		                              ( empty( $e20rmd_has_billing_fields ) && empty( $e20rmd_has_shipping_fields ) ) )
+		) {
+			$utils->log( "Billing and shipping address info not used..." );
+			
 			return;
 		}
 		
 		$has_billing_address  = self::userHasAddress( 'billing', $user );
 		$has_shipping_address = self::userHasAddress( 'shipping', $user );
 		
-		if ( false === $has_billing_address && false === $has_shipping_address ) {
+		if ( false === $has_billing_address && false === $has_shipping_address && true === $read_only ) {
 			$utils->log( "User doesn't have a billing or shipping address..." );
 			
 			return;
 		} ?>
         <div class="e20rmd_address_section">
-			<?php if ( true === $has_billing_address &&
-			           true === $e20rmd_show_billing_address &&
-			           ! empty( $e20rmd_has_billing_fields )
+			<?php if ( ( true === $has_billing_address && true === $read_only ) ||
+			           true === $e20rmd_show_billing_address
 			) {
 				$utils->log( "Loading billing info! " ); ?>
                 <!-- Billing address -->
@@ -355,28 +359,35 @@ class Billing_Information {
 								
 								$value = isset( $user->{$field_name} ) ? $user->{$field_name} : null;
 								
-								if ( 1 === preg_match( '/pmpro_bfirstname/i', $field_name ) ) {
+								if ( true === $read_only &&
+								     1 === preg_match( '/pmpro_bfirstname/i', $field_name ) ) {
 									$value       = sprintf( '%s %s', $user->pmpro_bfirstname, $user->pmpro_blastname );
 									$field_label = __( 'Name:', 'e20r-directory-for-pmpro' );
 								}
 								
-								if ( 1 === preg_match( '/pmpro_blastname/i', $field_name ) ) {
+								if ( true === $read_only &&
+								     1 === preg_match( '/pmpro_blastname/i', $field_name ) ) {
 									continue;
 								}
 								
-								printf(
-									'<span class="e20r-directory-address-entry"><label>%s:</label><span>%s</span></span>',
-									$field_label,
-									$value
-								); ?>
+								if ( true === $read_only ) {
+									printf(
+										'<span class="e20r-directory-address-entry"><label>%1$s</label><span>%2$s</span></span>',
+										$field_label,
+										$value
+									);
+								} else {
+									printf(
+										'<span class="e20r-directory-address-entry"><label for="%2$s">%1$s</label><input type="text" id="%2$s" name="%2$s" value="%3$s" class="e20r-directory-for-pmpro-input"></span>', $field_label, $field_name, $value );
+								} ?>
                             </div> <?php
 						} ?>
                     </div>
                 </div>
 			<?php } ?>
-			<?php if ( true === $has_shipping_address &&
-			           true === $e20rmd_show_shipping_address &&
-			           ! empty( $e20rmd_has_shipping_fields ) ) { ?>
+			<?php if ( ( true === $has_shipping_address && true === $read_only ) ||
+			           true === $e20rmd_show_shipping_address
+			) { ?>
                 <!-- Shipping address -->
                 <div class="e20r-directory-for-pmpro_shipping_address">
                     <h3 class="e20rmd_shipping_address_heading"><?php esc_attr_e( $s_heading ); ?></h3>
@@ -388,19 +399,27 @@ class Billing_Information {
 								
 								$value = isset( $user->{$field_name} ) ? $user->{$field_name} : null;
 								
-								if ( 1 === preg_match( '/pmpro_sfirstname/i', $field_name ) ) {
+								if ( true === $read_only &&
+								     1 === preg_match( '/pmpro_sfirstname/i', $field_name ) ) {
 									$value       = sprintf( '%s %s', $user->pmpro_bfirstname, $user->pmpro_blastname );
 									$field_label = __( 'Name:', 'e20r-directory-for-pmpro' );
 								}
 								
-								if ( 1 === preg_match( '/pmpro_slastname/i', $field_name ) ) {
+								if ( true === $read_only &&
+								     1 === preg_match( '/pmpro_slastname/i', $field_name ) ) {
 									continue;
 								}
-								printf(
-									'<span class="e20r-directory-address-entry"><label>%s:</label><span>%s</span></span>',
-									$field_label,
-									$value
-								); ?>
+								
+								if ( true === $read_only ) {
+									printf(
+										'<span class="e20r-directory-address-entry"><label>%1$s</label><span>%2$s</span></span>',
+										$field_label,
+										$value
+									);
+								} else {
+									printf(
+										'<span class="e20r-directory-address-entry"><label for="%2$s">%1$s</label><input type="text" id="%2$s" name="%2$s" value="%3$s" class="e20r-directory-for-pmpro-input"></span>', $field_label, $field_name, $value );
+								} ?>
                             </div> <?php
 						} ?>
                     </div>
@@ -458,12 +477,13 @@ class Billing_Information {
 	}
 	
 	/**
-	 * @param int      $user_id
-	 * @param \WP_User $old_user_data
+	 * Trigger when user profile is being saved
+	 *
+	 * @param int $user_id
 	 *
 	 * @return int
 	 */
-	public function maybeSaveBillingInfo( $user_id, $old_user_data ) {
+	public function maybeSaveBillingInfo( $user_id ) {
 		
 		$utils = Utilities::get_instance();
 		
@@ -471,23 +491,14 @@ class Billing_Information {
 			return $user_id;
 		}
 		
-		$user = get_user_by( 'ID', $user_id );
-		
-		if ( false === self::userHasAddress( 'billing', $user ) ) {
-			$utils->log( "No billing info settings found" );
-			
-			return $user_id;
+		if ( ! empty( $this->billing_field_list ) ) {
+			$utils->log( "Using PMPro billing fields to save data" );
+			$this->saveFields( $user_id, $this->billing_field_list );
 		}
 		
-		$billing_fields  = array_keys( self::getBillingFields() );
-		$shipping_fields = array_keys( self::getShippingFields() );
-		
-		if ( ! empty( $billing_address ) ) {
-			$this->saveFields( $user_id, $billing_fields );
-		}
-		
-		if ( ! empty( $shipping_fields ) ) {
-			$this->saveFields( $user_id, $shipping_fields );
+		if ( ! empty( $this->shipping_field_list ) ) {
+			$utils->log( "Using PMPro shipping fields to save data" );
+			$this->saveFields( $user_id, $this->shipping_field_list );
 		}
 	}
 	
@@ -505,15 +516,16 @@ class Billing_Information {
 			return;
 		}
 		
-		foreach ( array_keys( $field_list ) as $address_field ) {
+		$utils->log( "Field list: " . print_r( $field_list, true ) );
+		
+		foreach ( $field_list as $address_field => $label ) {
 			
 			$value = $utils->get_variable( $address_field, null );
+			$utils->log( "Attempting to save {$address_field} = {$value}" );
 			
-			if ( null === $value ) {
+			if ( empty( $value ) ) {
 				delete_user_meta( $user_id, $address_field );
-			}
-			
-			if ( ! empty( $value ) ) {
+			} else {
 				update_user_meta( $user_id, $address_field, $value, true );
 			}
 		}
