@@ -143,7 +143,7 @@ class Options {
 		}
 		
 		// Only need to fix if the number of page pairs is 1
-		if ( 1 != count( $this->{$parameter} ) ) {
+		if ( isset($this->{$parameter}['default']) && 1 != count( $this->{$parameter} ) ) {
 			return;
 		}
 		
@@ -153,7 +153,7 @@ class Options {
 		}
 		
 		// Grab the single pair (so we can restore it as the default setting
-		$pair = array_pop( $this->page_pairs );
+		$pair = array_shift( $this->page_pairs );
 		
 		// Very unexpected, but we have nothing to do so...
 		if ( empty( $pair ) ) {
@@ -173,16 +173,15 @@ class Options {
 			return;
 		}
 		
+		$pmpro_pages['directory'] = $this->{$parameter}['default']['directory'];
+		pmpro_setOption( "directory_page_id", $pmpro_pages['directory'] );
+		
 		if ( isset( $pmpro_pages['profile'] ) && ! empty( $pmpro_pages['profile'] ) ) {
 			return;
 		}
 		
-		$pmpro_pages['directory'] = $this->{$parameter}['default']['directory'];
 		$pmpro_pages['profile']   = $this->{$parameter}['default']['profile'];
-		
-		pmpro_setOption( "directory_page_id", $pmpro_pages['directory'] );
 		pmpro_setOption( "profile_page_id", $pmpro_pages['profile'] );
-		
 	}
 	
 	/**
@@ -196,6 +195,9 @@ class Options {
 		
 		$class = self::getInstance();
 		$utils = Utilities::get_instance();
+		
+		$utils->log("Should we fix the page pair settings?");
+		$class->maybeFixPagePairs( 'page_pairs',$class->page_pairs );
 		
 		/**
 		 * @var @var array( $directory_page_id => array( 'directory' => $directory_page_id, 'profile' => $profile_page_id ) );
