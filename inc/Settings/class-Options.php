@@ -207,7 +207,7 @@ class Options {
 		
 		$utils->log( "Page pairs are: " . print_r( $page_pairs, true ) );
 		
-		if ( 'default' === $profile_page_id ) {
+		if ( 'default' === $profile_page_id && isset( $page_pairs['default'] ) ) {
 			$utils->log( "Looking for the default directory page..." );
 			
 			return $page_pairs['default']['directory'];
@@ -227,7 +227,7 @@ class Options {
 			}
 		}
 		
-		if ( empty( $location ) && $profile_page_id !== $page_pairs['default']['profile'] ) {
+		if ( empty( $location ) && ( ! isset( $page_pairs['default'] ) || $profile_page_id !== $page_pairs['default']['profile'] ) ) {
 			$utils->log( "Directory page is not found for profile page ID {$profile_page_id}" );
 			
 			return false;
