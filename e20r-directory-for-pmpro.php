@@ -3,7 +3,7 @@
 Plugin Name: E20R Directory for PMPro
 Plugin URI: https://eighty20results.com/wordpress-plugins/e20r-directory-for-pmpro
 Description: Better member directory and profile pages for Paid Memberships Pro
-Version: 3.0
+Version: 3.1
 Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
 Text Domain: e20r-directory-for-pmpro
@@ -49,7 +49,7 @@ if ( ! defined( "E20R_DIRECTORY" ) ) {
 }
 
 if ( ! defined( "E20RED_VER" ) ) {
-	define( 'E20RED_VER', "3.0" );
+	define( 'E20RED_VER', "3.1" );
 }
 
 /**

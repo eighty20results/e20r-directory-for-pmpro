@@ -1,1 +1,3 @@
-ENHANCEMENT: Initial release of v3.0 of the E20R Directory for PMPro plugin
+ENHANCEMENT: Add filter to show/hide the Billing address info
+ENHANCEMENT: Add filter to show/hide the Shipping address info
+BUG FIX: PHP Notice when logging in from the front-end
