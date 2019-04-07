@@ -13,6 +13,8 @@ services:
       - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:ro
       - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:ro
       - /Volumes/Development/www/clean.local/wp-content/plugins/e20r-directory-for-pmpro:/var/www/html/wp-content/plugins/e20r-directory-for-pmpro:ro
+      - /Volumes/Development/www/clean.local/wp-content/plugins/woo-license-keys:/var/www/html/wp-content/plugins/woo-license-keys:ro
+      - /Volumes/Development/www/clean.local/wp-content/plugins/woo-gutenberg-products-block:/var/www/html/wp-content/plugins/woo-gutenberg-products-block:ro
     ports:
     - target: 80 # Web server
       published: 80
@@ -52,6 +54,9 @@ services:
     - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:ro
     - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:ro
     - /Volumes/Development/www/clean.local/wp-content/plugins/e20r-directory-for-pmpro:/var/www/html/wp-content/plugins/e20r-directory-for-pmpro:ro
+    - /Volumes/Development/www/clean.local/wp-content/plugins/woo-license-keys:/var/www/html/wp-content/plugins/woo-license-keys:ro
+    - /Volumes/Development/www/clean.local/wp-content/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce:ro
+    - /Volumes/Development/www/clean.local/wp-content/plugins/woo-gutenberg-products-block:/var/www/html/wp-content/plugins/woo-gutenberg-products-block:ro
     labels:
     - "traefik.enable=true"
     - "traefik.frontend.rule=Host:development.local"

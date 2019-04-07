@@ -13,6 +13,9 @@ services:
       - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:cached
       - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:cached
       - /Volumes/Development/www/clean.local/wp-content/plugins/e20r-directory-for-pmpro:/var/www/html/wp-content/plugins/e20r-directory-for-pmpro:cached
+       - /Volumes/Development/www/clean.local/wp-content/plugins/woo-license-keys:/var/www/html/wp-content/plugins/woo-license-keys:cached
+       - /Volumes/Development/www/clean.local/wp-content/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce:cached
+       - /Volumes/Development/www/clean.local/wp-content/plugins/woo-gutenberg-products-block:/var/www/html/wp-content/plugins/woo-gutenberg-products-block:cached
     ports:
     - target: 80 # Web server
       published: 80
@@ -47,11 +50,14 @@ services:
       PHP_XDEBUG_REMOTE_HOST: ts-laptop.local # macOS
     #      PHP_XDEBUG_REMOTE_HOST: 10.0.75.1 # Windows
     volumes:
-    - files:/mnt/files
-    - ./:/var/www/html
-    - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:cached
-    - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:cached
-    - /Volumes/Development/www/clean.local/wp-content/plugins/e20r-directory-for-pmpro:/var/www/html/wp-content/plugins/e20r-directory-for-pmpro:cached
+      - files:/mnt/files
+      - ./:/var/www/html
+      - /Volumes/Development/www/clean.local/wp-content/themes/e20r-coaching:/var/www/html/wp-content/themes/e20r-coaching:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/paid-memberships-pro:/var/www/html/wp-content/plugins/paid-memberships-pro:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/e20r-directory-for-pmpro:/var/www/html/wp-content/plugins/e20r-directory-for-pmpro:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/woo-license-keys:/var/www/html/wp-content/plugins/woo-license-keys:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce:cached
+      - /Volumes/Development/www/clean.local/wp-content/plugins/woo-gutenberg-products-block:/var/www/html/wp-content/plugins/woo-gutenberg-products-block:cached
     labels:
     - "traefik.enable=true"
     - "traefik.frontend.rule=Host:development.local"
