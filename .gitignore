@@ -77,3 +77,4 @@ composer.lock
 /includes/symfony/
 /components/
 /docker-env/e20r-directory-for-pmpro.sql
+inc/Utilities
