@@ -76,3 +76,4 @@ composer.lock
 /includes/robloach/
 /includes/symfony/
 /components/
+/docker-env/e20r-directory-for-pmpro.sql
