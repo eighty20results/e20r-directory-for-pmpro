@@ -142,6 +142,12 @@ class Directory_Page {
 			return true;
 		}
 		
+		if ( has_shortcode( $page->post_content, 'e20r-member-directory' ) ) {
+			$utils->log( "Found the 'e20r-member-directory' short code" );
+			
+			return true;
+		}
+		
 		if ( has_shortcode( $page->post_content, 'pmpro_member_directory' ) ) {
 			$utils->log( "Found the 'pmpro_member_directory' short code" );
 			
@@ -158,6 +164,7 @@ class Directory_Page {
 	 */
 	public function loadHooks() {
 		
+		add_shortcode( 'e20r-directory-for-pmpro', array( $this, 'shortcode' ) );
 		add_shortcode( "e20r_member_directory", array( $this, 'shortcode' ) );
 		add_shortcode( "e20r-member-directory", array( $this, 'shortcode' ) );
 		add_shortcode( "pmpro_member_directory", array( $this, 'shortcode' ) );
@@ -270,7 +277,7 @@ class Directory_Page {
 				$utils->add_message(
 					__(
 						'Invalid path given for the E20R Member Directory Profile page! Please change the \'profile_page_slug=""\' attribute on the PMPro Profile page',
-						'e20r-directory-for-pmpro'
+						E20R_Directory_For_PMPro::plugin_slug
 					),
 					'error',
 					'backend'
@@ -286,7 +293,7 @@ class Directory_Page {
 			$utils->add_message(
 				__(
 					'Invalid path given for the E20R Member Directory page! Please update the Profile page settings on the "Memberships" -> "Settings" -> "Pages" page',
-					'e20r-directory-for-pmpro'
+					E20R_Directory_For_PMPro::plugin_slug
 				),
 				'error',
 				'backend'
@@ -342,11 +349,11 @@ class Directory_Page {
 		} ?>
         <h3 id="e20r-directory-for-pmpro_subheading">
 			<?php if ( ! empty( $this->roles ) ) { ?>
-				<?php printf( __( 'Viewing All %s Profiles.', 'e20r-directory-for-pmpro' ), implode( ', ', array_map( 'ucwords', $this->roles ) ) ); ?>
+				<?php printf( __( 'Viewing All %s Profiles.', E20R_Directory_For_PMPro::plugin_slug ), implode( ', ', array_map( 'ucwords', $this->roles ) ) ); ?>
 			<?php } else if ( ! empty( $search ) ) { ?>
-				<?php printf( __( 'Profiles Within <em>%s</em>.', 'e20r-directory-for-pmpro' ), ucwords( esc_html( $search ) ) ); ?>
+				<?php printf( __( 'Profiles Within <em>%s</em>.', E20R_Directory_For_PMPro::plugin_slug ), ucwords( esc_html( $search ) ) ); ?>
 			<?php } else { ?>
-				<?php _e( 'Viewing All Profiles.', 'e20r-directory-for-pmpro' ); ?>
+				<?php _e( 'Viewing All Profiles.', E20R_Directory_For_PMPro::plugin_slug ); ?>
 			<?php }
 			self::addResultString(); ?>
         </h3> <?php
@@ -386,14 +393,14 @@ class Directory_Page {
             </div> <!-- end e20r-directory-for-pmpro -->
 		<?php } else { ?>
             <p class="e20r-directory-for-pmpro_message pmpro_message pmpro_error">
-				<?php _e( 'No matching member profiles found', 'e20r-directory-for-pmpro' ); ?>
+				<?php _e( 'No matching member profiles found', E20R_Directory_For_PMPro::plugin_slug ); ?>
 				<?php
 				if ( ! empty( $s ) ) {
-					printf( __( 'within <em>%s</em>.', 'e20r-directory-for-pmpro' ), ucwords( esc_html( $s ) ) );
+					printf( __( 'within <em>%s</em>.', E20R_Directory_For_PMPro::plugin_slug ), ucwords( esc_html( $s ) ) );
 					if ( ! empty( $directory_url ) ) {
 						?>
                         <a class="more-link"
-                           href="<?php echo esc_url_raw( $directory_url ); ?>"><?php _e( 'View All Members', 'e20r-directory-for-pmpro' ); ?></a>
+                           href="<?php echo esc_url_raw( $directory_url ); ?>"><?php _e( 'View All Members', E20R_Directory_For_PMPro::plugin_slug ); ?></a>
 						<?php
 					}
 				} else {
@@ -476,10 +483,11 @@ class Directory_Page {
 		}
 		
 		// Generate URLs
-		// $this->directory_url = E20R_Directory_For_PMPro::getURL( 'directory', $directory_page_id );
-		// $this->profile_url   = E20R_Directory_For_PMPro::getURL( 'profile', $profile_page_id );
-		$this->directory_url = get_permalink( $directory_page_id );
-		$this->profile_url   = get_permalink( $profile_page_id );
+		$this->directory_url     = E20R_Directory_For_PMPro::getURL( 'directory', $directory_page_id );
+		$this->read_only_profile = E20R_Directory_For_PMPro::getURL( 'profile', $profile_page_id );
+//		$this->directory_url     = get_permalink( $directory_page_id );
+//		$this->read_only_profile = get_permalink( $profile_page_id );
+		$this->profile_url = $this->read_only_profile;
 		
 		if ( empty( $this->directory_url ) ) {
 			$utils->log( "Error: Could not generate the URL for the 'directory' page (ID: {$directory_page_id})!" );
@@ -518,6 +526,15 @@ class Directory_Page {
 	 * Read data from Cache or from the DB itself (if needed)
 	 **
 	 * @return array|bool
+	 *
+	 * @uses e20r-directory-statuses
+	 * @uses pmpromd_membership_statuses (backward compatibility with PMPro's Member Directory add-on)
+	 * @uses e20r-directory-for-pmpro-exact-search-values
+	 * @uses pmpromd_exact_search_values (backward compatibility with previous PMPro Extended Membership Directory
+	 *       plugin)
+	 * @uses e20r-directory-for-pmpro-sql-where-clause
+	 * @uses e20r-directory-for-pmpro-set-order
+	 * @uses e20r-directory-for-pmpro-sql-statement
 	 */
 	private function readFromDB() {
 		
@@ -715,6 +732,8 @@ class Directory_Page {
 	
 	/**
 	 * Generate columns to use for directory and save it to the $columns class variable
+	 *
+	 * @uses e20r-directory-default-column-defs
 	 */
 	private function defaultColumns() {
 		
@@ -964,7 +983,6 @@ class Directory_Page {
 	
 	/**
 	 * Process any defined search fields (from filter)
-	 **
 	 *
 	 * @param array $joins
 	 *
@@ -1037,6 +1055,9 @@ class Directory_Page {
 	}
 	
 	/**
+	 * If there are multiple JOIN clauses, find the highest (first) order number
+	 * (JOIN clauses are ordered in the Select class)
+	 *
 	 * @param array $joins
 	 *
 	 * @return int
@@ -1093,7 +1114,7 @@ class Directory_Page {
 	}
 	
 	/**
-	 * Add
+	 * Add status based filtering of the result(s) in the Query
 	 *
 	 * @param Select $select
 	 * @param int    $where_counter
@@ -1230,16 +1251,14 @@ class Directory_Page {
 	}
 	
 	/**
+	 * Add extra search clauses if defined via the filter to the SQL Query
+	 *
 	 * @param Select $select
 	 * @param int    $where_counter
 	 *
 	 * @return int
 	 */
-	private function maybeAddExtraSearchFieldClauses(
-		
-		$select,
-		$where_counter
-	) {
+	private function maybeAddExtraSearchFieldClauses( $select, $where_counter ) {
 		
 		$utils = Utilities::get_instance();
 		
@@ -1458,7 +1477,7 @@ class Directory_Page {
               class="e20r-directory-for-pmpro_search search-form <?php echo apply_filters( 'e20r-directory-for-pmpro_search_class', 'locate-right' ); ?>">
             <div class="e20r-directory-for-pmpro_search_field ">
                 <label>
-                    <span class="screen-reader-text"><?php _e( 'Search for:', 'e20r-directory-for-pmpro' ); ?></span>
+                    <span class="screen-reader-text"><?php _e( 'Search for:', E20R_Directory_For_PMPro::plugin_slug ); ?></span>
                     <input type="search" class="search-field"
                            placeholder="<?php echo apply_filters( 'pmpromd_search_placeholder_text', __( "Search Members", "e20r-directory-for-pmpro" ) ); ?>"
                            name="ps" value="<?php esc_attr_e( $this->search ); ?>"
@@ -1504,9 +1523,9 @@ class Directory_Page {
             <small class="muted">
                 (<?php
 				if ( $class->total_in_db == 1 ) {
-					printf( __( 'Showing 1 Result', 'e20r-directory-for-pmpro' ), $class->start + 1, $class->end, $class->total_in_db );
+					printf( __( 'Showing 1 Result', E20R_Directory_For_PMPro::plugin_slug ), $class->start + 1, $class->end, $class->total_in_db );
 				} else {
-					printf( __( 'Showing %s-%s of %s results', 'e20r-directory-for-pmpro' ), $class->start + 1, $class->end, $class->total_in_db );
+					printf( __( 'Showing %s-%s of %s results', E20R_Directory_For_PMPro::plugin_slug ), $class->start + 1, $class->end, $class->total_in_db );
 				} ?>)
             </small>
 		<?php }
@@ -1585,19 +1604,14 @@ class Directory_Page {
 					null
 				);
 				
-				$the_user                   = get_userdata( $member->ID );
-				$the_user->membership_level = pmpro_getMembershipLevelForUser( $member->ID );
 				$count ++;
+				$the_user                   = get_userdata( $member->ID );
+				$the_user->membership_level = function_exists( 'pmpro_getMembershipLevelForUser' ) ?
+					pmpro_getMembershipLevelForUser( $member->ID ) :
+					false;
 				
-				if ( ! empty( $this->profile_url ) ) {
-					
-					if ( true === $this->editable_profile && is_user_logged_in() && $current_user->ID === $the_user->ID ) {
-						$this->profile_url       = get_edit_user_link( $the_user->ID );
-						$this->read_only_profile = $this->profile_url;
-					}
-				}
 				echo $this->createMemberTableRow( $the_user, $member );
-			} ?>
+			} // Foreach ?>
             </tbody>
         </table>
 		<?php
@@ -1613,8 +1627,8 @@ class Directory_Page {
 	 * @return false|string
 	 */
 	private function createMemberTableRow( $the_user, $member_info ) {
+	 
 		ob_start(); ?>
-
         <tr id="e20r-directory-for-pmpro_row-<?php esc_attr_e( $the_user->ID ); ?>"
             class="e20r-directory-for-pmpro_row<?php if ( true === $this->show_link && true === $this->link && ! empty( $this->profile_url ) ) {
 			    echo " e20r-directory-for-pmpro_linked";
@@ -1706,20 +1720,44 @@ class Directory_Page {
 			<?php } ?>
 			<?php if ( true === $this->show_link && true === $this->link && ! empty( $this->profile_url ) ) { ?>
                 <td class="e20r-directory-for-pmpro_link">
-					<?php if ( empty( $this->read_only_profile ) ) { ?>
-                        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $this->profile_url ) ); ?>"><?php _e( 'View Profile', 'e20r-directory-for-pmpro' ); ?></a>
-					<?php } else { ?>
-                        <span>
-								        <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $this->profile_url ) ); ?>"><?php _e( 'Edit', 'e20r-directory-for-pmpro' ); ?></a> <?php _e( 'or', 'e20r-directory-for-pmpro' ); ?>
-                            <a href="<?php echo esc_url( add_query_arg( 'pu', $the_user->user_nicename, $this->read_only_profile ) ); ?>"><?php _e( 'View', 'e20r-directory-for-pmpro' ); ?></a> <?php _e( "Profile", "e20r-directory-for-pmpro" ); ?>
-                                        </span>
-					<?php } ?>
+					<?php $this->displayLinks( $the_user ); ?>
                 </td>
 			<?php } ?>
         </tr>
 		<?php
 		
 		return ob_get_clean();
+	}
+	
+	/**
+     * Generate View and Edit links for Profile/user as needed
+     *
+	 * @param \WP_User $wp_user
+	 */
+	public function displayLinks( $wp_user ) {
+		
+		global $current_user;
+		$utils             = Utilities::get_instance();
+		$read_only_profile = $editable_profile = $this->profile_url;
+		
+		if ( true === $this->editable_profile && is_user_logged_in() && $current_user->ID === $wp_user->ID ) {
+			$editable_profile = get_edit_user_link( $wp_user->ID );
+		} ?>
+        <span><?php if (
+			true === $this->editable_profile &&
+			is_user_logged_in() &&
+			$current_user->ID === $wp_user->ID
+		) {
+			$utils->log( "Allowing edit for {$wp_user->ID}" ); ?>
+            <a href="<?php echo esc_url( add_query_arg( 'pu', $wp_user->user_nicename, $editable_profile ) ); ?>">
+                <?php _e( 'Edit', E20R_Directory_For_PMPro::plugin_slug ); ?>
+            </a>
+			<?php _e( 'or', E20R_Directory_For_PMPro::plugin_slug );
+		} ?>
+        <a href="<?php echo esc_url( add_query_arg( 'pu', $wp_user->user_nicename, $read_only_profile ) ); ?>">
+                <?php _e( 'View Profile', E20R_Directory_For_PMPro::plugin_slug ); ?>
+            </a>
+        </span><?php
 	}
 	
 	/**
@@ -1757,15 +1795,6 @@ class Directory_Page {
 					$count ++;
 					$wp_user                   = get_userdata( $member->ID );
 					$wp_user->membership_level = pmpro_getMembershipLevelForUser( $wp_user->ID );
-					
-					if ( ! empty( $this->profile_url ) ) {
-						
-						if ( true === $this->editable_profile && is_user_logged_in() && $current_user->ID === $wp_user->ID ) {
-							
-							$this->profile_url       = get_edit_user_link( $wp_user->ID );
-							$this->read_only_profile = $this->profile_url;
-						}
-					}
 					
 					echo $this->createMemberDivRow( $wp_user, $member, $count );
 				} ?>
@@ -1880,13 +1909,7 @@ class Directory_Page {
 				?>
 				<?php if ( true === $this->show_link && true === $this->link && ! empty( $this->profile_url ) ) { ?>
                     <p class="e20r-directory-for-pmpro_link">
-						<?php if ( empty( $this->read_only_profile ) ) { ?>
-                            <a href="<?php echo esc_url( add_query_arg( 'pu', $wp_user->user_nicename, $this->profile_url ) ); ?>"><?php _e( 'View Profile', 'e20r-directory-for-pmpro' ); ?></a>
-						<?php } else { ?>
-                            <span> <a href="<?php echo esc_url_raw( add_query_arg( 'pu', $wp_user->user_nicename, $this->profile_url ) ); ?>"><?php _e( 'Edit', 'e20r-directory-for-pmpro' ); ?></a> <?php _e( 'or', 'e20r-directory-for-pmpro' ); ?>
-                                <a href="<?php echo esc_url( add_query_arg( 'pu', $wp_user->user_nicename, $this->read_only_profile ) ); ?>"><?php _e( 'View', 'e20r-directory-for-pmpro' ); ?></a> <?php _e( "Profile", "e20r-directory-for-pmpro" ); ?>
-                                        </span>
-						<?php } ?>
+						<?php $this->displayLinks( $wp_user ); ?>
                     </p>
 				<?php } ?>
             </div> <!-- end pmpro_addon_package-->
