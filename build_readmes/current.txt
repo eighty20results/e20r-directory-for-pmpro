@@ -1,3 +1,9 @@
-ENHANCEMENT: Add filter to show/hide the Billing address info
-ENHANCEMENT: Add filter to show/hide the Shipping address info
-BUG FIX: PHP Notice when logging in from the front-end
+BUG FIX: Using constants for language slug
+BUG FIX: Use E20R_Directory_For_PMPro::getURL() in place of get_permalink() for profile/directory URLs
+BUG FIX: Could sometimes trigger fatal error in Directory_Page() class
+BUG FIX: Would add link to editable profile for all profile(s) in some circumstances
+ENHANCEMENT: Added @uses to document filters used in the Directory_Page::readFromDB() method
+ENHANCEMENT: Added @uses to document filters used in the Directory_Page::defaultColumns() method
+ENHANCEMENT: Expanded on documentation blocks to some of the member functions in Directory_Page() class
+ENHANCEMENT: Refactored and added Directory_Page::displayLinks() to generate edit/view profile link in a user's directory listing(s)
+ENHANCEMENT: Additional old/prior plugin shortcode possibilities supported by the 'e20r-member-directory' shortcode for compatibility

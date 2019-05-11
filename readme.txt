@@ -3,7 +3,7 @@ Contributors: eighty20results
 Tags: pmpro, paid memberships pro, members, directory, eighty/20 results
 Requires at least: 4.4
 Tested up to: 5.2
-Stable tag: 3.1
+Stable tag: 3.2
 
 Add a enhanced and more robust Member Directory and Profiles to your Membership Site - with attributes to customize the display.
 
@@ -48,7 +48,7 @@ Shortcode attributes for `[e20r-member-directory]` include:
 1. show_roles: Display the users if they have been assigned the role(s) listed (default: null, accepts comma separated list of role names)
 1. members_only_link: Show the link to the profile details page to logged in and active members only (default: 'false', accepts 'true' or 'false')
 1. editable_profile: If the user is logged in, they are shown both a view and edit link for their profile page (default: 'false', accepts 'true' or 'false'). Caution: The edit link may direct the user to the WordPress backend unless a front-end profile plugin is installed (For example: Theme My Login)
-1. profile_page_slug: The page slug for the profile page to send the viewer to if they click on the profile for a user. This will allow multiple profile and directory pages on the same server.
+1. profile_page_slug: The page slug for the profile page to send the viewer to if they click on the profile for a user. (This will also allow multiple profile and directory pages on the same site).
 1. filter_key_name: Allows filtering of the directory based on the User Meta key and value (for instance a Register Helper field name and value). This attribute must be used together with the 'filter_key_value' attribute.
 1. filter_key_value: Allows filtering of the directory based on the User Meta key and value (for instance a Register Helper field name and value). This attribute must be use together with the 'filter_key_name' attribute.
 
@@ -68,7 +68,7 @@ Shortcode attributes for `[e20r-member-profile]` include:
 1. user_id: Show a specific member's profile; default: none (accepts any numeric uesr id, i.e. user_id="125").
 1. billing_address: Show the PMPro Billing information in a separate section of the profile page. Default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Billing Address", but can be modified with the 'e20r-directory-profile-billing-header' filter. The filter returns the text of the heading.
 1. shipping_address: Show the PMPro Shipping information in a separate section of the profile page. Default: 'false' (accepts 'true' or 'false'). The default heading for the section is "Shippping Address", but it can be modified with the 'e20r-directory-profile-shipping-header' filter. The filter returns the text of the heading.
-1. directory_page_slug: The page slug for the directory page to use when allowing a user to return
+1. directory_page_slug: The page slug for the directory page to use when allowing a user to return (This will also allow multiple profile and directory pages on the same site)
 
 == Installation ==
 
@@ -79,6 +79,7 @@ Shortcode attributes for `[e20r-member-profile]` include:
 1. Navigate to Memberships > Page Settings to assign your pages to the Directory and Profile page settings.
 
 == Examples ==
+
 Show only level IDs 1 and 4, hide avatars and email address:
 [e20r-member-directory levels="1,4" show_avatar="false" show_email="false"]
 
@@ -101,7 +102,9 @@ Show a unique member directory by level. Level 1 Members can only see other Leve
 Show unique member profiles based on level - hide user phone number and email address for member listings belonging to
  membership level ID 1. Show the same data for membership levels belonging to membership level ID 2.
 
- On Page #1 (show to visitors who haven't logged in):
+Using a single page, but with the [membership] short code, you can modify views for logged in users
+
+ On (fake) Page #1 (show to visitors who haven't logged in):
 [membership level="-l"]
 [e20r-member-directory levels="1" show_email="false" show_phone="false"]
 [/membership]
@@ -110,6 +113,10 @@ On Page #2 (show to logged in users):
 [membership level="l"]
 [e20r-member-profile levels="2" show_email="true" show_phone="true"]
 /[membership]
+
+OR, you can use completely separate page(s) for the two level specific directory short codes and their corresponding
+member profile pages to display member level specific directories. See the "Membership" -> "Settings" ->
+"Page Settings" page to configure multiple directories/profiles for the site.
 
 == Hooks & Filters ==
 === Filters ===
@@ -149,6 +156,18 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 3.2 =
+
+* BUG FIX: Using constants for language slug
+* BUG FIX: Use E20R_Directory_For_PMPro::getURL() in place of get_permalink() for profile/directory URLs
+* BUG FIX: Could sometimes trigger fatal error in Directory_Page() class
+* BUG FIX: Would add link to editable profile for all profile(s) in some circumstances
+* ENHANCEMENT: Added @uses to document filters used in the Directory_Page::readFromDB() method
+* ENHANCEMENT: Added @uses to document filters used in the Directory_Page::defaultColumns() method
+* ENHANCEMENT: Expanded on documentation blocks to some of the member functions in Directory_Page() class
+* ENHANCEMENT: Refactored and added Directory_Page::displayLinks() to generate edit/view profile link in a user's directory listing(s)
+* ENHANCEMENT: Additional old/prior plugin shortcode possibilities supported by the 'e20r-member-directory' shortcode for compatibility
 
 = 3.1 =
 
