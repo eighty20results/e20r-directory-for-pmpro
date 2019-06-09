@@ -19,6 +19,7 @@
 namespace E20R\Member_Directory\Database;
 
 
+use E20R\Member_Directory\E20R_Directory_For_PMPro;
 use E20R\Utilities\Utilities;
 
 if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
@@ -409,8 +410,15 @@ if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
 			return $sql;
 		}
 		
+		/**
+		 * Add the Group By clause
+		 *
+		 * @param array $clause
+		 */
 		public function addGroupBy( $clause ) {
-		
+			
+			$group_by_clause       = $this->sanitizeData( $clause );
+			$this->group_clauses[] = $group_by_clause;
 		}
 		
 		/**
@@ -420,7 +428,31 @@ if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
 		 */
 		private function getGroupBy() {
 			
+			$utils    = Utilities::get_instance();
 			$group_by = null;
+			
+			if ( empty( $this->group_clauses ) ) {
+				$utils->log( "No GROUP BY clauses found" );
+				
+				return null;
+			}
+			
+			// Don't expect there to be more than one!
+			if ( count( $this->group_clauses ) > 1 ) {
+				$utils->log( "Error: Too many group by clauses" );
+				
+				return $group_by;
+			}
+			
+			// Process all GROUP BY clauses in the SELECT statement
+			foreach ( $this->group_clauses as $clause ) {
+				
+				if ( ! empty( $clause['table_alias'] ) && ! empty( $clause['column'] ) ) {
+					$group_by = sprintf( "GROUP BY %s.%s\n", $clause['table_alias'], $clause['column'] );
+				} else if ( isset( $clause['column'] ) ) {
+					$group_by = sprintf( "GROUP BY %s\n", $clause['column'] );
+				}
+			}
 			
 			return $group_by;
 		}
@@ -478,7 +510,7 @@ if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
 			 */
 			
 			if ( empty( $this->from ) ) {
-				trigger_error( __( 'No table (name) specified for SELECT statement!', Utilities::plugin_slug ), E_USER_WARNING );
+				trigger_error( __( 'No table (name) specified for SELECT statement!', E20R_Directory_For_PMPro::plugin_slug ), E_USER_WARNING );
 				
 				return null;
 			}
@@ -491,7 +523,7 @@ if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
 			
 			if ( empty( $this->columns ) ) {
 				
-				trigger_error( __( 'No columns specified. Using wild-card (all)...', Utilities::plugin_slug ), E_USER_NOTICE );
+				trigger_error( __( 'No columns specified. Using wild-card (all)...', E20R_Directory_For_PMPro::plugin_slug ), E_USER_NOTICE );
 				$this->columns[] = array( 'name' => '*', 'alias' => null );
 				
 			}
@@ -508,7 +540,7 @@ if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
 			}
 			
 			if ( ! empty( $this->group_clauses ) && empty( $this->having_clauses ) ) {
-				trigger_error( __( 'Have \'GROUP BY\' but no \'HAVING\' clauses.', 'e20r-directory-for-pmpro' ), E_USER_NOTICE );
+				trigger_error( __( 'Have \'GROUP BY\' but no \'HAVING\' clauses.', E20R_Directory_For_PMPro::plugin_slug ), E_USER_NOTICE );
 			}
 			
 			if ( ! empty( $this->group_clauses ) ) {
@@ -594,7 +626,7 @@ if ( ! class_exists( 'E20R\Member_Directory\Database\Select' ) ) {
 			
 			$tables_found = $wpdb->get_results( "SHOW TABLES LIKE '{$table_name}'" );
 			
-			Utilities::get_instance()->log( "Found for {$table_name}");
+			Utilities::get_instance()->log( "Found for {$table_name}" );
 			
 			if ( ! empty( $tables_found ) ) {
 				return true;
