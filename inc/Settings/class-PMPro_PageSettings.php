@@ -120,14 +120,16 @@ class PMPro_PageSettings {
 		
 		global $pmpro_pages;
 		
-		$css_id         = sprintf( '%1$s_page_id', $page_name );
-		$page_settings  = array(
+		$css_id        = sprintf( '%1$s_page_id', $page_name );
+		$page_settings = array(
 			'name'              => $css_id,
 			'show_option_none'  => sprintf( '-- %1$s --', __( 'Choose One', 'paid-memberships-pro' ) ),
 			'option_none_value' => - 1,
 			'selected'          => $pmpro_pages[ $page_name ],
+			'hierarchical'      => true,
 			'echo'              => false,
 		);
+		
 		$post_arguments = array( 'post' => $pmpro_pages[ $page_name ], 'action' => 'edit' );
 		
 		$html   = array();
@@ -154,7 +156,7 @@ class PMPro_PageSettings {
 		if ( empty( $hint ) ) {
 			$hint = sprintf( '%1$s %2$s',
 				__( 'Include the shortcode: ', 'paid-memberships-pro' ),
-				sprintf( '[pmpro_%1$s]', $page_name )
+				sprintf( '[e20r-member-%1$s]', $page_name )
 			);
 		}
 		
