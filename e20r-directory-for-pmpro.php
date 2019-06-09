@@ -467,22 +467,13 @@ class E20R_Directory_For_PMPro {
 		add_action( 'show_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
 		add_action( 'edit_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
 		
-		add_action( 'personal_options_update', array(
-			Billing_Information::getInstance(),
-			'maybeSaveBillingInfo',
-		), 99 );
-		add_action( 'edit_user_profile_update', array(
-			Billing_Information::getInstance(),
-			'maybeSaveBillingInfo',
-		), 99 );
-		
 		// Clear the Member List cache whenever a user's membership level or a checkout completes
 		add_action( 'pmpro_after_change_membership_level', array( $this, 'clearMemberCache' ), 99999 );
 		add_action( 'pmpro_after_checkout', array( $this, 'clearMemberCache' ), 99999 );
 		
 		add_filter( 'plugin_row_meta', array( $this, 'pluginRowMeta' ), 10, 2 );
 		
-		// add_action( 'profile_update', array( Billing_Information::getInstance(), 'maybeSaveBillingInfo' ), 999 );
+		// Process save operation from user profile page (editable) to save billing/shipping info updates
 		add_action( 'edit_user_profile_update', array(
 			Billing_Information::getInstance(),
 			'maybeSaveBillingInfo',
