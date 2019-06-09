@@ -46,43 +46,43 @@ class Profile_Page extends Template_Page {
 	private static $instance = null;
 	
 	/**
-     * The billing address info for the user (string)
-     *
+	 * The billing address info for the user (string)
+	 *
 	 * @var null|string
 	 */
 	private $billing_address = null;
 	
 	/**
-     * The shipping address info for the user
-     *
+	 * The shipping address info for the user
+	 *
 	 * @var null|string
 	 */
 	private $shipping_address = null;
 	
 	/**
-     * Include the Biography information (from the WP user profile)
-     *
+	 * Include the Biography information (from the WP user profile)
+	 *
 	 * @var null|bool
 	 */
 	private $show_bio = null;
 	
 	/**
-     * Display billing address info for the user (shortcode attribute)
-     *
+	 * Display billing address info for the user (shortcode attribute)
+	 *
 	 * @var null|bool
 	 */
 	private $show_billing = null;
 	
 	/**
-     * Display the name on the Profile page (shortcode attribute)
-     *
+	 * Display the name on the Profile page (shortcode attribute)
+	 *
 	 * @var null|bool
 	 */
 	private $show_name = null;
 	
 	/**
-     * Display the billing phone info on the Profile page (shortcode attribute)
-     *
+	 * Display the billing phone info on the Profile page (shortcode attribute)
+	 *
 	 * @var null|bool
 	 */
 	private $show_phone = null;
@@ -106,19 +106,20 @@ class Profile_Page extends Template_Page {
 	 */
 	public function loadHooks() {
 		
-	    $type = 'profile';
-	    
-	    $short_codes = apply_filters( 'e20r-directory-supported-shortcodes', array(
-			    sprintf( 'e20r_member_%1$s', $type ),
-			    sprintf( 'e20r-member-%1$s', $type ),
-			    sprintf( 'pmpro_member_%1$s', $type ),
-		    )
-	    );
-	    
-	    foreach( $short_codes as $short_code ) {
-		    add_shortcode( $short_code, array( $this, 'shortcode' ) );
-        }
-	    
+		$type = 'profile';
+		
+		$short_codes = apply_filters( 'e20r-directory-supported-shortcodes', array(
+				sprintf( 'e20r-%1$s-for-pmpro', $type ),
+				sprintf( 'e20r_member_%1$s', $type ),
+				sprintf( 'e20r-member-%1$s', $type ),
+				sprintf( 'pmpro_member_%1$s', $type ),
+			)
+		);
+		
+		foreach ( $short_codes as $short_code ) {
+			add_shortcode( $short_code, array( $this, 'shortcode' ) );
+		}
+		
 		add_action( 'wp', array( $this, 'profilePreHeader' ), 1 );
 		
 		add_filter( 'the_title', array( $this, 'theTitle' ), 10, 2 );
@@ -525,7 +526,8 @@ class Profile_Page extends Template_Page {
                 <label>
                     <span class="screen-reader-text"><?php _e( 'Search for:', E20R_Directory_For_PMPro::plugin_slug ); ?></span>
                     <input type="search" class="search-field"
-                           placeholder="<?php _e( "Search Members", E20R_Directory_For_PMPro::plugin_slug ); ?>" name="ps"
+                           placeholder="<?php _e( "Search Members", E20R_Directory_For_PMPro::plugin_slug ); ?>"
+                           name="ps"
                            value="<?php esc_attr_e( $ps ); ?>"
                            title="<?php _e( "Search Members", E20R_Directory_For_PMPro::plugin_slug ); ?>"/>
                     <input type="hidden" name="limit" value="<?php esc_attr_e( $this->page_size ); ?>"/>
@@ -610,7 +612,7 @@ class Profile_Page extends Template_Page {
 				<?php } ?>
 				<?php if ( ( true === $this->show_billing && ( false === $e20rmd_show_billing_address && false === $e20rmd_show_shipping_address ) ) && ! empty( $profile_user->pmpro_baddress1 ) ) { ?>
                     <p class="e20r-directory-for-pmpro_baddress">
-                        <strong><?php _e( 'Address', E20R_Directory_For_PMPro::plugin_slug); ?></strong>
+                        <strong><?php _e( 'Address', E20R_Directory_For_PMPro::plugin_slug ); ?></strong>
 						<?php esc_html_e( $profile_user->pmpro_baddress1 ); ?><br/>
 						<?php
 						if ( ! empty( $profile_user->pmpro_baddress2 ) ) {
