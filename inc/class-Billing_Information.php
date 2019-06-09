@@ -301,7 +301,7 @@ class Billing_Information {
 	 * @param \WP_User $user
 	 * @param bool     $read_only
 	 *
-     * @return bool|null
+	 * @return bool|null
 	 */
 	public function addAddressSection( $fields, $user, $read_only = true ) {
 		
@@ -339,16 +339,17 @@ class Billing_Information {
 		
 		$has_billing_address  = self::userHasAddress( 'billing', $user );
 		$has_shipping_address = self::userHasAddress( 'shipping', $user );
+		$load_admin_css       = apply_filters( 'e20r-directory-load-admin-css-on-page', ( is_admin() ? true : false ) );
 		
-		if ( false === $has_billing_address && false === $has_shipping_address && true === $read_only ) {
+		if ( false === $has_billing_address && false === $has_shipping_address && true === $read_only && false === $load_admin_css ) {
 			$utils->log( "User doesn't have a billing or shipping address..." );
 			
 			return null;
 		} ?>
         <div class="e20rmd_address_section">
 			<?php if ( true === (bool) apply_filters( 'e20r-directory-show-pmpro-billing-info', true ) && (
-			        ( true === $has_billing_address && true === $read_only ) ||
-			           true === $e20rmd_show_billing_address )
+					( true === $has_billing_address && true === $read_only ) ||
+					true === $e20rmd_show_billing_address )
 			) {
 				$utils->log( "Loading billing info! " ); ?>
                 <!-- Billing address -->
@@ -388,8 +389,8 @@ class Billing_Information {
                 </div>
 			<?php } ?>
 			<?php if ( true === (bool) apply_filters( 'e20r-directory-show-pmpro-billing-info', true ) && (
-			        ( true === $has_shipping_address && true === $read_only ) ||
-			           true === $e20rmd_show_shipping_address )
+					( true === $has_shipping_address && true === $read_only ) ||
+					true === $e20rmd_show_shipping_address )
 			) { ?>
                 <!-- Shipping address -->
                 <div class="e20r-directory-for-pmpro_shipping_address">
