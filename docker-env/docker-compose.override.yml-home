@@ -16,6 +16,8 @@ services:
       - /Volumes/Development/www/clean.local/wp-content/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce:ro
       - /Volumes/Development/www/clean.local/wp-content/plugins/woo-license-keys:/var/www/html/wp-content/plugins/woo-license-keys:ro
       - /Volumes/Development/www/clean.local/wp-content/plugins/woo-gutenberg-products-block:/var/www/html/wp-content/plugins/woo-gutenberg-products-block:ro
+      - /Volumes/Development/www/clean.local/wp-content/plugins/theme-my-login:/var/www/html/wp-content/plugins/theme-my-login:ro
+      - /Volumes/Development/www/clean.local/wp-content/plugins/tml-profiles:/var/www/html/wp-content/plugins/tml-profiles:ro
     ports:
     - target: 80 # Web server
       published: 80
@@ -58,6 +60,8 @@ services:
     - /Volumes/Development/www/clean.local/wp-content/plugins/woo-license-keys:/var/www/html/wp-content/plugins/woo-license-keys:ro
     - /Volumes/Development/www/clean.local/wp-content/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce:ro
     - /Volumes/Development/www/clean.local/wp-content/plugins/woo-gutenberg-products-block:/var/www/html/wp-content/plugins/woo-gutenberg-products-block:ro
+    - /Volumes/Development/www/clean.local/wp-content/plugins/theme-my-login:/var/www/html/wp-content/plugins/theme-my-login:ro
+    - /Volumes/Development/www/clean.local/wp-content/plugins/tml-profiles:/var/www/html/wp-content/plugins/tml-profiles:ro
     labels:
     - "traefik.enable=true"
     - "traefik.frontend.rule=Host:development.local"
