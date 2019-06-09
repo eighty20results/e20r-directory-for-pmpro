@@ -75,7 +75,7 @@ class E20R_Directory_For_PMPro {
 	 *
 	 * @var float $Version
 	 */
-	public static $Version = (float) E20RED_VER;
+	public static $Version = E20RED_VER;
 	
 	/**
 	 * The only instance of this class
