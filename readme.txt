@@ -3,7 +3,7 @@ Contributors: eighty20results
 Tags: pmpro, paid memberships pro, members, directory, eighty/20 results
 Requires at least: 4.4
 Tested up to: 5.2.1
-Stable tag: 3.2.1
+Stable tag: 3.3
 
 Add a enhanced and more robust Member Directory and Profiles to your Membership Site - with attributes to customize the display.
 
@@ -156,6 +156,34 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 3.3 =
+
+* ENHANCEMENT: Added filter 'e20r-directory-load-admin-css-on-page' to let custom plugins load billing/shipping address CSS
+* ENHANCEMENT: Add Template_Page base class for page templates in the plugin
+* ENHANCEMENT: Added PHPDoc blocks for variables & some of the functions
+* ENHANCEMENT: Add support for filterable list of supported profile short codes (have to be compatible w/PMPro or this plugin's profile page template)
+* ENHANCEMENT: Added 'e20r-directory-supported-shortcodes' filter representing list of profile/directory short codes we support
+* ENHANCEMENT: Directory_Page now extends the Template_Page class
+* ENHANCEMENT: Improved PHPDoc blocks for class variables
+* ENHANCEMENT: Using filter to identify all supported short codes for the directory page
+* BUG FIX: Occasional fatal error during plugin activation
+* BUG FIX: Returning too many results during search
+* BUG FIX: Didn't handle all cases of yes/true/no/false values
+* BUG FIX: addURL() function didn't always save the right URL
+* BUG FIX: Use the Template_Page::hasShortcode() function instead of page specific functions
+* BUG FIX: Didn't load the billing/shipping address CSS on back/front end editable profile page(s)\
+* BUG FIX: Bad/incorrect short codes for extra page settings in PMPro (for this plugin)
+* BUG FIX: Didn't load the plugin updater functionality
+* BUG FIX: Didn't always return the page size variable to the directory when on the Profile page
+* BUG FIX: Incomplete list of supported shortcode templates in Profile_Page class
+* BUG FIX: Didn't use the attribute value for use_precise_values when passing to filter(s)
+* BUG FIX: Could return duplicate results when user did a search
+* BUG FIX: Didn't always activate the plugin
+* BUG FIX: Template_Page is an incorrectly declared class
+* BUG FIX: Instantiation error in E20R_Directory_For_PMPro class
+* BUG FIX: Confusing instantiation of the has_shortcode variable
+* BUG FIX: Extra save operation for billing/shipping address updates on WP_User profile page
 
 = 3.2.1 =
 
