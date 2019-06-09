@@ -36,6 +36,7 @@ namespace E20R\Member_Directory;
 
 global $e20rmd_options;
 
+use E20R\Member_Directory\Modules\TML_Support;
 use E20R\Member_Directory\Settings\Licensing;
 use E20R\Member_Directory\Settings\Options;
 use E20R\Member_Directory\Settings\Page_Pairing;
@@ -106,14 +107,14 @@ class E20R_Directory_For_PMPro {
 		switch ( $type ) {
 			case 'true':
 				// Return true if we found one of the 'true' values
-				$found = in_array( strtolower( $value ) , array( 'yes', '1', 'true' ) );
+				$found = in_array( strtolower( $value ), array( 'yes', '1', 'true' ) );
 				$utils->log( "Checking for true: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
 				
 				return ( true === $found ? true : false );
 				break;
 			default:
 				// Return false if we found one of the 'false' values
-				$found = in_array( strtolower( $value ) , array( 'no', 'false', '0' ) );
+				$found = in_array( strtolower( $value ), array( 'no', 'false', '0' ) );
 				$utils->log( "Checking for false: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
 				
 				return ( true === $found ? false : true );
@@ -395,7 +396,7 @@ class E20R_Directory_For_PMPro {
 	 */
 	public static function getURL( $type, $page_id = 'default' ) {
 		
-		$utils         = Utilities::get_instance();
+		$utils = Utilities::get_instance();
 		
 		if ( 'default' === $page_id ) {
 			$page_ids = Options::get( 'page_ids' );
@@ -425,17 +426,44 @@ class E20R_Directory_For_PMPro {
 		add_action( 'plugins_loaded', array( Profile_Page::getInstance(), 'loadHooks' ), 20 );
 		add_action( 'plugins_loaded', array( Page_Pairing::getInstance(), 'loadHooks' ), 21 );
 		
+		// $is_licensed = Licensing::get_instance()->check_licenses();
+		$is_licensed = true;
+		
+		if ( true === $is_licensed ) {
+			add_action( 'plugins_loaded', array( TML_Support::getInstance(), 'loadHooks' ), 21 );
+			
+			add_action( 'e20rmd_add_extra_profile_output', array(
+				Billing_Information::getInstance(),
+				'addAddressSection',
+			), 5, 2 );
+			
+			add_filter( 'e20r-member-profile_fields', array(
+				Billing_Information::getInstance(),
+				'fixAddressInfo',
+			), 99, 2 );
+			
+			add_action( 'show_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
+			add_action( 'edit_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
+			
+			add_action( 'personal_options_update', array( $this, 'saveExtraProfileFields' ), 10 );
+			add_action( 'edit_user_profile_update', array( $this, 'saveExtraProfileFields' ), 10 );
+			
+			// Add billing info to User Profile page(s)
+			add_action( 'show_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
+			add_action( 'edit_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
+			
+			// Process save operation from user profile page (editable) to save billing/shipping info updates
+			add_action( 'edit_user_profile_update', array(
+				Billing_Information::getInstance(),
+				'maybeSaveBillingInfo',
+			), 999 );
+			add_action( 'personal_options_update', array(
+				Billing_Information::getInstance(),
+				'maybeSaveBillingInfo',
+			), 999 );
+		}
+		
 		add_action( 'plugins_loaded', array( $this, 'init' ), 99 );
-		
-		add_action( 'e20rmd_add_extra_profile_output', array(
-			Billing_Information::getInstance(),
-			'addAddressSection',
-		), 5, 2 );
-		
-		add_filter( 'e20r-member-profile_fields', array(
-			Billing_Information::getInstance(),
-			'fixAddressInfo',
-		), 99, 2 );
 		
 		add_action( 'init', 'E20R\\Member_Directory\\Tools\\I18N::loadTextDomain', 1 );
 		
@@ -457,31 +485,11 @@ class E20R_Directory_For_PMPro {
 			remove_action( 'pmpro_extra_page_settings', 'pmpromd_extra_page_settings', 10 );
 		}
 		
-		add_action( 'show_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
-		add_action( 'edit_user_profile', array( $this, 'showExtraProfileFields' ), 10 );
-		
-		add_action( 'personal_options_update', array( $this, 'saveExtraProfileFields' ), 10 );
-		add_action( 'edit_user_profile_update', array( $this, 'saveExtraProfileFields' ), 10 );
-		
-		// Add billing info to User Profile page(s)
-		add_action( 'show_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
-		add_action( 'edit_user_profile', array( $this, 'showBillingInfoFields' ), 10 );
-		
 		// Clear the Member List cache whenever a user's membership level or a checkout completes
 		add_action( 'pmpro_after_change_membership_level', array( $this, 'clearMemberCache' ), 99999 );
 		add_action( 'pmpro_after_checkout', array( $this, 'clearMemberCache' ), 99999 );
 		
 		add_filter( 'plugin_row_meta', array( $this, 'pluginRowMeta' ), 10, 2 );
-		
-		// Process save operation from user profile page (editable) to save billing/shipping info updates
-		add_action( 'edit_user_profile_update', array(
-			Billing_Information::getInstance(),
-			'maybeSaveBillingInfo',
-		), 999 );
-		add_action( 'personal_options_update', array(
-			Billing_Information::getInstance(),
-			'maybeSaveBillingInfo',
-		), 999 );
 		
 		// add_filter( 'pmpro_page_custom_template_path', array( $this, 'directory_template_paths' ), 99, 5 );
 		
@@ -574,10 +582,10 @@ class E20R_Directory_For_PMPro {
 		$load_admin_css_on_page = apply_filters( 'e20r-directory-load-admin-css-on-page', ( is_admin() ? true : false ) );
 		
 		if ( 'admin_page_pmpro-pagesettings' !== $hook &&
-             'user-edit.php' !== $hook &&
-             'profile.php' !== $hook &&
-             false === $load_admin_css_on_page
-        ) {
+		     'user-edit.php' !== $hook &&
+		     'profile.php' !== $hook &&
+		     false === $load_admin_css_on_page
+		) {
 			$utils->log( "Not on the profile or PMPro Settings page: {$hook}" );
 			
 			return;
@@ -886,10 +894,15 @@ if ( function_exists( 'pmpro_loadTemplate' ) ) {
 // Load this plugin
 add_action( 'plugins_loaded', array( E20R_Directory_For_PMPro::getInstance(), 'loadHooks' ) );
 
-require_once( plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php' );
+$update_loader = plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php';
 
-$plugin_updates = \Puc_v4_Factory::buildUpdateChecker(
-	'https://eighty20results.com/protected-content/e20r-directory-for-pmpro/metadata.json',
-	__FILE__,
-	'e20r-directory-for-pmpro'
-);
+if ( file_exists( $update_loader ) ) {
+	
+	require_once( $update_loader );
+	
+	$plugin_updates = \Puc_v4_Factory::buildUpdateChecker(
+		'https://eighty20results.com/protected-content/e20r-directory-for-pmpro/metadata.json',
+		__FILE__,
+		'e20r-directory-for-pmpro'
+	);
+}
