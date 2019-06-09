@@ -396,7 +396,6 @@ class E20R_Directory_For_PMPro {
 	public static function getURL( $type, $page_id = 'default' ) {
 		
 		$utils         = Utilities::get_instance();
-		$has_shortcode = false;
 		
 		if ( 'default' === $page_id ) {
 			$page_ids = Options::get( 'page_ids' );
