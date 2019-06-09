@@ -28,7 +28,7 @@ use E20R\Utilities\Utilities;
  *
  * @credit https://www.paidmembershipspro.com
  */
-class Directory_Page {
+class Directory_Page extends Template_Page {
 	
 	/**
 	 * The current instance of this class
@@ -37,6 +37,11 @@ class Directory_Page {
 	 */
 	private static $instance = null;
 	
+	/**
+     * Key for the member directory data cache
+     *
+	 * @var null|string
+	 */
 	public $cache_key = null;
 	
 	/**
@@ -46,6 +51,11 @@ class Directory_Page {
 	 */
 	private $columns = array();
 	
+	/**
+     * Found record count (from the DB)
+     *
+	 * @var null|int
+	 */
 	private $total_in_db = null;
 	
 	/**
@@ -55,108 +65,165 @@ class Directory_Page {
 	 */
 	private $where_list = array();
 	
-	private $avatar_size = '128';
-	private $fields = null;
+	/**
+	 * The configured layout structure for the directory listing
+	 * @var string $layout - div|table|2col|3col|4col
+	 */
 	private $layout = 'div';
-	private $level = null;
-	private $levels = null;
-	private $paginated = false;
-	private $link = null;
-	private $order_by = 'display_name';
-	private $order = 'ASC';
-	private $show_avatar = null;
-	private $show_email = null;
-	private $show_level = null;
-	private $show_search = null;
-	private $show_startdate = null;
-	private $page_size = null;
-	private $show_roles = null;
-	private $members_only_link = true;
-	private $editable_profile = false;
-	private $profile_page_slug = null;
-	private $filter_key_name = null;
-	private $filter_key_value = null;
-	
-	private $search = null;
-	
-	private $directory_url = null;
-	
-	private $profile_url = null;
-	
-	private $roles = null;
-	
-	private $show_link = false;
-	
-	private $read_only_profile = null;
-	
-	private $fields_array = array();
-	
-	private $use_precise_values = false;
-	
-	private $statuses = null;
-	
-	private $extra_search_fields = array();
-	
-	private $page_number = 1;
-	
-	private $start = 0;
-	
-	private $end = 0;
-	
-	private function __construct() {
-	}
 	
 	/**
-	 * Does the supplied WP_Post (page) have one of the directory short codes embedded?
+	 * List of membership level(s) to display
 	 *
-	 * @param \WP_Post $page
-	 *
-	 * @return bool
+	 * @var null|int[] $level |$levels
 	 */
-	public static function hasShortcode( $page ) {
-		
-		$utils = Utilities::get_instance();
-		
-		if ( ! isset( $page->post_content ) ) {
-			$utils->log( "Post argument is empty!" );
-			
-			return false;
-		}
-		
-		// Make sure we're processing a WP_Post object
-		if ( ! is_a( $page, '\WP_Post' ) ) {
-			$utils->log( "The supplied page argument isn't a WordPress Post object!" );
-			
-			return false;
-		}
-		
-		if ( has_shortcode( $page->post_content, 'e20r_directory_for_pmpro' ) ) {
-			$utils->log( "Found the 'e20r_directory_for_pmpro' short code" );
-			
-			return true;
-		}
-		
-		if ( has_shortcode( $page->post_content, 'e20r-directory-for-pmpro' ) ) {
-			$utils->log( "Found the 'e20r-directory-for-pmpro' short code" );
-			
-			return true;
-		}
-		
-		if ( has_shortcode( $page->post_content, 'e20r-member-directory' ) ) {
-			$utils->log( "Found the 'e20r-member-directory' short code" );
-			
-			return true;
-		}
-		
-		if ( has_shortcode( $page->post_content, 'pmpro_member_directory' ) ) {
-			$utils->log( "Found the 'pmpro_member_directory' short code" );
-			
-			return true;
-		}
-		
-		$utils->log( "Could not locate a Directory short code!" );
-		
-		return false;
+	private $level = null;
+	private $levels = null;
+	
+	/**
+	 * Whether to display a paginated directory page
+	 *
+	 * @var bool
+	 */
+	private $paginated = false;
+	
+	/**
+	 * @var null
+	 */
+	private $link = null;
+	
+	/**
+	 * WP_User or WP User meta data field to sort by. Default is: display_name
+	 * Supported sort options: 'user_email', 'display_name', 'user_login', 'user_registered', 'membership_id',
+	 * 'startdate', 'joindate', 'last_name', 'first_name'
+	 *
+	 * @var string $order_by
+	 */
+	private $order_by = 'display_name';
+	
+	/**
+	 * Sort order for the directory (ASC|DESC)
+	 *
+	 * @var string
+	 */
+	private $order = 'ASC';
+	
+	/**
+	 * Whether to display the WP Role(s) the member/user belongs to
+	 *
+	 * @var bool
+	 */
+	private $show_roles = false;
+	
+	/**
+	 * Show/hide the link on the directory page to a logged in user's editable profile data (backend) page
+	 * (front-end if a plugin like Theme My Login w/the Profile add-on is installed and active)
+	 *
+	 * @var bool
+	 */
+	private $members_only_link = true;
+	
+	/**
+	 * Send the logged in user to their editable WP User profile when clicking their own link when true
+	 *
+	 * @var bool
+	 */
+	private $editable_profile = false;
+	
+	/**
+	 * The slug of the Member Directory Profile page to send the user to (overrides the "Membership" -> "Settings" ->
+	 * "Page Settings" configuration for this directory page)
+     *
+	 * @var null|string
+	 */
+	private $profile_page_slug = null;
+	
+	/**
+     * Filter returned results in the directory based on WP User Meta key/value pair (this is the key)
+     *
+	 * @var null|string
+	 */
+	private $filter_key_name = null;
+	
+	/**
+     * Filter returned results in the directory based on WP User Meta key/value pair (this is the value)
+     *
+	 * @var null|string
+	 */
+	private $filter_key_value = null;
+	
+	
+	/**
+     * URL to this directory page
+     *
+	 * @var null|string
+	 */
+	private $directory_url = null;
+	
+	/**
+     * URL to the linked profile page
+     *
+	 * @var null|string
+	 */
+	private $profile_url = null;
+	
+	/**
+     * Display the link to the user's profile page (show = 1|yes|true, hide = 0|no|false)
+     *
+	 * @var bool
+	 */
+	private $show_link = false;
+	
+	/**
+     * Do not allow editing of profile data (regardless)
+     *
+	 * @var null|bool
+	 */
+	private $read_only_profile = null;
+	
+	/**
+     * In metadata search, require a perfect match to the search string in order to return the record as a valid result
+     *
+	 * @var bool
+	 */
+	private $use_precise_values = false;
+	
+	/**
+     * List of member statuses that can be displayed
+     *
+	 * @var null|array
+	 */
+	private $statuses = null;
+	
+	/**
+     * List of search fields to add to the search query (additional fields to search + use_precise_values means more granularity in search)
+     *
+	 * @var array
+	 */
+	private $extra_search_fields = array();
+	
+	/**
+     * Current page number for paginated results
+     *
+	 * @var int
+	 */
+	private $page_number = 1;
+	
+	/**
+	 * @var int
+	 */
+	private $start = 0;
+	
+	/**
+	 * @var int
+	 */
+	private $end = 0;
+	
+	/**
+	 * Directory_Page constructor.
+     *
+     * @access private
+	 */
+	private function __construct() {
 	}
 	
 	/**
@@ -164,10 +231,19 @@ class Directory_Page {
 	 */
 	public function loadHooks() {
 		
-		add_shortcode( 'e20r-directory-for-pmpro', array( $this, 'shortcode' ) );
-		add_shortcode( "e20r_member_directory", array( $this, 'shortcode' ) );
-		add_shortcode( "e20r-member-directory", array( $this, 'shortcode' ) );
-		add_shortcode( "pmpro_member_directory", array( $this, 'shortcode' ) );
+		$type = 'directory';
+		
+		$short_codes = apply_filters( 'e20r-directory-supported-shortcodes', array(
+		        sprintf( 'e20r-%1$s-for-pmpro', $type ),
+				sprintf( 'e20r_member_%1$s', $type ),
+				sprintf( 'e20r-member-%1$s', $type ),
+				sprintf( 'pmpro_member_%1$s', $type ),
+			)
+		);
+		
+		foreach( $short_codes as $short_code ) {
+			add_shortcode( $short_code, array( $this, 'shortcode' ) );
+		}
 	}
 	
 	/**
@@ -181,12 +257,12 @@ class Directory_Page {
 	 */
 	public function shortcode( $atts, $content = null, $code = "" ) {
 		
-		$utils = \E20R\Utilities\Utilities::get_instance();
+		$utils = Utilities::get_instance();
 		
 		// $atts    ::= array of attributes
 		// $content ::= text within enclosing form of shortcode element
 		// $code    ::= the shortcode found, when == callback name
-		// examples: [e20r-directory-for-pmpro show_avatar="false" show_email="false" levels="1,2"]
+		// examples: [e20r-member-directory show_avatar="false" show_email="false" levels="1,2"]
 		
 		$this->processAttributes( $atts );
 		
@@ -466,7 +542,7 @@ class Directory_Page {
 		
 		// Page variables
 		$directory_page_id = isset( $post->ID ) ? $post->ID : null;
-		$profile_page_id   = Options::getProfileIDFromDirectory( $post->ID );
+		$profile_page_id   = Options::getProfileIDFromDirectory( $directory_page_id );
 		
 		// Grab the default directory page if none is specified
 		if ( empty( $directory_page_id ) ) {
@@ -581,7 +657,7 @@ class Directory_Page {
 		 *
 		 * @param bool - False (uses 'LIKE' with wildcard comparisons for metadata
 		 */
-		$this->use_precise_values = apply_filters( 'e20r-directory-for-pmpro-exact-search-values', false );
+		$this->use_precise_values = apply_filters( 'e20r-directory-for-pmpro-exact-search-values', $this->use_precise_values );
 		
 		/**
 		 * Backwards compatibility for the e20r-directory-for-pmpro-exact-search-values filter
@@ -638,8 +714,10 @@ class Directory_Page {
 		$where_counter = $this->maybeAddLevelWhere( $select, $where_counter );
 		
 		// Any GROUP BY statements (when using extra search field(s))
-		if ( ! empty( $search ) || ! empty( $this->extra_search_fields ) ) {
+		if ( ! empty( $this->search ) || ! empty( $this->extra_search_fields ) ) {
 			
+		    $utils->log("Add GROUP BY clause");
+		    
 			$group_by_clause = array(
 				'column'      => 'ID',
 				'table_alias' => 'u',
@@ -1627,7 +1705,7 @@ class Directory_Page {
 	 * @return false|string
 	 */
 	private function createMemberTableRow( $the_user, $member_info ) {
-	 
+		
 		ob_start(); ?>
         <tr id="e20r-directory-for-pmpro_row-<?php esc_attr_e( $the_user->ID ); ?>"
             class="e20r-directory-for-pmpro_row<?php if ( true === $this->show_link && true === $this->link && ! empty( $this->profile_url ) ) {
@@ -1730,8 +1808,8 @@ class Directory_Page {
 	}
 	
 	/**
-     * Generate View and Edit links for Profile/user as needed
-     *
+	 * Generate View and Edit links for Profile/user as needed
+	 *
 	 * @param \WP_User $wp_user
 	 */
 	public function displayLinks( $wp_user ) {
