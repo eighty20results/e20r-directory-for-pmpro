@@ -1,1 +1,9 @@
-BUG FIX: Incorrect path when loading the Plugin Updates Checker component
+BUG FIX: Didn't include javascript files in plugin build
+BUG FIX: Didn't escape the add_query_arg() result
+BUG FIX: Incorrect URL for edit link on PMPro Settings -> Pages page
+BUG FIX: Didn't load the CSS file when editing profile w/TML Profile plugin
+BUG FIX: Didn't list pages hierarchically when showing drop-down of pages for settings
+BUG FIX: Not using the preferred shortcode for the generate functions
+BUG FIX: Included TML in docker environment (home)
+BUG FIX: Load TML support as module (licensed)
+BUG FIX: Don't attempt to load plugin-update-checker in development environment

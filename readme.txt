@@ -3,7 +3,7 @@ Contributors: eighty20results
 Tags: pmpro, paid memberships pro, members, directory, eighty/20 results
 Requires at least: 4.4
 Tested up to: 5.2.1
-Stable tag: 3.3.1
+Stable tag: 3.4
 
 Add a enhanced and more robust Member Directory and Profiles to your Membership Site - with attributes to customize the display.
 
@@ -156,6 +156,18 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 3.4 =
+
+* BUG FIX: Didn't include javascript files in plugin build
+* BUG FIX: Didn't escape the add_query_arg() result
+* BUG FIX: Incorrect URL for edit link on PMPro Settings -> Pages page
+* BUG FIX: Didn't load the CSS file when editing profile w/TML Profile plugin
+* BUG FIX: Didn't list pages hierarchically when showing drop-down of pages for settings
+* BUG FIX: Not using the preferred shortcode for the generate functions
+* BUG FIX: Included TML in docker environment (home)
+* BUG FIX: Load TML support as module (licensed)
+* BUG FIX: Don't attempt to load plugin-update-checker in development environment
 
 = 3.3.1 =
 
