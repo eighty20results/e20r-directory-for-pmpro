@@ -6,7 +6,7 @@
 #
 short_name="e20r-directory-for-pmpro"
 server="eighty20results.com"
-include=(components css inc includes/yahnis-elsts languages ${short_name}.php readme.txt)
+include=(components css inc includes/yahnis-elsts javascript languages ${short_name}.php readme.txt)
 exclude=( *.yml *.phar composer.* vendor)
 #build=()
 plugin_path="${short_name}"
