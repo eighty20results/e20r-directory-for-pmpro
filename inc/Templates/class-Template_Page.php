@@ -20,10 +20,10 @@ namespace E20R\Member_Directory;
 
 use E20R\Utilities\Utilities;
 
-class Template_Page {
+abstract class Template_Page {
 	
 	/**
-	 * @var null|Template_Page
+	 * @var null|Template_Page|Profile_Page|Directory_Page
 	 */
 	private static $instance = null;
 	
@@ -195,20 +195,6 @@ class Template_Page {
 	}
 	
 	/**
-	 * Get or instantiate and get the current class
-	 *
-	 * @return Template_Page|null
-	 */
-	public static function getInstance() {
-		
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
-		
-		return self::$instance;
-	}
-	
-	/**
 	 * Does the supplied WP_Post (page) have one of the directory short codes embedded?
 	 *
 	 * @param \WP_Post $page
@@ -301,4 +287,11 @@ class Template_Page {
 	 * @return false|string
 	 */
 	abstract function shortcode( $atts, $content, $code );
+	
+	/**
+	 * Get or instantiate and get the current class
+	 *
+	 * @return Template_Page|null
+	 */
+	abstract static function getInstance();
 }
