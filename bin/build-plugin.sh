@@ -31,12 +31,11 @@ then
 fi
 
 for p in ${include[@]}; do
-    if [[ 'includes/yahnis-elsts' == ${p} ]]; then
+    if [[ 'includes/yahnis-elsts' == ${p} ]] || [[ 'includes/autoload.php' == ${p} ]]; then
         cp -R ${src_path}${p} ${dst_path}/includes
     else
-       cp -R ${src_path}${p} ${dst_path}
+        cp -R ${src_path}${p} ${dst_path}
     fi
-
 done
 
 #mkdir -p ${dst_path}/plugin-updates/vendor/
@@ -48,6 +47,7 @@ for e in ${exclude[@]}; do
     find ${dst_path} -type d -iname ${e} -exec rm -rf {} \;
 done
 
+cp
 cd ${dst_path}/..
 zip -r ${kit_name}.zip ${plugin_path}
 ssh ${server} "cd ./${server}/protected-content/ ; mkdir -p \"${short_name}\""
