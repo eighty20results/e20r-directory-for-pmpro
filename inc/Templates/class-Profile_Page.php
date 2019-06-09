@@ -33,7 +33,11 @@ global $e20rmd_show_shipping_address;
 global $e20rmd_has_billing_fields;
 global $e20rmd_has_shipping_fields;
 
-class Profile_Page {
+/**
+ * Class Profile_Page
+ * @package E20R\Member_Directory
+ */
+class Profile_Page extends Template_Page {
 	
 	/**
 	 * Current instance of the Profile class
@@ -42,79 +46,46 @@ class Profile_Page {
 	private static $instance = null;
 	
 	/**
-	 * List of URLs by post ID for the Profile page(s) (key: paired directory page ID)
-	 *
-	 * @var string[int] $profile_url
+     * The billing address info for the user (string)
+     *
+	 * @var null|string
 	 */
-	private $profile_url = array();
-	
-	/**
-	 * List of URLs by post ID for the Directory page(s) (key: paired profile page ID)
-	 *
-	 * @var string[int] $this->directory_url
-	 */
-	private $directory_url = array();
-	
-	private $limit = null;
-	
-	private $avatar_size = '128';
-	private $fields = null;
-	private $show_avatar = null;
 	private $billing_address = null;
-	private $shipping_address = null;
-	private $show_bio = null;
-	private $show_billing = null;
-	private $show_email = null;
-	private $show_level = null;
-	private $show_name = null;
-	private $show_phone = null;
-	private $show_search = null;
-	private $show_startdate = null;
-	private $user_id = null;
-	private $directory_page_slug = null;
-	
-	private $fields_array = array();
 	
 	/**
-	 * Add the Profile page URL for the specific page (if applicable)
-	 *
-	 * @param int    $page_id
-	 * @param string $url
-	 *
-	 * @return bool
+     * The shipping address info for the user
+     *
+	 * @var null|string
 	 */
-	public static function addURL( $page_id, $url ) {
-		
-		$class = self::getInstance();
-		$utils = Utilities::get_instance();
-		
-		if ( false === wp_http_validate_url( $url ) ) {
-			return false;
-		}
-		
-		// Get the base URL for the site (used to find the page slug)
-		$base_url = preg_quote( get_site_url() );
-		
-		// Get rid of the base URL so we're left with the page slug
-		$page_slug    = preg_replace( "/{$base_url}/", '', $url );
-		$profile_page = get_page_by_path( $page_slug );
-		
-		if ( empty( $profile_page ) ) {
-			$utils->log( "Page {$page_slug} not found?!?!" );
-			
-			return false;
-		}
-		
-		if ( false === self::hasShortcode( $profile_page ) ) {
-			$utils->log( "Not processing a page with a profile short code on it" );
-			
-			return false;
-		}
-		
-		$class->profile_url[ $page_id ] = $url;
-		
-		return true;
-	}
+	private $shipping_address = null;
+	
+	/**
+     * Include the Biography information (from the WP user profile)
+     *
+	 * @var null|bool
+	 */
+	private $show_bio = null;
+	
+	/**
+     * Display billing address info for the user (shortcode attribute)
+     *
+	 * @var null|bool
+	 */
+	private $show_billing = null;
+	
+	/**
+     * Display the name on the Profile page (shortcode attribute)
+     *
+	 * @var null|bool
+	 */
+	private $show_name = null;
+	
+	/**
+     * Display the billing phone info on the Profile page (shortcode attribute)
+     *
+	 * @var null|bool
+	 */
+	private $show_phone = null;
 	
 	/**
 	 * Return or instantiate and return the E20R_Profile class instance
@@ -124,57 +95,10 @@ class Profile_Page {
 	public static function getInstance() {
 		
 		if ( true === is_null( self::$instance ) ) {
-			self::$instance                = new self();
+			self::$instance = new self();
 		}
 		
 		return self::$instance;
-	}
-	
-	/**
-	 * Does the supplied WP_Post (page) have one of the directory short codes embedded?
-	 *
-	 * @param \WP_Post $page
-	 *
-	 * @return bool
-	 */
-	public static function hasShortcode( $page ) {
-		
-		$utils = Utilities::get_instance();
-		
-		if ( ! isset( $page->post_content ) ) {
-			$utils->log( "Post argument is empty!" );
-			
-			return false;
-		}
-		
-		// Make sure we're processing a WP_Post object
-		if ( ! is_a( $page, '\WP_Post' ) ) {
-			$utils->log( "The supplied page argument isn't a WordPress Post object!" );
-			
-			return false;
-		}
-		
-		if ( has_shortcode( $page->post_content, 'e20r_member_profile' ) ) {
-			$utils->log( "Found the 'e20r_member_profile' short code" );
-			
-			return true;
-		}
-		
-		if ( has_shortcode( $page->post_content, 'e20r-member-profile' ) ) {
-			$utils->log( "Found the 'e20r-member-profile' short code" );
-			
-			return true;
-		}
-		
-		if ( has_shortcode( $page->post_content, 'pmpro_member_profile' ) ) {
-			$utils->log( "Found the 'pmpro_member_profile' short code" );
-			
-			return true;
-		}
-		
-		$utils->log( "Could not locate a profile short code!" );
-		
-		return false;
 	}
 	
 	/**
@@ -182,10 +106,19 @@ class Profile_Page {
 	 */
 	public function loadHooks() {
 		
-		add_shortcode( 'e20r-member-profile', array( $this, 'profileShortCode' ) );
-		add_shortcode( 'e20r_member_profile', array( $this, 'profileShortCode' ) );
-		add_shortcode( 'pmpro_member_profile', array( $this, 'profileShortCode' ) );
-		
+	    $type = 'profile';
+	    
+	    $short_codes = apply_filters( 'e20r-directory-supported-shortcodes', array(
+			    sprintf( 'e20r_member_%1$s', $type ),
+			    sprintf( 'e20r-member-%1$s', $type ),
+			    sprintf( 'pmpro_member_%1$s', $type ),
+		    )
+	    );
+	    
+	    foreach( $short_codes as $short_code ) {
+		    add_shortcode( $short_code, array( $this, 'shortcode' ) );
+        }
+	    
 		add_action( 'wp', array( $this, 'profilePreHeader' ), 1 );
 		
 		add_filter( 'the_title', array( $this, 'theTitle' ), 10, 2 );
@@ -307,7 +240,7 @@ class Profile_Page {
 		}
 		
 		if ( empty( $this->profile_url ) ) {
-		    $this->setProfilePageVariables();
+			$this->setProfilePageVariables();
 		}
 		
 		if ( get_permalink( $post ) != $this->profile_url ) {
@@ -346,9 +279,9 @@ class Profile_Page {
 		}
 		
 		if ( ! self::hasShortcode( $post ) ) {
-		    return;
-        }
-        
+			return;
+		}
+		
 		$directory_url = get_permalink( Options::getDirectoryIDFromProfile( $post->ID ) );
 		
 		// If no profile user found, go to directory (or home, if no directory is specified)
@@ -382,22 +315,22 @@ class Profile_Page {
 	
 	/**
 	 * Configure the URLs for the directory as it relates to the current page (profile)
-     *
-     * @return bool
+	 *
+	 * @return bool
 	 */
 	private function setProfilePageVariables() {
-	    
-	    global $post;
-	    $utils = Utilities::get_instance();
-	    
+		
+		global $post;
+		$utils = Utilities::get_instance();
+		
 		// Page variables
 		$directory_page_id = Options::getDirectoryIDFromProfile( $post->ID );
-		$profile_page_id = Options::getProfileIDFromDirectory( $directory_page_id );
+		$profile_page_id   = Options::getProfileIDFromDirectory( $directory_page_id );
 		
-		$utils->log("Got directory ID of {$directory_page_id} for profile ID {$post->ID}");
-		$utils->log("Got profile ID of {$profile_page_id} for directory ID {$directory_page_id}");
+		$utils->log( "Got directory ID of {$directory_page_id} for profile ID {$post->ID}" );
+		$utils->log( "Got profile ID of {$profile_page_id} for directory ID {$directory_page_id}" );
 		// Grab the default directory page if none is specified
-  
+		
 		if ( empty( $directory_page_id ) ) {
 			// Get the default directory page ID
 			$directory_page_id = Options::getDirectoryIDFromProfile();
@@ -413,36 +346,38 @@ class Profile_Page {
 		//$this->directory_url = E20R_Directory_For_PMPro::getURL( 'directory', $directory_page_id );
 		//$this->profile_url   = E20R_Directory_For_PMPro::getURL( 'profile', $profile_page_id );
 		
-        $this->directory_url = get_permalink( $directory_page_id );
-		$this->profile_url = get_permalink( $profile_page_id );
+		$this->directory_url = get_permalink( $directory_page_id );
+		$this->profile_url   = get_permalink( $profile_page_id );
 		
 		
-		$utils->log("Profile id: {$profile_page_id} -> {$this->profile_url}");
-		$utils->log("Directory id: {$directory_page_id} -> {$this->directory_url}");
+		$utils->log( "Profile id: {$profile_page_id} -> {$this->profile_url}" );
+		$utils->log( "Directory id: {$directory_page_id} -> {$this->directory_url}" );
 		
 		if ( empty( $this->directory_url ) ) {
-		    $utils->log("Error: Could not generate the URL for the 'directory' page (ID: {$directory_page_id})!");
+			$utils->log( "Error: Could not generate the URL for the 'directory' page (ID: {$directory_page_id})!" );
+			
 			return false;
-        }
+		}
 		
 		if ( empty( $this->profile_url ) ) {
-			$utils->log("Error: Could not generate the URL for the 'profile' page (ID: {$profile_page_id})!");
+			$utils->log( "Error: Could not generate the URL for the 'profile' page (ID: {$profile_page_id})!" );
+			
 			return false;
 		}
 		
 		return true;
-    }
-    
+	}
+	
 	/**
-	 * Process the Profile short code
+	 * Process the short code for the Profile page
 	 *
-	 * @param        $atts
+	 * @param array  $atts
 	 * @param null   $content
 	 * @param string $code
 	 *
 	 * @return false|string
 	 */
-	function profileShortCode( $atts, $content = null, $code = "" ) {
+	public function shortcode( $atts, $content = null, $code = "" ) {
 		
 		$utils = Utilities::get_instance();
 		
@@ -484,17 +419,18 @@ class Profile_Page {
 		
 		// Configure the page variables for the Profile page
 		if ( false === $this->setProfilePageVariables() ) {
-		    $utils->add_message(
-		            sprintf(
-		                    __( 'Error loading the "%s" profile page (ID: %d)', E20R_Directory_For_PMPro::plugin_slug ),
-                            $post->post_title,
-                            $post->ID
-                    ),
-                    'error',
-                    'backend'
-            );
-		    return null;
-        }
+			$utils->add_message(
+				sprintf(
+					__( 'Error loading the "%s" profile page (ID: %d)', E20R_Directory_For_PMPro::plugin_slug ),
+					$post->post_title,
+					$post->ID
+				),
+				'error',
+				'backend'
+			);
+			
+			return null;
+		}
 		
 		/**
 		 * Use the supplied page slug as the profile page instead (if available)
@@ -548,7 +484,7 @@ class Profile_Page {
 		
 		$utils->log( "Show billing address in own section? " . ( $e20rmd_show_billing_address ? 'Yes' : 'No' ) );
 		
-		$this->limit = $utils->get_variable( 'page_size', 15 );
+		$this->page_size = $utils->get_variable( 'page_size', 15 );
 		
 		$pu = $utils->get_variable( 'pu', null );
 		
@@ -587,12 +523,12 @@ class Profile_Page {
             <form action="<?php echo esc_url_raw( $this->directory_url ); ?>" method="post" role="search"
                   class="e20r-directory-for-pmpro_search search-form">
                 <label>
-                    <span class="screen-reader-text"><?php _e( 'Search for:', 'label' ); ?></span>
+                    <span class="screen-reader-text"><?php _e( 'Search for:', E20R_Directory_For_PMPro::plugin_slug ); ?></span>
                     <input type="search" class="search-field"
-                           placeholder="<?php _e( "Search Members", "e20r-directory-for-pmpro" ); ?>" name="ps"
+                           placeholder="<?php _e( "Search Members", E20R_Directory_For_PMPro::plugin_slug ); ?>" name="ps"
                            value="<?php esc_attr_e( $ps ); ?>"
-                           title="<?php _e( "Search Members", "e20r-directory-for-pmpro" ); ?>"/>
-                    <input type="hidden" name="limit" value="<?php esc_attr_e( $this->limit ); ?>"/>
+                           title="<?php _e( "Search Members", E20R_Directory_For_PMPro::plugin_slug ); ?>"/>
+                    <input type="hidden" name="limit" value="<?php esc_attr_e( $this->page_size ); ?>"/>
                 </label>
 				<?php
 				$search_fields = apply_filters( 'e20r-directory-for-pmpro_extra_search_input', array() );
@@ -607,7 +543,7 @@ class Profile_Page {
 				}
 				do_action( 'e20r-directory-for-pmpro_extra_search_output' ); ?>
                 <input type="submit" class="search-submit"
-                       value="<?php _e( "Search Members", "e20r-directory-for-pmpro" ); ?>">
+                       value="<?php _e( "Search Members", E20R_Directory_For_PMPro::plugin_slug ); ?>">
             </form>
             <span class="clear"></span>
 		<?php } ?>
@@ -656,25 +592,25 @@ class Profile_Page {
 				<?php } ?>
 				<?php if ( true === $this->show_email ) { ?>
                     <p class="e20r-directory-for-pmpro_email">
-                        <strong><?php _e( 'Email Address', 'pmpro' ); ?></strong>
+                        <strong><?php _e( 'Email Address', E20R_Directory_For_PMPro::plugin_slug ); ?></strong>
 						<?php esc_html_e( $profile_user->user_email ); ?>
                     </p>
 				<?php } ?>
 				<?php if ( true === $this->show_level && ! empty( $profile_user->membership_level->name ) ) { ?>
                     <p class="e20r-directory-for-pmpro_level">
-                        <strong><?php _e( 'Level', 'pmpro' ); ?></strong>
+                        <strong><?php _e( 'Level', E20R_Directory_For_PMPro::plugin_slug ); ?></strong>
 						<?php esc_html_e( $profile_user->membership_level->name ); ?>
                     </p>
 				<?php } ?>
 				<?php if ( true === $this->show_startdate && ! empty( $profile_user->membership_level->startdate ) ) { ?>
                     <p class="e20r-directory-for-pmpro_date">
-                        <strong><?php _e( 'Start Date', 'pmpro' ); ?></strong>
+                        <strong><?php _e( 'Start Date', E20R_Directory_For_PMPro::plugin_slug ); ?></strong>
 						<?php echo date_i18n( get_option( "date_format" ), $profile_user->membership_level->startdate ); ?>
                     </p>
 				<?php } ?>
 				<?php if ( ( true === $this->show_billing && ( false === $e20rmd_show_billing_address && false === $e20rmd_show_shipping_address ) ) && ! empty( $profile_user->pmpro_baddress1 ) ) { ?>
                     <p class="e20r-directory-for-pmpro_baddress">
-                        <strong><?php _e( 'Address', 'pmpro' ); ?></strong>
+                        <strong><?php _e( 'Address', E20R_Directory_For_PMPro::plugin_slug); ?></strong>
 						<?php esc_html_e( $profile_user->pmpro_baddress1 ); ?><br/>
 						<?php
 						if ( ! empty( $profile_user->pmpro_baddress2 ) ) {
@@ -690,7 +626,7 @@ class Profile_Page {
 				<?php } ?>
 				<?php if ( true === $this->show_phone && ! empty( $profile_user->pmpro_bphone ) ) { ?>
                     <p class="e20r-directory-for-pmpro_phone">
-                        <strong><?php _e( 'Phone Number', 'pmpro' ); ?></strong>
+                        <strong><?php _e( 'Phone Number', E20R_Directory_For_PMPro::plugin_slug ); ?></strong>
 						<?php echo formatPhone( $profile_user->pmpro_bphone ); ?>
                     </p>
 				<?php } ?>
@@ -766,7 +702,7 @@ class Profile_Page {
 			<?php if ( apply_filters( 'e20r-directory-for-pmpro_profile_show_return_link', true ) && ! empty( $this->directory_url ) ) { ?>
                 <div align="center">
                     <a class="more-link" href="<?php echo esc_url_raw( $this->directory_url ); ?>">
-						<?php _e( 'View All Members', 'e20r-directory-for-pmpro' ); ?>
+						<?php _e( 'View All Members', E20R_Directory_For_PMPro::plugin_slug ); ?>
                     </a>
                 </div>
 			<?php } ?>
