@@ -2,8 +2,8 @@
 Contributors: eighty20results
 Tags: pmpro, paid memberships pro, members, directory, eighty/20 results
 Requires at least: 4.4
-Tested up to: 5.2
-Stable tag: 3.2
+Tested up to: 5.2.1
+Stable tag: 3.2.1
 
 Add a enhanced and more robust Member Directory and Profiles to your Membership Site - with attributes to customize the display.
 
@@ -149,13 +149,17 @@ NOTE: e20r-directory-for-pmpro_extra_search_input (filter hook) and e20r-directo
 
 = I found a bug in the plugin. =
 
-Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/eighty20results.com/e20r-directory-for-pmpro/issues
+Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/eighty20results/e20r-directory-for-pmpro/issues
 
 = I need help installing, configuring, or customizing the plugin. =
 
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 3.2.1 =
+
+* BUG FIX: Occasional fatal PHP error when activating the plugin
 
 = 3.2 =
 
