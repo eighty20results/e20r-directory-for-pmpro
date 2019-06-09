@@ -886,7 +886,7 @@ if ( function_exists( 'pmpro_loadTemplate' ) ) {
 // Load this plugin
 add_action( 'plugins_loaded', array( E20R_Directory_For_PMPro::getInstance(), 'loadHooks' ) );
 
-require_once( plugin_dir_path( __FILE__ ) . 'includes/yahnis-elsts/plugin-update-checker/plugin-update-checker.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php' );
 
 $plugin_updates = \Puc_v4_Factory::buildUpdateChecker(
 	'https://eighty20results.com/protected-content/e20r-directory-for-pmpro/metadata.json',
