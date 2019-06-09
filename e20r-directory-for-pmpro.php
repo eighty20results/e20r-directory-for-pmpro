@@ -3,7 +3,7 @@
 Plugin Name: E20R Directory for PMPro
 Plugin URI: https://eighty20results.com/wordpress-plugins/e20r-directory-for-pmpro
 Description: Better member directory and profile pages for Paid Memberships Pro
-Version: 3.2.1
+Version: 3.3
 Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
 Text Domain: e20r-directory-for-pmpro
@@ -49,7 +49,7 @@ if ( ! defined( "E20R_DIRECTORY" ) ) {
 }
 
 if ( ! defined( "E20RED_VER" ) ) {
-	define( 'E20RED_VER', "3.2.1" );
+	define( 'E20RED_VER', "3.3" );
 }
 
 /**
@@ -75,7 +75,7 @@ class E20R_Directory_For_PMPro {
 	 *
 	 * @var float $Version
 	 */
-	public static $Version = 3.0;
+	public static $Version = (float) E20RED_VER;
 	
 	/**
 	 * The only instance of this class
@@ -101,19 +101,19 @@ class E20R_Directory_For_PMPro {
 	 */
 	public static function trueFalse( $value, $type = 'false' ) {
 		
-		$utils = \E20R\Utilities\Utilities::get_instance();
+		$utils = Utilities::get_instance();
 		
 		switch ( $type ) {
 			case 'true':
 				// Return true if we found one of the 'true' values
-				$found = in_array( $value, array( 'yes', '1', 'true' ) );
+				$found = in_array( strtolower( $value ) , array( 'yes', '1', 'true' ) );
 				$utils->log( "Checking for true: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
 				
 				return ( true === $found ? true : false );
 				break;
 			default:
 				// Return false if we found one of the 'false' values
-				$found = in_array( $value, array( 'no', 'false', '0' ) );
+				$found = in_array( strtolower( $value ) , array( 'no', 'false', '0' ) );
 				$utils->log( "Checking for false: {$value} -> " . ( $found ? 'Found' : 'Not Found' ) );
 				
 				return ( true === $found ? false : true );
@@ -309,15 +309,11 @@ class E20R_Directory_For_PMPro {
 				'profile'   => get_permalink( $settings['profile'] ),
 			);
 			
-			Directory_Page::addURL( $settings['directory'], get_permalink( $settings['directory'] ) );
-			Profile_Page::addURL( $settings['profile'], $urls );
+			Directory_Page::addURL( $settings['directory'], get_permalink( $settings['directory'] ), 'directory' );
+			Profile_Page::addURL( $settings['profile'], $urls, 'profile' );
 		}
 		
-		$directory_page = get_post( $directory_page_id );
-		
-		
-		$profile_page = get_post( $profile_page_id );
-		Profile_Page::setURL( get_permalink( $profile_page ) );
+		// Directory_Page::addURL( $profile_page_id, 'profile' );
 		
 		if ( false === Options::set( 'page_pairs', $options ) ) {
 			$utils->log( "Unable to (re) save the Option settings for the page pairs" );
@@ -407,15 +403,7 @@ class E20R_Directory_For_PMPro {
 			$page_id  = $page_ids['default'][ $type ];
 		}
 		
-		// Make sure the page has a valid/expected short code
-		switch ( $type ) {
-			case 'profile':
-				$has_shortcode = Profile_Page::hasShortcode( get_post( $page_id ) );
-				break;
-			case 'directory':
-				$has_shortcode = Directory_Page::hasShortcode( get_post( $page_id ) );
-				break;
-		}
+		$has_shortcode = Template_Page::hasShortcode( get_post( $page_id ), $type );
 		
 		if ( false === $has_shortcode ) {
 			$utils->log( "No short code found for {$type}" );
@@ -431,7 +419,7 @@ class E20R_Directory_For_PMPro {
 	 */
 	public function loadHooks() {
 		
-	    // TODO: Activate licensing module once implemented
+		// TODO: Activate licensing module once implemented
 		// add_action( 'plugins_loaded', array( Licensing::get_instance(), 'load_hooks'), 18 );
 		add_action( 'plugins_loaded', array( PMPro_PageSettings::getInstance(), 'loadHooks' ), 19 );
 		add_action( 'plugins_loaded', array( Directory_Page::getInstance(), 'loadHooks' ), 20 );
@@ -515,11 +503,12 @@ class E20R_Directory_For_PMPro {
 	 * Post notice when Member Directory settings haven't been configured (are empty).
 	 */
 	public function areSettingsEmpty() {
-	    
-	    $utils      = Utilities::get_instance();
+		
+		$utils = Utilities::get_instance();
 		
 		if ( ! is_admin() ) {
 			$utils->log( "Not in WordPress backend!" );
+			
 			return;
 		}
 		
@@ -527,7 +516,8 @@ class E20R_Directory_For_PMPro {
 		$page_pairs = Options::get( 'page_pairs' );
 		
 		if ( ! empty( $page_pairs ) ) {
-			$utils->log("Page pair settings is not empty.. ");
+			$utils->log( "Page pair settings is not empty.. " );
+			
 			return;
 		}
 		
@@ -586,11 +576,18 @@ class E20R_Directory_For_PMPro {
 		$utils = Utilities::get_instance();
 		
 		if ( ! is_admin() ) {
-		    $utils->log("Not in WP backend!");
-		    return;
-        }
-        
-		if ( 'admin_page_pmpro-pagesettings' !== $hook && 'user-edit.php' !== $hook ) {
+			$utils->log( "Not in WP backend!" );
+			
+			return;
+		}
+		
+		$load_admin_css_on_page = apply_filters( 'e20r-directory-load-admin-css-on-page', ( is_admin() ? true : false ) );
+		
+		if ( 'admin_page_pmpro-pagesettings' !== $hook &&
+             'user-edit.php' !== $hook &&
+             'profile.php' !== $hook &&
+             false === $load_admin_css_on_page
+        ) {
 			$utils->log( "Not on the profile or PMPro Settings page: {$hook}" );
 			
 			return;
@@ -636,17 +633,17 @@ class E20R_Directory_For_PMPro {
 	 */
 	public function init() {
 		
-	    $utils = Utilities::get_instance();
+		$utils = Utilities::get_instance();
 		if ( function_exists( 'pmpromd_register_styles' ) && is_admin() ) {
 			
 			$utils->add_message(
-			        __(
-			                "The 'Member Directory & Profile Pages' add-on for Paid Memberships Pro is currently active. You should deactivate it before you activate this plugin.",
-                            self::plugin_slug
-                    ),
-                    'error',
-                    'backend'
-            );
+				__(
+					"The 'Member Directory & Profile Pages' add-on for Paid Memberships Pro is currently active. You should deactivate it before you activate this plugin.",
+					self::plugin_slug
+				),
+				'error',
+				'backend'
+			);
 			
 			return;
 		}
@@ -705,7 +702,7 @@ class E20R_Directory_For_PMPro {
 	 * Register/load Directory/Profile page styles as/when needed
 	 */
 	public function registerStyles() {
-	 
+		
 		$css_list = apply_filters( 'e20r-directory-for-pmpro-css-file-paths', array(
 				'child_theme'  => array(
 					'file' => get_stylesheet_directory() . '/paid-memberships-pro/member-directory/css/e20r-directory-for-pmpro.css',
@@ -756,14 +753,14 @@ class E20R_Directory_For_PMPro {
 	public function extraPageSettings( $pages ) {
 		
 		$pages['directory'] = array(
-			'title'   => __( 'Directory', 'e20r-directory-for-pmpro' ),
-			'content' => '[e20r-directory-for-pmpro]',
-			'hint'    => __( 'Include the shortcode [e20r_directory_for_pmpro].', 'e20r-directory-for-pmpro' ),
+			'title'   => __( 'Member Directory', E20R_Directory_For_PMPro::plugin_slug ),
+			'content' => '[e20r-member-directory]',
+			'hint'    => __( 'Include the [e20r-member-directory] shortcode.', E20R_Directory_For_PMPro::plugin_slug ),
 		);
 		$pages['profile']   = array(
-			'title'   => __( 'Profile', 'e20r-directory-for-pmpro' ),
+			'title'   => __( 'Member Profile', E20R_Directory_For_PMPro::plugin_slug ),
 			'content' => '[e20r-member-profile]',
-			'hint'    => __( 'Include the shortcode [e20r_directory_profile].', 'e20r-directory-for-pmpro' ),
+			'hint'    => __( 'Include the [e20r-member-profile] shortcode.', E20R_Directory_For_PMPro::plugin_slug ),
 		);
 		
 		return $pages;
@@ -775,17 +772,17 @@ class E20R_Directory_For_PMPro {
 	 * @param \WP_User $user
 	 */
 	public function showExtraProfileFields( $user ) {
-	 
-		$is_admin = current_user_can( 'manage_options' );
-		$hide_directory = (bool) get_user_meta( $user->ID, 'e20red_hide_directory', true );
+		
+		$is_admin             = current_user_can( 'manage_options' );
+		$hide_directory       = (bool) get_user_meta( $user->ID, 'e20red_hide_directory', true );
 		$pmpro_hide_directory = (bool) get_user_meta( $user->ID, 'pmpro_hide_directory', true );
 		
 		// Compatibility with the PMPro add-on setting(s)
 		if ( true === $pmpro_hide_directory && false === $hide_directory ) {
-		    $hide_directory = $pmpro_hide_directory;
-		    update_user_meta( $user->ID, 'e20red_hide_directory', $hide_directory );
-        }
-        
+			$hide_directory = $pmpro_hide_directory;
+			update_user_meta( $user->ID, 'e20red_hide_directory', $hide_directory );
+		}
+		
 		if ( (
 			     true === apply_filters( 'e20r-directory-for-pmpro_non_admin_profile_settings', true ) &&
 			     false === $is_admin
@@ -823,14 +820,14 @@ class E20R_Directory_For_PMPro {
 		
 		// Transition the user from the PMPro 'hide_directory' variable (if necessary)
 		if ( $pmpro_hide_directory ) {
-		    update_user_meta( $user_id, 'e20red_hide_directory', $pmpro_hide_directory );
-        }
-        
+			update_user_meta( $user_id, 'e20red_hide_directory', $pmpro_hide_directory );
+		}
+		
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
 		
-		$utils = Utilities::get_instance();
+		$utils          = Utilities::get_instance();
 		$hide_directory = (bool) $utils->get_variable( 'e20red_hide_directory', false );
 		
 		update_user_meta( $user_id, 'e20red_hide_directory', $hide_directory );
@@ -899,7 +896,7 @@ if ( function_exists( 'pmpro_loadTemplate' ) ) {
 // Load this plugin
 add_action( 'plugins_loaded', array( E20R_Directory_For_PMPro::getInstance(), 'loadHooks' ) );
 
-require_once( plugin_dir_path( __FILE__ ) . 'includes/autoload.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/yahnis-elsts/plugin-update-checker/plugin-update-checker.php' );
 
 $plugin_updates = \Puc_v4_Factory::buildUpdateChecker(
 	'https://eighty20results.com/protected-content/e20r-directory-for-pmpro/metadata.json',
