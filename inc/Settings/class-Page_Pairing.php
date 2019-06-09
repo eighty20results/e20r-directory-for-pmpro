@@ -181,12 +181,12 @@ class Page_Pairing {
 		$profile_view_link   = null;
 		
 		if ( - 1 !== $directory_page_id ) {
-			$directory_edit_link = add_query_arg( array( 'post' => $directory_page_id, 'action' => 'edit' ), admin_url( 'edit.php' ) );
+			$directory_edit_link = esc_url( add_query_arg( array( 'post' => $directory_page_id, 'action' => 'edit' ), admin_url( 'post.php' ) ) );
 			$directory_view_link = get_permalink( $directory_page_id );
 		}
 		
 		if ( - 1 !== $profile_page_id ) {
-			$profile_edit_link = add_query_arg( array( 'post' => $profile_page_id, 'action' => 'edit' ), admin_url( 'post.php' ) );
+			$profile_edit_link = esc_url( add_query_arg( array( 'post' => $profile_page_id, 'action' => 'edit' ), admin_url( 'post.php' ) ) );
 			$profile_view_link = get_permalink( $profile_page_id );
 		}
 		
