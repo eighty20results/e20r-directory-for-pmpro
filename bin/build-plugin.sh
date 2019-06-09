@@ -6,7 +6,7 @@
 #
 short_name="e20r-directory-for-pmpro"
 server="eighty20results.com"
-include=(components css inc includes/yahnis-elsts includes/autoload.php languages ${short_name}.php readme.txt)
+include=(components css inc includes/yahnis-elsts languages ${short_name}.php readme.txt)
 exclude=( *.yml *.phar composer.* vendor)
 #build=()
 plugin_path="${short_name}"
@@ -31,7 +31,7 @@ then
 fi
 
 for p in ${include[@]}; do
-    if [[ 'includes/yahnis-elsts' == ${p} ]] || [[ 'includes/autoload.php' == ${p} ]]; then
+    if [[ 'includes/yahnis-elsts' == ${p} ]] || [[ 'includes/autoload.php' == ${p} ]] || [[ 'includes/composer' == ${p} ]] || [[ 'includes/bin' == ${p} ]] ; then
         cp -R ${src_path}${p} ${dst_path}/includes
     else
         cp -R ${src_path}${p} ${dst_path}
