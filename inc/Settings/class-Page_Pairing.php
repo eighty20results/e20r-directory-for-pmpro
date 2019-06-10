@@ -82,16 +82,17 @@ class Page_Pairing {
             </td>
         </tr>
         <tr>
-        <?php if ( isset( $page_pairs['default'] ) && -1 !== (int) $page_pairs['default']['directory'] ) { ?>
-        <tr>
-            <td class="e20r-directory-page-pair" colspan="2">
-                <p class="e20r-directory-default">
-                    <?php printf(__( 'The default directory page is: "%1$s" (Page id: %2$d) '), get_the_title( $page_pairs['default']['directory'] ), $page_pairs['default']['directory'] ); ?><br/>
-	                <?php printf(__( 'The default profile page is: "%1$s" (Page id: %2$d) '), get_the_title( $page_pairs['default']['profile'] ), $page_pairs['default']['profile'] ); ?>
-                </p>
-            </td>
-        </tr>
-        <?php } ?>
+		<?php if ( isset( $page_pairs['default'] ) && - 1 !== (int) $page_pairs['default']['directory'] ) { ?>
+            <tr>
+                <td class="e20r-directory-page-pair" colspan="2">
+                    <p class="e20r-directory-default">
+						<?php printf( __( 'The default directory page is: "%1$s" (Page id: %2$d) ' ), get_the_title( $page_pairs['default']['directory'] ), $page_pairs['default']['directory'] ); ?>
+                        <br/>
+						<?php printf( __( 'The default profile page is: "%1$s" (Page id: %2$d) ' ), get_the_title( $page_pairs['default']['profile'] ), $page_pairs['default']['profile'] ); ?>
+                    </p>
+                </td>
+            </tr>
+		<?php } ?>
         <tr>
             <td class="e20r-directory-page-pair" colspan="2">
                 <div class="e20r-directory-page e20r-admin-header"><?php _e( 'Directory Page', Controller::plugin_slug ); ?></div>
@@ -181,12 +182,18 @@ class Page_Pairing {
 		$profile_view_link   = null;
 		
 		if ( - 1 !== $directory_page_id ) {
-			$directory_edit_link = esc_url( add_query_arg( array( 'post' => $directory_page_id, 'action' => 'edit' ), admin_url( 'post.php' ) ) );
+			$directory_edit_link = esc_url( add_query_arg( array(
+				'post'   => $directory_page_id,
+				'action' => 'edit',
+			), admin_url( 'post.php' ) ) );
 			$directory_view_link = get_permalink( $directory_page_id );
 		}
 		
 		if ( - 1 !== $profile_page_id ) {
-			$profile_edit_link = esc_url( add_query_arg( array( 'post' => $profile_page_id, 'action' => 'edit' ), admin_url( 'post.php' ) ) );
+			$profile_edit_link = esc_url( add_query_arg( array(
+				'post'   => $profile_page_id,
+				'action' => 'edit',
+			), admin_url( 'post.php' ) ) );
 			$profile_view_link = get_permalink( $profile_page_id );
 		}
 		
@@ -383,13 +390,15 @@ class Page_Pairing {
 		$utils = Utilities::get_instance();
 		$utils->log( "Settings before sanitation: " . print_r( $_REQUEST, true ) );
 		
+		$current_page_settings = Options::get( 'page_pair' );
+		
 		if ( ! isset( $_REQUEST['e20r_directory_page_map'] ) && ! is_array( $_REQUEST['e20r_directory_page_map'] ) ) {
 			$utils->log( "Nothing to save for the page pairings" );
 			
 			return false;
 		}
 		
-		$page_pairs = array();
+		$page_pairs = $current_page_settings;
 		
 		foreach ( $_REQUEST['e20r_directory_page_map'] as $parameter => $value ) {
 			
@@ -408,13 +417,33 @@ class Page_Pairing {
 				$dir_page_id  = $page_id;
 			}
 			
+			$profile_page_id = $utils->_sanitize(
+				$_REQUEST['e20r_directory_page_map']["e20r_profile_page_id-{$dir_page_id}"]
+			);
+			
+			$directory_page_id = $utils->_sanitize(
+				$_REQUEST['e20r_directory_page_map']["e20r_directory_page_id-{$dir_page_id}"]
+			);
+			
+			if ( ! isset( $page_pairs['default'] ) ) {
+				$page_pairs['default']              = array();
+				$page_pairs['default']['directory'] = $directory_page_id;
+				$page_pairs['default']['profile']   = $profile_page_id;
+				continue;
+			}
+			
+			if ( $page_pairs['default']['directory'] === $directory_page_id ) {
+				$page_pairs['default']['profile'] = $profile_page_id;
+				continue;
+			}
+			
+			if ( ! isset( $page_pairs[ $page_id ] ) ) {
+				$page_pairs[ $page_id ] = array();
+			}
+			
 			$page_pairs[ $page_id ] = array(
-				'directory' => $utils->_sanitize(
-					$_REQUEST['e20r_directory_page_map']["e20r_directory_page_id-{$dir_page_id}"]
-				),
-				'profile'   => $utils->_sanitize(
-					$_REQUEST['e20r_directory_page_map']["e20r_profile_page_id-{$dir_page_id}"]
-				),
+				'directory' => $directory_page_id,
+				'profile'   => $profile_page_id,
 			);
 		}
 		
