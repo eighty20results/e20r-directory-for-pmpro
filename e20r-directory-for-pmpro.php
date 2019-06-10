@@ -3,7 +3,7 @@
 Plugin Name: E20R Directory for PMPro
 Plugin URI: https://eighty20results.com/wordpress-plugins/e20r-directory-for-pmpro
 Description: Better member directory and profile pages for Paid Memberships Pro
-Version: 3.5
+Version: 3.6
 Author: eighty20results, strangerstudios
 Author URI: https://eighty20results.com/thomas-sjolshagen
 Text Domain: e20r-directory-for-pmpro
@@ -51,7 +51,7 @@ if ( ! defined( "E20R_DIRECTORY" ) ) {
 }
 
 if ( ! defined( "E20RED_VER" ) ) {
-	define( 'E20RED_VER', "3.5" );
+	define( 'E20RED_VER', "3.6" );
 }
 
 /**
@@ -852,14 +852,14 @@ class E20R_Directory_For_PMPro {
 			sprintf(
 				'<a href="%s" title="%s">%s</a>',
 				esc_url( 'http://eighty20results.com/paid-memberships-pro/e20r-directory-for-pmpro/' ),
-				__( 'View Documentation', 'e20r-directory-for-pmpro' ),
-				__( 'Docs', 'e20r-directory-for-pmpro' )
+				__( 'View Documentation', E20R_Directory_For_PMPro::plugin_slug ),
+				__( 'Docs', E20R_Directory_For_PMPro::plugin_slug )
 			),
 			sprintf(
 				'<a href="%s" title="%s">%s</a>',
-				esc_url( 'http://eighty20results.com/support/' ),
-				__( 'Submit Customer Support Question', 'e20r-directory-for-pmpro' ),
-				__( 'Support', 'e20r-directory-for-pmpro' )
+				esc_url( 'https://github.com/eighty20results/e20r-directory-for-pmpro/issues' ),
+				__( 'Submit Customer Support Question', E20R_Directory_For_PMPro::plugin_slug ),
+				__( 'Support', E20R_Directory_For_PMPro::plugin_slug )
 			),
 		);
 		
