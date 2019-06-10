@@ -1,1 +1,2 @@
-ENHANCEMENT: Attempt to deactivate page caching when dispaying directory or profile page/post(s)
+BUG FIX: Error while handling multiple page pairs
+BUG FIX: Error while processing multiple page pairs and the PMPro directory/profile ID settings
