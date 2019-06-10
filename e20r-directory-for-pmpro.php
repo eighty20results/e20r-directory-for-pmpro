@@ -42,6 +42,7 @@ use E20R\Member_Directory\Settings\Options;
 use E20R\Member_Directory\Settings\Page_Pairing;
 use E20R\Member_Directory\Settings\PMPro_PageSettings;
 use E20R\Member_Directory\Tools\Billing_Information;
+use E20R\Member_Directory\Tools\Deactivate_Page_Cache;
 use E20R\Utilities\Cache;
 use E20R\Utilities\Utilities;
 
@@ -421,6 +422,7 @@ class E20R_Directory_For_PMPro {
 		
 		// TODO: Activate licensing module once implemented
 		// add_action( 'plugins_loaded', array( Licensing::get_instance(), 'load_hooks'), 18 );
+		add_action( 'plugins_loaded', array( Deactivate_Page_Cache::getInstance(), 'loadHooks' ), 18 );
 		add_action( 'plugins_loaded', array( PMPro_PageSettings::getInstance(), 'loadHooks' ), 19 );
 		add_action( 'plugins_loaded', array( Directory_Page::getInstance(), 'loadHooks' ), 20 );
 		add_action( 'plugins_loaded', array( Profile_Page::getInstance(), 'loadHooks' ), 20 );
