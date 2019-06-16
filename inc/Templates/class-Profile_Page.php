@@ -238,8 +238,8 @@ class Profile_Page extends Template_Page {
 		$utils = Utilities::get_instance();
 		
 		if ( ! is_page() ) {
-		    return;
-        }
+			return;
+		}
 		
 		if ( ! isset( $post->ID ) ) {
 			return;
@@ -247,11 +247,12 @@ class Profile_Page extends Template_Page {
 		
 		if ( ! self::hasShortcode( $post, 'profile' ) ) {
 			$utils->log( "Couldn't find the short code for the profile page on this page: " . print_r( $post->ID, true ) );
+			
 			return;
 		}
 		
 		if ( empty( $this->profile_url ) ) {
-		    $utils->log("Configure profile page variables as part of the header processing");
+			$utils->log( "Configure profile page variables as part of the header processing" );
 			$this->setProfilePageVariables();
 		}
 		
@@ -264,7 +265,7 @@ class Profile_Page extends Template_Page {
 		$profile_user = $utils->get_variable( 'pu', null );
 		
 		if ( empty( $profile_user ) && ! is_user_logged_in() ) {
-			$utils->log( "No profile user info found...");
+			$utils->log( "No profile user info found..." );
 			
 			return;
 		}
@@ -275,50 +276,51 @@ class Profile_Page extends Template_Page {
 		}
 		
 		if ( is_numeric( $profile_user ) ) {
-		    $utils->log("Searching for user by ID");
+			$utils->log( "Searching for user by ID" );
 			$user = get_user_by( 'ID', $profile_user );
 		} else if ( ! is_email( $profile_user ) && is_string( $profile_user ) ) {
-			$utils->log("Searching for user by login");
+			$utils->log( "Searching for user by login" );
 			$user = get_user_by( 'login', $profile_user );
 		} else if ( is_email( $profile_user ) && is_string( $profile_user ) ) {
-			$utils->log("Searching for user by email");
+			$utils->log( "Searching for user by email" );
 			$user = get_user_by( 'email', $profile_user );
 		}
 		
-		if ( empty( $user ) && is_user_logged_in() ) {
+		if ( empty( $user ) ) {
 			$user = $current_user;
 		}
 		
-		$directory_url = get_permalink( Options::getDirectoryIDFromProfile( $post->ID ) );
+		if ( ! empty( $user ) ) {
+		    $utils->log("Have user to display profile for");
+		    return;
+        }
 		
-		// If no profile user found, go to directory (or home, if no directory is specified)
-		if ( ! isset( $user->ID ) ) {
-			
-			$utils->log( "User not found??? " );
-			
-			if ( ! empty( $directory_url ) ) {
-				$utils->log( "No directory URL found for profile page ID: {$post->ID}" );
-				wp_redirect( $directory_url );
-			} else {
-				wp_redirect( home_url() );
-			}
-			exit;
+		if ( ! function_exists( 'pmpro_getMatches' ) ) {
+			$utils->log("PMPro isn't active");
+			return;
 		}
 		
 		// If a level is required for the profile page, make sure the profile user has it.
 		$levels = pmpro_getMatches( "/levels?=[\"']([^\"^']*)[\"']/", $post->post_content, true );
 		
-		if ( ! empty( $levels ) && function_exists( 'pmpro_hasMembershipLevel' ) &&
-		     ! pmpro_hasMembershipLevel( explode( ",", $levels ), $profile_user->ID )
+		if ( ! empty( $levels ) &&
+             pmpro_hasMembershipLevel( explode( ",", $levels ), $user->ID )
 		) {
-			
-			if ( ! empty( $directory_url ) ) {
-				wp_redirect( $directory_url );
-			} else {
-				wp_redirect( home_url() );
-			}
+		    $utils->log("User has expected membership level(s)");
+		    return;
+		}
+		
+		$directory_url = get_permalink( Options::getDirectoryIDFromProfile( $post->ID ) );
+		
+		// No directory page URL found so sending to home page
+		if ( empty( $directory_url ) ) {
+			wp_redirect( home_url() );
 			exit;
 		}
+		
+		$utils->log( "Directory URL found for profile page ID: {$post->ID}" );
+		wp_redirect( $directory_url );
+		exit;
 	}
 	
 	/**
