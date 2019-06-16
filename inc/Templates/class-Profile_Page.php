@@ -234,7 +234,8 @@ class Profile_Page extends Template_Page {
 		global $post;
 		global $current_user;
 		
-		$user = null;
+		$user  = null;
+		$utils = Utilities::get_instance();
 		
 		if ( ! isset( $post->ID ) ) {
 			return;
@@ -245,41 +246,44 @@ class Profile_Page extends Template_Page {
 		}
 		
 		if ( get_permalink( $post ) != $this->profile_url ) {
+			$utils->log( "NOT the expected profile URL for this page!" );
 			return;
 		}
 		
-		$utils = Utilities::get_instance();
-		/*
-			Pre-header operations here.
-		*/
+		// Pre-header operations here.
 		global $main_post_id;
 		
 		$main_post_id = $post->ID;
 		
 		//Get the user request variable (pu)
-		$profile_user = $utils->get_variable( 'pu', '' );
+		$profile_user = $utils->get_variable( 'pu', null );
 		
 		if ( empty( $profile_user ) && ! is_user_logged_in() ) {
+			$utils->log( "No profile user info found!? " . print_r( $_REQUEST, true ) );
+			
 			return;
 		}
 		
 		if ( empty( $profile_user ) ) {
+			$utils->log( "Using current user info if it exists" );
 			$profile_user = $current_user->ID;
 		}
 		
 		if ( is_numeric( $profile_user ) ) {
 			$user = get_user_by( 'ID', $profile_user );
+		} else if ( ! is_email( $profile_user ) && is_string( $profile_user ) ) {
+			$user = get_user_by( 'login', $profile_user );
+		} else if ( is_email( $profile_user ) && is_string( $profile_user ) ) {
+			$user = get_user_by( 'email', $profile_user );
 		}
 		
-		if ( empty( $user ) ) {
-			$user = get_user_by( 'slug', $profile_user );
-		}
-		
-		if ( empty( $user ) ) {
+		if ( empty( $user ) && is_user_logged_in() ) {
 			$user = $current_user;
 		}
 		
-		if ( ! self::hasShortcode( $post ) ) {
+		if ( ! self::hasShortcode( $post, 'profile' ) ) {
+			$utils->log( "Couldn't find the short code for the profile page on this page: " . print_r( $post->ID, true ) );
+			
 			return;
 		}
 		
@@ -288,7 +292,10 @@ class Profile_Page extends Template_Page {
 		// If no profile user found, go to directory (or home, if no directory is specified)
 		if ( ! isset( $user->ID ) ) {
 			
+			$utils->log( "User not found??? " );
+			
 			if ( ! empty( $directory_url ) ) {
+				$utils->log( "No directory URL found for profile page ID: {$post->ID}" );
 				wp_redirect( $directory_url );
 			} else {
 				wp_redirect( home_url() );
