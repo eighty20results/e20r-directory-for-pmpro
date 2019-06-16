@@ -1,2 +1,4 @@
-BUG FIX: Error while handling multiple page pairs
-BUG FIX: Error while processing multiple page pairs and the PMPro directory/profile ID settings
+BUG FIX: Load utils library early in profilePreHeader()
+BUG FIX: Improved debugging
+BUG FIX: User slug and login isn't the same value!
+BUG FIX: Not checking for email address as search value for user

@@ -3,7 +3,7 @@ Contributors: eighty20results
 Tags: pmpro, paid memberships pro, members, directory, eighty/20 results
 Requires at least: 4.4
 Tested up to: 5.2.1
-Stable tag: 3.6
+Stable tag: 3.6.1
 
 Add a enhanced and more robust Member Directory and Profiles to your Membership Site - with attributes to customize the display.
 
@@ -156,6 +156,13 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.eighty20results.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 3.6.1 =
+
+* BUG FIX: Load utils library early in profilePreHeader()
+* BUG FIX: Improved debugging
+* BUG FIX: User slug and login isn't the same value!
+* BUG FIX: Not checking for email address as search value for user
 
 = 3.6 =
 
