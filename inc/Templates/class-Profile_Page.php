@@ -237,17 +237,22 @@ class Profile_Page extends Template_Page {
 		$user  = null;
 		$utils = Utilities::get_instance();
 		
+		if ( ! is_page() ) {
+		    return;
+        }
+		
 		if ( ! isset( $post->ID ) ) {
 			return;
 		}
 		
-		if ( empty( $this->profile_url ) ) {
-			$this->setProfilePageVariables();
+		if ( ! self::hasShortcode( $post, 'profile' ) ) {
+			$utils->log( "Couldn't find the short code for the profile page on this page: " . print_r( $post->ID, true ) );
+			return;
 		}
 		
-		if ( get_permalink( $post ) != $this->profile_url ) {
-			$utils->log( "NOT the expected profile URL for this page!" );
-			return;
+		if ( empty( $this->profile_url ) ) {
+		    $utils->log("Configure profile page variables as part of the header processing");
+			$this->setProfilePageVariables();
 		}
 		
 		// Pre-header operations here.
@@ -259,7 +264,7 @@ class Profile_Page extends Template_Page {
 		$profile_user = $utils->get_variable( 'pu', null );
 		
 		if ( empty( $profile_user ) && ! is_user_logged_in() ) {
-			$utils->log( "No profile user info found!? " . print_r( $_REQUEST, true ) );
+			$utils->log( "No profile user info found...");
 			
 			return;
 		}
@@ -270,21 +275,18 @@ class Profile_Page extends Template_Page {
 		}
 		
 		if ( is_numeric( $profile_user ) ) {
+		    $utils->log("Searching for user by ID");
 			$user = get_user_by( 'ID', $profile_user );
 		} else if ( ! is_email( $profile_user ) && is_string( $profile_user ) ) {
+			$utils->log("Searching for user by login");
 			$user = get_user_by( 'login', $profile_user );
 		} else if ( is_email( $profile_user ) && is_string( $profile_user ) ) {
+			$utils->log("Searching for user by email");
 			$user = get_user_by( 'email', $profile_user );
 		}
 		
 		if ( empty( $user ) && is_user_logged_in() ) {
 			$user = $current_user;
-		}
-		
-		if ( ! self::hasShortcode( $post, 'profile' ) ) {
-			$utils->log( "Couldn't find the short code for the profile page on this page: " . print_r( $post->ID, true ) );
-			
-			return;
 		}
 		
 		$directory_url = get_permalink( Options::getDirectoryIDFromProfile( $post->ID ) );
@@ -303,10 +305,8 @@ class Profile_Page extends Template_Page {
 			exit;
 		}
 		
-		/*
-			If a level is required for the profile page, make sure the profile user has it.
-		*/
-		$levels = pmpro_getMatches( "/ levels?=[\"']([^\"^']*)[\"']/", $post->post_content, true );
+		// If a level is required for the profile page, make sure the profile user has it.
+		$levels = pmpro_getMatches( "/levels?=[\"']([^\"^']*)[\"']/", $post->post_content, true );
 		
 		if ( ! empty( $levels ) && function_exists( 'pmpro_hasMembershipLevel' ) &&
 		     ! pmpro_hasMembershipLevel( explode( ",", $levels ), $profile_user->ID )
