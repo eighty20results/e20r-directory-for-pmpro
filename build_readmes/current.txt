@@ -1,3 +1,1 @@
-BUG FIX: Attempted to process profile preheader on a non-page
-BUG FIX: Refactored profile shortcode check
-BUG FIX: Error in regex for level(s)
+BUG FIX: Redirecting a profile view to the directory page for the wrong reasons
