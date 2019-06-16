@@ -1,4 +1,3 @@
-BUG FIX: Load utils library early in profilePreHeader()
-BUG FIX: Improved debugging
-BUG FIX: User slug and login isn't the same value!
-BUG FIX: Not checking for email address as search value for user
+BUG FIX: Attempted to process profile preheader on a non-page
+BUG FIX: Refactored profile shortcode check
+BUG FIX: Error in regex for level(s)
